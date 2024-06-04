@@ -5,6 +5,10 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiServer", "WebApiServer\WebApiServer.csproj", "{98EC2EB5-C302-488F-80F4-97B46F475A9A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthDbContext", "AuthDbContext\AuthDbContext.csproj", "{6E880177-3DC6-43A9-B41C-5D415DA9D4DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthDbMigrationsPsql", "AuthDbMigrationsPsql\AuthDbMigrationsPsql.csproj", "{AD59539D-86EC-44EB-8351-AC15887918D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,13 @@ Global
 		{98EC2EB5-C302-488F-80F4-97B46F475A9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98EC2EB5-C302-488F-80F4-97B46F475A9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98EC2EB5-C302-488F-80F4-97B46F475A9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E880177-3DC6-43A9-B41C-5D415DA9D4DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E880177-3DC6-43A9-B41C-5D415DA9D4DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E880177-3DC6-43A9-B41C-5D415DA9D4DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E880177-3DC6-43A9-B41C-5D415DA9D4DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD59539D-86EC-44EB-8351-AC15887918D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD59539D-86EC-44EB-8351-AC15887918D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD59539D-86EC-44EB-8351-AC15887918D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD59539D-86EC-44EB-8351-AC15887918D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

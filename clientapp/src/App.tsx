@@ -1,44 +1,71 @@
-import { useEffect, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect } from 'react'
+import { ThemeProvider } from '@emotion/react'
+import { useAppDispatch, useAppSelector } from './redux/hooks/hooks'
 import './App.css'
-import { genWebApiServerApi } from './axios.manager'
+import { ConfigAxios, genAuthApi, genAdminApi } from './axios.manager'
+import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+import { APP_URL_Home, APP_URL_Login } from './constants/general'
+import { LoginPage } from './components/LoginPage'
+import ProtectedRoutes from './components/ProtectedRoutes'
+import { RouteNotFound } from './components/RouteNotFound'
+import { MainPage } from './components/MainPage'
+import { GlobalState } from './redux/states/GlobalState'
+import { evalThemeChanged } from './styles/Theme'
+import React from 'react'
+import { CssBaseline } from '@mui/material'
+
+const router = createBrowserRouter(
+  [
+    //--------------------------------------------------------
+    // PUBLIC ROUTES
+    //--------------------------------------------------------
+
+    // login
+    {
+      path: APP_URL_Login,
+      element: <LoginPage />
+    },
+
+    //--------------------------------------------------------
+    // PROTECTED ROUTES
+    //--------------------------------------------------------
+    {
+      
+      element: <ProtectedRoutes />,
+      errorElement: <RouteNotFound />,
+      children: [
+
+        // home
+        {
+          path: APP_URL_Home,
+          element: <MainPage />
+        },
+
+      ]
+    },
+  ],
+  {
+    // basename: 'https://localhost:5000'
+  }
+)
+
 
 function App() {
-  const [count, setCount] = useState(0)
-  const [apiResult, setApiResult] = useState('')
+  const global = useAppSelector<GlobalState>((state) => state.global)
+  const dispatch = useAppDispatch()
+  const theme = React.useMemo(() => evalThemeChanged(global), [global.theme])
 
   useEffect(() => {
-    const api = genWebApiServerApi()
-    api.getWeatherForecast().then(data => {
-      setApiResult(JSON.stringify(data.data))
-    })
-  }, [])
+    ConfigAxios(dispatch)
+  }, [dispatch])   
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-      {apiResult}
-    </>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+
+      <RouterProvider router={router} fallbackElement={<p>Loading...</p>} />
+    </ThemeProvider>
+
   )
 }
 

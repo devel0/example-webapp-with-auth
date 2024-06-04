@@ -24,114 +24,406 @@ import type { RequestArgs } from './base';
 import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerMap } from './base';
 
 /**
- * 
+ * M:ExampleWebApp.Backend.WebApi.AuthController.CurrentUser api response data.
  * @export
- * @interface DateOnly
+ * @interface CurrentUserResponseDto
  */
-export interface DateOnly {
+export interface CurrentUserResponseDto {
     /**
      * 
-     * @type {number}
-     * @memberof DateOnly
+     * @type {CurrentUserStatus}
+     * @memberof CurrentUserResponseDto
      */
-    'year'?: number;
+    'status': CurrentUserStatus;
     /**
-     * 
-     * @type {number}
-     * @memberof DateOnly
+     * Login username.
+     * @type {string}
+     * @memberof CurrentUserResponseDto
      */
-    'month'?: number;
+    'userName'?: string | null;
     /**
-     * 
-     * @type {number}
-     * @memberof DateOnly
+     * Email address.
+     * @type {string}
+     * @memberof CurrentUserResponseDto
      */
-    'day'?: number;
+    'email'?: string | null;
     /**
-     * 
-     * @type {DayOfWeek}
-     * @memberof DateOnly
+     * List of roles associated to this user.
+     * @type {Array<string>}
+     * @memberof CurrentUserResponseDto
      */
-    'dayOfWeek'?: DayOfWeek;
-    /**
-     * 
-     * @type {number}
-     * @memberof DateOnly
-     */
-    'dayOfYear'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof DateOnly
-     */
-    'dayNumber'?: number;
+    'roles'?: Array<string> | null;
 }
 
 
 /**
- * 
+ * M:ExampleWebApp.Backend.WebApi.AuthController.CurrentUser response api specific status.  OK (Authentication valid.)  InvalidArgument (Invalid argument.)  InvalidAuthentication (Invalid authentication.)  AccessTokenNotFound (Invalid argument.)
  * @export
  * @enum {string}
  */
 
-export const DayOfWeek = {
-    NUMBER_0: 0,
-    NUMBER_1: 1,
-    NUMBER_2: 2,
-    NUMBER_3: 3,
-    NUMBER_4: 4,
-    NUMBER_5: 5,
-    NUMBER_6: 6
+export const CurrentUserStatus = {
+    /**
+    * Authentication valid.
+    */
+    OK: 'OK',
+    /**
+    * Invalid argument.
+    */
+    InvalidArgument: 'InvalidArgument',
+    /**
+    * Invalid authentication.
+    */
+    InvalidAuthentication: 'InvalidAuthentication',
+    /**
+    * Invalid argument.
+    */
+    AccessTokenNotFound: 'AccessTokenNotFound'
 } as const;
 
-export type DayOfWeek = typeof DayOfWeek[keyof typeof DayOfWeek];
+export type CurrentUserStatus = typeof CurrentUserStatus[keyof typeof CurrentUserStatus];
 
 
 /**
  * 
  * @export
- * @interface WeatherForecast
+ * @interface IdentityError
  */
-export interface WeatherForecast {
-    /**
-     * 
-     * @type {DateOnly}
-     * @memberof WeatherForecast
-     */
-    'date'?: DateOnly;
-    /**
-     * 
-     * @type {number}
-     * @memberof WeatherForecast
-     */
-    'temperatureC'?: number;
+export interface IdentityError {
     /**
      * 
      * @type {string}
-     * @memberof WeatherForecast
+     * @memberof IdentityError
      */
-    'summary'?: string | null;
+    'code'?: string | null;
     /**
      * 
-     * @type {number}
-     * @memberof WeatherForecast
+     * @type {string}
+     * @memberof IdentityError
      */
-    'temperatureF'?: number;
+    'description'?: string | null;
+}
+/**
+ * M:ExampleWebApp.Backend.WebApi.AuthController.LockoutUser(ExampleWebApp.Backend.WebApi.LockoutUserRequestDto) api request data.
+ * @export
+ * @interface LockoutUserRequestDto
+ */
+export interface LockoutUserRequestDto {
+    /**
+     * User name.
+     * @type {string}
+     * @memberof LockoutUserRequestDto
+     */
+    'userName': string | null;
+    /**
+     * Lock out end (UTC).
+     * @type {string}
+     * @memberof LockoutUserRequestDto
+     */
+    'lockoutEnd': string;
+}
+/**
+ * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.LoginRequestDto) api request data.
+ * @export
+ * @interface LoginRequestDto
+ */
+export interface LoginRequestDto {
+    /**
+     * Username. If null but ExampleWebApp.Backend.WebApi.LoginRequestDto.Email was given login will be tried within email as user identifier, instead of the username.
+     * @type {string}
+     * @memberof LoginRequestDto
+     */
+    'userName'?: string | null;
+    /**
+     * Email. Can be null if non null ExampleWebApp.Backend.WebApi.LoginRequestDto.UserName given.
+     * @type {string}
+     * @memberof LoginRequestDto
+     */
+    'email'?: string | null;
+    /**
+     * Password.
+     * @type {string}
+     * @memberof LoginRequestDto
+     */
+    'password': string | null;
+}
+/**
+ * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.LoginRequestDto) api response data.
+ * @export
+ * @interface LoginResponseDto
+ */
+export interface LoginResponseDto {
+    /**
+     * 
+     * @type {LoginStatus}
+     * @memberof LoginResponseDto
+     */
+    'status': LoginStatus;
+    /**
+     * Username.
+     * @type {string}
+     * @memberof LoginResponseDto
+     */
+    'userName'?: string | null;
+    /**
+     * Email.
+     * @type {string}
+     * @memberof LoginResponseDto
+     */
+    'email'?: string | null;
+    /**
+     * User roles.
+     * @type {Array<string>}
+     * @memberof LoginResponseDto
+     */
+    'roles'?: Array<string> | null;
+}
+
+
+/**
+ * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.LoginRequestDto) response api specific status.  OK (Login vaild.)  UsernameOrEmailRequired (Missing username or email.)  InvalidAuthentication (Invalid authentication.)  InvalidHttpContext (Authentication http context.)
+ * @export
+ * @enum {string}
+ */
+
+export const LoginStatus = {
+    /**
+    * Login vaild.
+    */
+    OK: 'OK',
+    /**
+    * Missing username or email.
+    */
+    UsernameOrEmailRequired: 'UsernameOrEmailRequired',
+    /**
+    * Invalid authentication.
+    */
+    InvalidAuthentication: 'InvalidAuthentication',
+    /**
+    * Authentication http context.
+    */
+    InvalidHttpContext: 'InvalidHttpContext'
+} as const;
+
+export type LoginStatus = typeof LoginStatus[keyof typeof LoginStatus];
+
+
+/**
+ * M:ExampleWebApp.Backend.WebApi.AuthController.RegisterUser(ExampleWebApp.Backend.WebApi.RegisterUserRequestDto) api request data.
+ * @export
+ * @interface RegisterUserRequestDto
+ */
+export interface RegisterUserRequestDto {
+    /**
+     * User name.
+     * @type {string}
+     * @memberof RegisterUserRequestDto
+     */
+    'userName': string | null;
+    /**
+     * User email.
+     * @type {string}
+     * @memberof RegisterUserRequestDto
+     */
+    'email': string | null;
+    /**
+     * User password.
+     * @type {string}
+     * @memberof RegisterUserRequestDto
+     */
+    'password': string | null;
+}
+/**
+ * M:ExampleWebApp.Backend.WebApi.AuthController.RegisterUser(ExampleWebApp.Backend.WebApi.RegisterUserRequestDto) api response data.
+ * @export
+ * @interface RegisterUserResponseDto
+ */
+export interface RegisterUserResponseDto {
+    /**
+     * 
+     * @type {RegisterUserStatus}
+     * @memberof RegisterUserResponseDto
+     */
+    'status': RegisterUserStatus;
+    /**
+     * List of register errors if any.
+     * @type {Array<IdentityError>}
+     * @memberof RegisterUserResponseDto
+     */
+    'errors': Array<IdentityError> | null;
+}
+
+
+/**
+ * M:ExampleWebApp.Backend.WebApi.AuthController.RegisterUser(ExampleWebApp.Backend.WebApi.RegisterUserRequestDto) response api specific status.  OK (Registration ok.)  IdentityError (Identity error.)
+ * @export
+ * @enum {string}
+ */
+
+export const RegisterUserStatus = {
+    /**
+    * Registration ok.
+    */
+    OK: 'OK',
+    /**
+    * Identity error.
+    */
+    IdentityError: 'IdentityError'
+} as const;
+
+export type RegisterUserStatus = typeof RegisterUserStatus[keyof typeof RegisterUserStatus];
+
+
+/**
+ * M:ExampleWebApp.Backend.WebApi.AuthController.SetUserRoles(ExampleWebApp.Backend.WebApi.SetUserRolesRequestDto) api request data.
+ * @export
+ * @interface SetUserRolesRequestDto
+ */
+export interface SetUserRolesRequestDto {
+    /**
+     * User name.
+     * @type {string}
+     * @memberof SetUserRolesRequestDto
+     */
+    'userName': string | null;
+    /**
+     * Roles to set to the user.
+     * @type {Array<string>}
+     * @memberof SetUserRolesRequestDto
+     */
+    'roles': Array<string> | null;
+}
+/**
+ * M:ExampleWebApp.Backend.WebApi.AuthController.SetUserRoles(ExampleWebApp.Backend.WebApi.SetUserRolesRequestDto) api response data.
+ * @export
+ * @interface SetUserRolesResponseDto
+ */
+export interface SetUserRolesResponseDto {
+    /**
+     * 
+     * @type {SetUserRolesStatus}
+     * @memberof SetUserRolesResponseDto
+     */
+    'status': SetUserRolesStatus;
+    /**
+     * Roles added.
+     * @type {Array<string>}
+     * @memberof SetUserRolesResponseDto
+     */
+    'rolesAdded'?: Array<string> | null;
+    /**
+     * Roles removed.
+     * @type {Array<string>}
+     * @memberof SetUserRolesResponseDto
+     */
+    'rolesRemoved'?: Array<string> | null;
+}
+
+
+/**
+ * M:ExampleWebApp.Backend.WebApi.AuthController.SetUserRoles(ExampleWebApp.Backend.WebApi.SetUserRolesRequestDto) response api specific status.  OK (Set user roles successful.)  InternalError (Internal error.)  AdminRolesReadOnly (Can\'t change admin role.)  UserNotFound (User not found.)
+ * @export
+ * @enum {string}
+ */
+
+export const SetUserRolesStatus = {
+    /**
+    * Set user roles successful.
+    */
+    OK: 'OK',
+    /**
+    * Internal error.
+    */
+    InternalError: 'InternalError',
+    /**
+    * Can&#39;t change admin role.
+    */
+    AdminRolesReadOnly: 'AdminRolesReadOnly',
+    /**
+    * User not found.
+    */
+    UserNotFound: 'UserNotFound'
+} as const;
+
+export type SetUserRolesStatus = typeof SetUserRolesStatus[keyof typeof SetUserRolesStatus];
+
+
+/**
+ * M:ExampleWebApp.Backend.WebApi.AuthController.ListUsers api response data.
+ * @export
+ * @interface UserListItemResponseDto
+ */
+export interface UserListItemResponseDto {
+    /**
+     * User name.
+     * @type {string}
+     * @memberof UserListItemResponseDto
+     */
+    'userName': string | null;
+    /**
+     * User email.
+     * @type {string}
+     * @memberof UserListItemResponseDto
+     */
+    'email': string | null;
+    /**
+     * User roles.
+     * @type {Array<string>}
+     * @memberof UserListItemResponseDto
+     */
+    'roles': Array<string> | null;
+    /**
+     * Access failed count.
+     * @type {number}
+     * @memberof UserListItemResponseDto
+     */
+    'accessFailedCount': number;
+    /**
+     * Email is confirmed.
+     * @type {boolean}
+     * @memberof UserListItemResponseDto
+     */
+    'emailConfirmed': boolean;
+    /**
+     * Lockout end (UTC).
+     * @type {string}
+     * @memberof UserListItemResponseDto
+     */
+    'lockoutEnd': string | null;
+    /**
+     * User phone number.
+     * @type {string}
+     * @memberof UserListItemResponseDto
+     */
+    'phoneNumber': string | null;
+    /**
+     * User phone number confirmed.
+     * @type {boolean}
+     * @memberof UserListItemResponseDto
+     */
+    'phoneNumberConfirmed': boolean;
+    /**
+     * Two factor enabled.
+     * @type {boolean}
+     * @memberof UserListItemResponseDto
+     */
+    'twoFactorEnabled': boolean;
 }
 
 /**
- * WebApiServerApi - axios parameter creator
+ * AdminApi - axios parameter creator
  * @export
  */
-export const WebApiServerApiAxiosParamCreator = function (configuration?: Configuration) {
+export const AdminApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
          * 
+         * @summary Long running task.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getWeatherForecast: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/weatherforecast`;
+        apiLongRunning: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/LongRunning`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -158,59 +450,625 @@ export const WebApiServerApiAxiosParamCreator = function (configuration?: Config
 };
 
 /**
- * WebApiServerApi - functional programming interface
+ * AdminApi - functional programming interface
  * @export
  */
-export const WebApiServerApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = WebApiServerApiAxiosParamCreator(configuration)
+export const AdminApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = AdminApiAxiosParamCreator(configuration)
     return {
         /**
          * 
+         * @summary Long running task.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getWeatherForecast(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<WeatherForecast>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getWeatherForecast(options);
+        async apiLongRunning(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiLongRunning(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['WebApiServerApi.getWeatherForecast']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiLongRunning']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
 
 /**
- * WebApiServerApi - factory interface
+ * AdminApi - factory interface
  * @export
  */
-export const WebApiServerApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = WebApiServerApiFp(configuration)
+export const AdminApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = AdminApiFp(configuration)
     return {
         /**
          * 
+         * @summary Long running task.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getWeatherForecast(options?: any): AxiosPromise<Array<WeatherForecast>> {
-            return localVarFp.getWeatherForecast(options).then((request) => request(axios, basePath));
+        apiLongRunning(options?: any): AxiosPromise<void> {
+            return localVarFp.apiLongRunning(options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * WebApiServerApi - object-oriented interface
+ * AdminApi - object-oriented interface
  * @export
- * @class WebApiServerApi
+ * @class AdminApi
  * @extends {BaseAPI}
  */
-export class WebApiServerApi extends BaseAPI {
+export class AdminApi extends BaseAPI {
     /**
      * 
+     * @summary Long running task.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof WebApiServerApi
+     * @memberof AdminApi
      */
-    public getWeatherForecast(options?: RawAxiosRequestConfig) {
-        return WebApiServerApiFp(this.configuration).getWeatherForecast(options).then((request) => request(this.axios, this.basePath));
+    public apiLongRunning(options?: RawAxiosRequestConfig) {
+        return AdminApiFp(this.configuration).apiLongRunning(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * AuthApi - axios parameter creator
+ * @export
+ */
+export const AuthApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Retrieve current logged in user name, email, roles.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthCurrentUserGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/Auth/CurrentUser`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary List all roles.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthListRolesGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/Auth/ListRoles`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary List all users.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthListUsersGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/Auth/ListUsers`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Immediate user lockout until given time or unlock if time is in the past ( UTC ).  Note that this happens when access token expires.
+         * @param {LockoutUserRequestDto} [lockoutUserRequestDto] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthLockoutUserPost: async (lockoutUserRequestDto?: LockoutUserRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/Auth/LockoutUser`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(lockoutUserRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Login user by given username or email and auth password.
+         * @param {LoginRequestDto} [loginRequestDto] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthLoginPost: async (loginRequestDto?: LoginRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/Auth/Login`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(loginRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Logout current user.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthLogoutGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/Auth/Logout`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Create user by given username, email, password.
+         * @param {RegisterUserRequestDto} [registerUserRequestDto] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthRegisterUserPost: async (registerUserRequestDto?: RegisterUserRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/Auth/RegisterUser`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(registerUserRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Change user roles
+         * @param {SetUserRolesRequestDto} [setUserRolesRequestDto] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthSetUserRolesPost: async (setUserRolesRequestDto?: SetUserRolesRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/Auth/SetUserRoles`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(setUserRolesRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * AuthApi - functional programming interface
+ * @export
+ */
+export const AuthApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = AuthApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Retrieve current logged in user name, email, roles.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiAuthCurrentUserGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CurrentUserResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthCurrentUserGet(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthApi.apiAuthCurrentUserGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary List all roles.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiAuthListRolesGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<string>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthListRolesGet(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthApi.apiAuthListRolesGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary List all users.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiAuthListUsersGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserListItemResponseDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthListUsersGet(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthApi.apiAuthListUsersGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Immediate user lockout until given time or unlock if time is in the past ( UTC ).  Note that this happens when access token expires.
+         * @param {LockoutUserRequestDto} [lockoutUserRequestDto] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiAuthLockoutUserPost(lockoutUserRequestDto?: LockoutUserRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthLockoutUserPost(lockoutUserRequestDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthApi.apiAuthLockoutUserPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Login user by given username or email and auth password.
+         * @param {LoginRequestDto} [loginRequestDto] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiAuthLoginPost(loginRequestDto?: LoginRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LoginResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthLoginPost(loginRequestDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthApi.apiAuthLoginPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Logout current user.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiAuthLogoutGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthLogoutGet(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthApi.apiAuthLogoutGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Create user by given username, email, password.
+         * @param {RegisterUserRequestDto} [registerUserRequestDto] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiAuthRegisterUserPost(registerUserRequestDto?: RegisterUserRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RegisterUserResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthRegisterUserPost(registerUserRequestDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthApi.apiAuthRegisterUserPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Change user roles
+         * @param {SetUserRolesRequestDto} [setUserRolesRequestDto] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiAuthSetUserRolesPost(setUserRolesRequestDto?: SetUserRolesRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SetUserRolesResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthSetUserRolesPost(setUserRolesRequestDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthApi.apiAuthSetUserRolesPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * AuthApi - factory interface
+ * @export
+ */
+export const AuthApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = AuthApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Retrieve current logged in user name, email, roles.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthCurrentUserGet(options?: any): AxiosPromise<CurrentUserResponseDto> {
+            return localVarFp.apiAuthCurrentUserGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary List all roles.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthListRolesGet(options?: any): AxiosPromise<Array<string>> {
+            return localVarFp.apiAuthListRolesGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary List all users.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthListUsersGet(options?: any): AxiosPromise<Array<UserListItemResponseDto>> {
+            return localVarFp.apiAuthListUsersGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Immediate user lockout until given time or unlock if time is in the past ( UTC ).  Note that this happens when access token expires.
+         * @param {LockoutUserRequestDto} [lockoutUserRequestDto] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthLockoutUserPost(lockoutUserRequestDto?: LockoutUserRequestDto, options?: any): AxiosPromise<void> {
+            return localVarFp.apiAuthLockoutUserPost(lockoutUserRequestDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Login user by given username or email and auth password.
+         * @param {LoginRequestDto} [loginRequestDto] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthLoginPost(loginRequestDto?: LoginRequestDto, options?: any): AxiosPromise<LoginResponseDto> {
+            return localVarFp.apiAuthLoginPost(loginRequestDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Logout current user.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthLogoutGet(options?: any): AxiosPromise<void> {
+            return localVarFp.apiAuthLogoutGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Create user by given username, email, password.
+         * @param {RegisterUserRequestDto} [registerUserRequestDto] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthRegisterUserPost(registerUserRequestDto?: RegisterUserRequestDto, options?: any): AxiosPromise<RegisterUserResponseDto> {
+            return localVarFp.apiAuthRegisterUserPost(registerUserRequestDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Change user roles
+         * @param {SetUserRolesRequestDto} [setUserRolesRequestDto] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthSetUserRolesPost(setUserRolesRequestDto?: SetUserRolesRequestDto, options?: any): AxiosPromise<SetUserRolesResponseDto> {
+            return localVarFp.apiAuthSetUserRolesPost(setUserRolesRequestDto, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * AuthApi - object-oriented interface
+ * @export
+ * @class AuthApi
+ * @extends {BaseAPI}
+ */
+export class AuthApi extends BaseAPI {
+    /**
+     * 
+     * @summary Retrieve current logged in user name, email, roles.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthApi
+     */
+    public apiAuthCurrentUserGet(options?: RawAxiosRequestConfig) {
+        return AuthApiFp(this.configuration).apiAuthCurrentUserGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary List all roles.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthApi
+     */
+    public apiAuthListRolesGet(options?: RawAxiosRequestConfig) {
+        return AuthApiFp(this.configuration).apiAuthListRolesGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary List all users.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthApi
+     */
+    public apiAuthListUsersGet(options?: RawAxiosRequestConfig) {
+        return AuthApiFp(this.configuration).apiAuthListUsersGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Immediate user lockout until given time or unlock if time is in the past ( UTC ).  Note that this happens when access token expires.
+     * @param {LockoutUserRequestDto} [lockoutUserRequestDto] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthApi
+     */
+    public apiAuthLockoutUserPost(lockoutUserRequestDto?: LockoutUserRequestDto, options?: RawAxiosRequestConfig) {
+        return AuthApiFp(this.configuration).apiAuthLockoutUserPost(lockoutUserRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Login user by given username or email and auth password.
+     * @param {LoginRequestDto} [loginRequestDto] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthApi
+     */
+    public apiAuthLoginPost(loginRequestDto?: LoginRequestDto, options?: RawAxiosRequestConfig) {
+        return AuthApiFp(this.configuration).apiAuthLoginPost(loginRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Logout current user.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthApi
+     */
+    public apiAuthLogoutGet(options?: RawAxiosRequestConfig) {
+        return AuthApiFp(this.configuration).apiAuthLogoutGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Create user by given username, email, password.
+     * @param {RegisterUserRequestDto} [registerUserRequestDto] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthApi
+     */
+    public apiAuthRegisterUserPost(registerUserRequestDto?: RegisterUserRequestDto, options?: RawAxiosRequestConfig) {
+        return AuthApiFp(this.configuration).apiAuthRegisterUserPost(registerUserRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Change user roles
+     * @param {SetUserRolesRequestDto} [setUserRolesRequestDto] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthApi
+     */
+    public apiAuthSetUserRolesPost(setUserRolesRequestDto?: SetUserRolesRequestDto, options?: RawAxiosRequestConfig) {
+        return AuthApiFp(this.configuration).apiAuthSetUserRolesPost(setUserRolesRequestDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

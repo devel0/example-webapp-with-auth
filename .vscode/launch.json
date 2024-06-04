@@ -44,7 +44,7 @@
         {
             "name": "Launch Chrome",
             "request": "launch",
-            "type": "chrome",
+            "type": "chrome",            
             "url": "https://webapp-test.searchathing.com/app",
             "webRoot": "${workspaceFolder}/clientapp"
         },
