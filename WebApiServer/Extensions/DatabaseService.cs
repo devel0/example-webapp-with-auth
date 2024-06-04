@@ -60,7 +60,7 @@ public static partial class Extensions
             if (appliedMigrations.Count == 0 && pendingMigrations.Count == 0)
                 throw new Exception("no initial migration found");
 
-            if (appliedMigrations.Count == 0 && pendingMigrations.Count > 0)
+            if (pendingMigrations.Count > 0)
             {
                 app.Logger.LogInformation("database migrations");
 
