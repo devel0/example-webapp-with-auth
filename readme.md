@@ -147,6 +147,7 @@ SEED_ADMIN_PASS=$(cat ~/security/devel/ExampleWebApp/admin)
 DB_PROVIDER="Postgres"
 DB_CONN_STRING="Host=localhost; Database=ExampleWebApp; Username=example_webapp_user; Password=$(cat ~/security/devel/ExampleWebApp/postgres-user)"
 
+dotnet user-secrets init
 dotnet user-secrets set "SeedUsers:Admin:Email" "$SEED_ADMIN_EMAIL"
 dotnet user-secrets set "SeedUsers:Admin:Password" "$SEED_ADMIN_PASS"
 dotnet user-secrets set "Provider" "$DB_PROVIDER"
