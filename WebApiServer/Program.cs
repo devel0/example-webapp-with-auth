@@ -2,8 +2,8 @@ var cts = new CancellationTokenSource();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// merge user secrets to app configuration
-builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly());
+// load config from appsettings, environment and user-secrets
+builder.SetupAppSettings();
 
 // configure database connection string and provider
 builder.ConfigureDatabase();
