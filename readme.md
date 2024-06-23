@@ -109,6 +109,7 @@ dotnet publish -c Release --runtime linux-x64 --sc
 ### db machine prerequisite
 
 ```sh
+apt install postgres
 su - postgres
 psql
 postgres=# CREATE USER webapp_test_user WITH ENCRYPTED PASSWORD 'DBPASS' CREATEDB;
