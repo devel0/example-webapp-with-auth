@@ -6,7 +6,8 @@ import ThemeChooser from './ThemeChooser'
 import { useEffect } from 'react'
 import { setSnack } from '../redux/slices/globalSlice'
 import { SnackNfoType } from '../types/SnackNfo'
-import { genAuthApi, genAdminApi } from '../axios.manager'
+import { genAdminApi } from '../axios.manager'
+import { green, yellow } from '@mui/material/colors'
 
 export const MainPage = () => {
     const global = useAppSelector<GlobalState>((state) => state.global)
@@ -21,6 +22,8 @@ export const MainPage = () => {
 
     return (
         <Box>
+            {import.meta.env.DEV && <Typography color={yellow[400]}>Development environment</Typography>}<br />
+            {import.meta.env.PROD && <Typography color={green[400]}>Production environment</Typography>}<br />
             master page<br />
             current user: {global.currentUser?.userName}<br />
             roles: {global.currentUser?.roles}<br />
