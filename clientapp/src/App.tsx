@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { ThemeProvider } from '@emotion/react'
 import { useAppDispatch, useAppSelector } from './redux/hooks/hooks'
 import './App.css'
-import { ConfigAxios, genAuthApi, genAdminApi } from './axios.manager'
+import { ConfigAxios } from './axios.manager'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import { APP_URL_Home, APP_URL_Login } from './constants/general'
 import { LoginPage } from './components/LoginPage'
@@ -30,7 +30,7 @@ const router = createBrowserRouter(
     // PROTECTED ROUTES
     //--------------------------------------------------------
     {
-      
+
       element: <ProtectedRoutes />,
       errorElement: <RouteNotFound />,
       children: [
@@ -57,7 +57,7 @@ function App() {
 
   useEffect(() => {
     ConfigAxios(dispatch)
-  }, [dispatch])   
+  }, [dispatch])
 
   return (
     <ThemeProvider theme={theme}>

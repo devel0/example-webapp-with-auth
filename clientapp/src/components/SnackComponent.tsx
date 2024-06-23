@@ -1,8 +1,4 @@
-import {
-    Alert,
-    Box, Fade,
-    Slide, SlideProps, Snackbar, Typography
-} from '@mui/material'
+import { Alert, Box, Snackbar } from '@mui/material'
 import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
 import { GlobalState } from '../redux/states/GlobalState'
 import { unsetSnack } from '../redux/slices/globalSlice'
@@ -12,15 +8,15 @@ export const SnackComponent = () => {
     const global = useAppSelector<GlobalState>((state) => state.global)
     const dispatch = useAppDispatch()
 
-    function SlideTransition(props: SlideProps) {
-        return <Slide {...props} direction="up" />
-    }
+    // function SlideTransition(props: SlideProps) {
+    //     return <Slide {...props} direction="up" />
+    // }
 
-    function FadeTransition(props: SlideProps) {
-        return <Fade {...props} />
-    }
+    // function FadeTransition(props: SlideProps) {
+    //     return <Fade {...props} />
+    // }
 
-    return <Box>             
+    return <Box>
         <Snackbar
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             // TransitionComponent={SlideTransition}
@@ -63,7 +59,7 @@ export const SnackComponent = () => {
                 {global.snackWarningMsg}
             </Alert>
         </Snackbar>
-        
+
         <Snackbar
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             // TransitionComponent={SlideTransition}

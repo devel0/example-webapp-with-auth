@@ -1,7 +1,7 @@
 
 import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
 import { GlobalState } from '../redux/states/GlobalState'
-import { Box, Button } from '@mui/material'
+import { Box, Button, Typography } from '@mui/material'
 import ThemeChooser from './ThemeChooser'
 import { useEffect } from 'react'
 import { setSnack } from '../redux/slices/globalSlice'

@@ -29,7 +29,7 @@ export const globalSlice = createSlice({
       state.currentUser = action.payload
     },
 
-    setLoggedOut: (state, action: PayloadAction<void>) => {
+    setLoggedOut: (state) => {
       state.currentUser = undefined
     },
 
