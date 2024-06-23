@@ -3,8 +3,8 @@ namespace ExampleWebApp.Backend.WebApi;
 public static partial class Constants
 {    
 
-    public const string CONFIG_KEY_ConnectionString = "DbConnString";
-    public const string CONFIG_KEY_DbProvider = "Provider";
+    public const string CONFIG_KEY_ConnectionString = "ConnectionStrings:Sample";
+    public const string CONFIG_KEY_DbProvider = "DbProvider";
 
     public const string CONFIG_VALUE_DbProvider_Postgres = "Postgres";
     
