@@ -4,13 +4,6 @@ public static partial class Extensions
 {
 
     /// <summary>
-    /// Logger factory for db sensitive data logging.    
-    /// </summary>    
-    static readonly ILoggerFactory loggerFactory = LoggerFactory.Create(loggingBuilder => loggingBuilder
-        .SetMinimumLevel(LogLevel.Information)
-        .AddConsole());
-
-    /// <summary>
     /// Configure db connection string and provider.
     /// </summary>    
     public static void ConfigureDatabase(this WebApplicationBuilder webApplicationBuilder)
@@ -35,8 +28,7 @@ public static partial class Extensions
                 default: throw new NotImplementedException($"provider {provider} not implemented");
             }
 
-            options
-                .UseLoggerFactory(loggerFactory)
+            options                
                 .EnableSensitiveDataLogging();
 
         });
