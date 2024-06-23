@@ -136,15 +136,9 @@ Host main-test
   HostName TARGETMACHINEIP
   User root
   IdentityFile ~/.ssh/main-test.id_rsa
-
-Host main-test-user
-  HostName TARGETMACHINEIP
-  User user
-  IdentityFile ~/.ssh/main-test-user.id_rsa
 ```
 
 - append `~/.ssh/main-test.id_rsa.pub` content to the target machine `/root/.ssh/authorized_keys`
-- append `~/.ssh/main-test-user.id_rsa.pub` content to the target machine `/home/user/.ssh/authorized_keys`
 
 ### target machine
 
@@ -153,9 +147,6 @@ Host main-test-user
 ```sh
 apt install openssh-server rsync nginx
 useradd -m user
-mkdir /home/user/.ssh
-chmod 700 /home/user/.ssh
-chown user:user /home/user/.ssh
 mkdir /root/secrets
 ```
 
