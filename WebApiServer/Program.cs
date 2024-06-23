@@ -46,13 +46,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGenCustom();
 
 // setup client static files serving on production
-if (builder.Environment.IsProduction())
-{
-    builder.Services.AddSpaStaticFiles(configuration =>
-    {
-        configuration.RootPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "clientapp");
-    });
-}
+builder.SetupSpa();
 
 //----------------------------------------------------------------------------------
 // APP BUILD
@@ -107,33 +101,8 @@ await app.InitializeDatabaseAsync(cts.Token);
 // adds missing roles to database from ROLES_ALL array source
 await app.UpgradeRolesAsync();
 
-// builting serve client static files from /app
-if (app.Environment.IsProduction())
-{
-    var spaPath = "/app";
-
-    app.Map(new PathString(spaPath), client =>
-    {
-        client.UseSpaStaticFiles();
-        client.UseSpa(spa =>
-        {
-            spa.Options.SourcePath = "clientapp";
-            spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
-            {
-                OnPrepareResponse = ctx =>
-                {
-                    var headers = ctx.Context.Response.GetTypedHeaders();
-                    headers.CacheControl = new CacheControlHeaderValue
-                    {
-                        NoCache = true,
-                        NoStore = true,
-                        MustRevalidate = true
-                    };
-                }
-            };
-        });
-    });
-}
+// setup mapping for serving spa static files
+app.MapSpaStaticFiles();
 
 //----------------------------------------------------------------------------------
 // APP START
@@ -149,8 +118,3 @@ await app.WaitForShutdownAsync();
 
 // app run
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
