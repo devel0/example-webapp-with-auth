@@ -5,6 +5,12 @@
 - [prerequisites](#prerequisites)
   - [local db](#local-db)
 - [test it](#test-it)
+- [production deployment](#production-deployment)
+  - [db machine prerequisite](#db-machine-prerequisite)
+  - [ssh config on development machine](#ssh-config-on-development-machine)
+  - [target machine](#target-machine)
+  - [copy production files](#copy-production-files)
+  - [setup service](#setup-service)
 - [how this project was built](#how-this-project-was-built)
 
 <hr/>
@@ -18,6 +24,7 @@
   - backend and frontend debugging in a solution
   - publish release with frontend webpacked available through server static files available directly from within backend
   - step by step how this project was built by git commit
+- configuration user-secrets, environment variables, and appsettings.json, appsettings.[Environment].json with autoreload on change
 - jwt auth secure, httponly, strict samesite
 - react redux
 - login public page and protected routes
@@ -87,6 +94,98 @@ npm run dev
 
 ![](./doc/mainpage.png)
 
+## production deployment
+
+- change `linux-x64` with target platform: `linux-x64`, `win-x64`, `osx-x64`
+
+```sh
+dotnet publish -c Release --runtime linux-x64 --sc
+```
+
+- note: option `--sc` makes self contained with all required runtimes ( ie. no need to install dotnet runtime on the target platform )
+
+- published files will be in `WebApiServer/bin/Release/net8.0/linux-x64/publish/`
+
+### db machine prerequisite
+
+```sh
+su - postgres
+psql
+postgres=# CREATE USER webapp_test_user WITH ENCRYPTED PASSWORD 'DBPASS' CREATEDB;
+CREATE ROLE
+```
+
+- tune postgres host allowed `/etc/postgresql/16/main/my.conf`
+
+```sh
+listen_addresses = '*'
+```
+
+- tune postgres db permissions `/etc/postgresql/16/main/pg_hba.conf` ( replace `TARGETMACHINEIP` with ip of the target machine where the app will run )
+
+```sh
+# TYPE  DATABASE        USER                  ADDRESS                 METHOD
+host    webapp_test     webapp_test_user      TARGETMACHINEIP/32      scram-sha-256
+host    postgres        webapp_test_user      TARGETMACHINEIP/32      scram-sha-256
+```
+
+### ssh config on development machine
+
+```sh
+Host main-test
+  HostName TARGETMACHINEIP
+  User root
+  IdentityFile ~/.ssh/main-test.id_rsa
+
+Host main-test-user
+  HostName TARGETMACHINEIP
+  User user
+  IdentityFile ~/.ssh/main-test-user.id_rsa
+```
+
+- append `~/.ssh/main-test.id_rsa.pub` content to the target machine `/root/.ssh/authorized_keys`
+- append `~/.ssh/main-test-user.id_rsa.pub` content to the target machine `/home/user/.ssh/authorized_keys`
+
+### target machine
+
+- from target machine:
+
+```sh
+apt install openssh-server rsync nginx
+useradd -m user
+mkdir /home/user/.ssh
+chmod 700 /home/user/.ssh
+chown user:user /home/user/.ssh
+mkdir /root/secrets
+```
+
+### copy production files
+
+- from development machine:
+
+```sh
+rsync -arvx --delete WebApiServer/bin/Release/net8.0/linux-x64/publish/ main-test:/srv/app
+```
+
+### setup service
+
+- from development machine:
+
+```sh
+scp deploy/nginx.d/prod/webapp-test.conf main-test:/etc/nginx/conf.d
+scp deploy/service/webapp-test.service main-test:/etc/systemd/system
+scp deploy/webapp-test.env main-test:/root/secrets
+```
+
+- from target machine:
+
+```sh
+# tune secrets
+nano /root/secrets/webapp-test.env
+systemctl enable webapp-test
+service webapp-test start
+```
+
 ## how this project was built
 
 - started from clone from [example web app](https://github.com/devel0/example-webapp/blob/e9328b16212f1d128518088bb8a2c4b620c2035e/readme.md#how-this-project-was-built)
@@ -147,11 +246,10 @@ SEED_ADMIN_PASS=$(cat ~/security/devel/ExampleWebApp/admin)
 DB_PROVIDER="Postgres"
 DB_CONN_STRING="Host=localhost; Database=ExampleWebApp; Username=example_webapp_user; Password=$(cat ~/security/devel/ExampleWebApp/postgres-user)"
 
-dotnet user-secrets init
 dotnet user-secrets set "SeedUsers:Admin:Email" "$SEED_ADMIN_EMAIL"
 dotnet user-secrets set "SeedUsers:Admin:Password" "$SEED_ADMIN_PASS"
-dotnet user-secrets set "Provider" "$DB_PROVIDER"
-dotnet user-secrets set "DbConnString" "$DB_CONN_STRING"
+dotnet user-secrets set "DbProvider" "$DB_PROVIDER"
+dotnet user-secrets set "ConnectionStrings:Sample" "$DB_CONN_STRING"
 
 dotnet add package Microsoft.IdentityModel.Tokens --version 7.5.2
 dotnet add package System.IdentityModel.Tokens.Jwt --version 7.5.2
