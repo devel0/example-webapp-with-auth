@@ -5,6 +5,7 @@
 - [prerequisites](#prerequisites)
   - [local db](#local-db)
 - [test it](#test-it)
+- [db dia gen](#db-dia-gen)
 - [production deployment](#production-deployment)
   - [db machine prerequisite](#db-machine-prerequisite)
   - [ssh config on development machine](#ssh-config-on-development-machine)
@@ -110,6 +111,12 @@ npm run dev
 - master page
 
 ![](./doc/mainpage.png)
+
+## db dia gen
+
+database diagram can be generated through `db-dia-gen.sh` script that uses schemacrawler ( [more][1] )
+
+![](./doc/db/db.png)
 
 ## production deployment
 
@@ -273,3 +280,5 @@ cd example-webapp-with-auth
 cd WebApiServer
 dotnet ef migrations add init --project ../AuthDbMigrationsPsql -- --provider Postgres
 ```
+
+[1]: https://github.com/devel0/knowledge/blob/168e6cec6fdc0298b21d758c198d6f9210032ba8/doc/psql-schema-crawler.md
