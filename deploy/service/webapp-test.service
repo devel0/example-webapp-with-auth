@@ -8,8 +8,11 @@ Type=simple
 Restart=always
 RestartSec=10
 User=user
-ExecStart=/srv/app/WebApiServer
+Group=user
+SyslogIdentifier=ExampleWebApp
+KillSignal=SIGINT
 EnvironmentFile=/root/secrets/webapp-test.env
+ExecStart=/srv/app/WebApiServer
 
 [Install]
 WantedBy=multi-user.target
