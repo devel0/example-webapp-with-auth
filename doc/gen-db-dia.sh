@@ -4,7 +4,7 @@
 
 exdir="$(dirname "$(readlink -f "$0")")"
 
-DST="$exdir"/doc/db
+DST="$exdir"/db
 DBHOST=localhost
 DBNAME=ExampleWebApp
 
