@@ -38,6 +38,9 @@ global using Microsoft.OpenApi.Models;
 global using Swashbuckle.AspNetCore.SwaggerGen;
 global using Swashbuckle.AspNetCore.Annotations;
 global using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
+global using Serilog;
+global using Serilog.Templates;
+global using Serilog.Templates.Themes;
 global using Npgsql;
 global using SearchAThing.Ext;
 

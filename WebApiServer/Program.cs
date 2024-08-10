@@ -2,6 +2,9 @@ var cts = new CancellationTokenSource();
 
 var builder = WebApplication.CreateBuilder(args);
 
+// setup logger
+builder.SetupLogger();
+
 // load config from appsettings, environment and user-secrets
 builder.SetupAppSettings();
 
@@ -107,6 +110,8 @@ app.MapSpaStaticFiles();
 
 // start app
 await app.StartAsync();
+
+app.Logger.LogInformation($"Environment: {app.Environment.EnvironmentName}");
 
 app.Logger.LogInformation($"Listening on {string.Join(" ", app.Urls.Select(w => w.ToString()))}");
 
