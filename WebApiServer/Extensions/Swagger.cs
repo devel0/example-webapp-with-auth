@@ -8,10 +8,13 @@ public static partial class Extensions
     /// </summary>    
     public static void AddSwaggerGenCustom(this IServiceCollection serviceCollection)
     {
-
         serviceCollection
         .AddSwaggerGen(options =>
         {
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = SWAGGER_API_TITLE, Version = "v1" });
+
+            // options.DocumentFilter<CustomModelDocumentFilter<SomeExportedApiAddictionalType>>();
+
             var xmlFiles = Directory.GetFiles(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
 
             foreach (var xmlFile in xmlFiles)
@@ -48,12 +51,35 @@ public static partial class Extensions
                 o.DescriptionSource = DescriptionSources.XmlComments;
 
                 // new line for enum values descriptions
-                o.NewLine = Environment.NewLine;                
+                o.NewLine = Environment.NewLine;
             });
 
             // enable interpret [SwaggerOperation]
             options.EnableAnnotations();
         });
+    }
+
+    /// <summary>
+    /// Configure swagger theme.
+    /// </summary>
+    public static void ConfigSwagger(this WebApplication webApplication)
+    {
+        if (webApplication.Environment.IsDevelopment())
+        {
+            var logger = webApplication.Logger;
+
+            webApplication.UseSwagger();
+            webApplication.UseSwaggerUI(c =>
+            {
+                c.InjectStylesheet("/swagger/SwaggerDark.css");
+            });
+            webApplication.MapGet("/swagger/SwaggerDark.css", async ([FromServices] CancellationToken cancellationToken) =>
+            {
+                var cssPathfilename = SWAGGER_CSS_PATH();
+                var css = await File.ReadAllBytesAsync(cssPathfilename, cancellationToken);
+                return Results.File(css, "text/css");
+            }).ExcludeFromDescription();
+        }
     }
 
 }

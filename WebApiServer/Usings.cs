@@ -32,6 +32,7 @@ global using SameSiteMode = Microsoft.AspNetCore.Http.SameSiteMode;
 global using Microsoft.AspNetCore.Authentication;
 global using Microsoft.AspNetCore.ResponseCompression;
 global using Microsoft.AspNetCore.Diagnostics;
+global using Microsoft.OpenApi.Models;
 
 // thirdy
 global using Swashbuckle.AspNetCore.SwaggerGen;

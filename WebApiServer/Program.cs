@@ -65,10 +65,7 @@ app.SetupException();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    app.ConfigSwagger();
 
 if (corsAllowedOrigins is not null)
 {

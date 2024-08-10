@@ -5,6 +5,11 @@ public static partial class Constants
 
     public const string API_BASE_URL = "/api";
 
+    // Swagger    
+    public static string SWAGGER_CSS_PATH() =>
+         Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Misc", "SwaggerDark.css");
+    public const string SWAGGER_API_TITLE = "ExampleWebApp API";
+
     // api STATUS
 
     public const int STATUS_OK = 0;
