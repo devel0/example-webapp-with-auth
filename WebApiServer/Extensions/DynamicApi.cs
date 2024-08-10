@@ -9,22 +9,22 @@ public static partial class Extensions
 
         // ----------------------------- admin
 
-        var apiUrl = $"{API_BASE_URL}/LongRunning";
+        // var apiUrl = $"{API_BASE_URL}/LongRunning";
 
-        app.MapGet(apiUrl, async (
-            [FromServices] CancellationToken cancellationToken) =>
-        {
-            await Task.Delay(1000, cancellationToken);
+        // app.MapGet(apiUrl, async (
+        //     [FromServices] CancellationToken cancellationToken) =>
+        // {
+        //     await Task.Delay(1000, cancellationToken);
 
-            return Results.Ok();
-        })
-        .RequireAuthorization(ROLE_admin)
-        .WithMetadata(new SwaggerOperationAttribute
-        {
-            Summary = $"Long running task.",
-            Tags = tags,
-            OperationId = apiUrl
-        });
+        //     return Results.Ok();
+        // })
+        // .RequireAuthorization(ROLE_admin)
+        // .WithMetadata(new SwaggerOperationAttribute
+        // {
+        //     Summary = $"Long running task.",
+        //     Tags = tags,
+        //     OperationId = apiUrl
+        // });
         // .WithOpenApi();
 
     }
