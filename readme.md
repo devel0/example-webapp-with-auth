@@ -58,6 +58,7 @@ DB_PROVIDER="Postgres"
 DB_CONN_STRING="Host=localhost; Database=REPL_DBNAME; Username=REPL_DBUSER; Password=REPL_DBPASS"
 JWTKEY="$(openssl rand -hex 32)"
 
+dotnet user-secrets init
 dotnet user-secrets set "SeedUsers:Admin:Email" "$SEED_ADMIN_EMAIL"
 dotnet user-secrets set "SeedUsers:Admin:Password" "$SEED_ADMIN_PASS"
 dotnet user-secrets set "DbProvider" "$DB_PROVIDER"
