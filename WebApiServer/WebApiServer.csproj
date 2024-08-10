@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>    
+    <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
@@ -18,16 +18,16 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.0.1" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />    
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.7.0" />    
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.7.0" />
     <PackageReference Include="Unchase.Swashbuckle.AspNetCore.Extensions" Version="2.7.1" />
     <PackageReference Include="netcore-ext" Version="2.7.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AuthDbContext\AuthDbContext.csproj" />
-    <ProjectReference Include="..\AuthDbMigrationsPsql\AuthDbMigrationsPsql.csproj" />
+    <ProjectReference Include="..\AppDbContext\AppDbContext.csproj" />
+    <ProjectReference Include="..\AppDbMigrationsPsql\AppDbMigrationsPsql.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
@@ -48,7 +48,7 @@
     <!-- Include the newly-built files in the publish output -->
     <ItemGroup>
       <DistFiles Include="$(SpaRoot)dist\**" />
-      <ResolvedFileToPublish Include="@(DistFiles-&gt;'%(FullPath)')"
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')"
         Exclude="@(ResolvedFileToPublish)">
         <RelativePath>clientapp\%(DistFiles.RecursiveDir)%(DistFiles.Filename)%(DistFiles.Extension)</RelativePath>
         <!-- <RelativePath>%(DistFiles.Identity)</RelativePath> -->

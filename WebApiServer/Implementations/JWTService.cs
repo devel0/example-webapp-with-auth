@@ -5,13 +5,13 @@ public class JWTService : IJWTService
     readonly ILogger<JWTService> logger;
     readonly IConfiguration configuration;
     readonly UserManager<ApplicationUser> userManager;
-    readonly AuthDbContext dbContext;
+    readonly AppDbContext dbContext;
 
     public JWTService(
         ILogger<JWTService> logger,
         IConfiguration configuration,
         UserManager<ApplicationUser> userManager,
-        AuthDbContext dbContext)
+        AppDbContext dbContext)
     {
         this.logger = logger;
         this.configuration = configuration;

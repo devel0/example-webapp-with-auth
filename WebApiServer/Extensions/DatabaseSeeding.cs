@@ -10,7 +10,7 @@ public static partial class Extensions
         CancellationToken cancellationToken)
     {
         using var scope = webApplication.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<WebApplication>>();
         var usermgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         var rolemgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();

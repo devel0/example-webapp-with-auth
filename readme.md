@@ -215,27 +215,27 @@ npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
 npm i @reduxjs/toolkit react-redux react-router-dom axios linq-to-typescript usehooks-ts @fontsource/roboto
 ```
 
-- create auth dbcontext
+- create app dbcontext
 
 ```sh
 cd example-webapp-with-auth
-dotnet new classlib -n AuthDbContext
-dotnet sln add AuthDbContext
-cd AuthDbContext
+dotnet new classlib -n AppDbContext
+dotnet sln add AppDbContext
+cd AppDbContext
 dotnet add package Microsoft.AspNetCore.Identity.EntityFrameworkCore --version 8.0.5
 dotnet add package Microsoft.EntityFrameworkCore.Design --version 8.0.5
 ```
 
-- create auth dbcontext migration
+- create app dbcontext migration
 
 ```sh
 cd example-webapp-with-auth
-dotnet new classlib -n AuthDbMigrationsPsql
-dotnet sln add AuthDbMigrationsPsql
-cd AuthDbMigrationsPsql
+dotnet new classlib -n AppDbMigrationsPsql
+dotnet sln add AppDbMigrationsPsql
+cd AppDbMigrationsPsql
 dotnet add package Microsoft.EntityFrameworkCore.Relational --version 8.0.5
 dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL --version 8.0.4
-dotnet add reference ../AuthDbContext
+dotnet add reference ../AppDbContext
 ```
 
 - add db pkgs to webapi sever
@@ -245,8 +245,8 @@ cd example-webapp-with-auth
 cd WebApiServer
 dotnet add package Microsoft.EntityFrameworkCore.Design --version 8.0.5
 dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer --version 8.0.5
-dotnet add reference ../AuthDbContext
-dotnet add reference ../AuthDbMigrationsPsql
+dotnet add reference ../AppDbContext
+dotnet add reference ../AppDbMigrationsPsql
 
 openssl rand -hex 32 > ~/security/devel/ExampleWebApp/jwt.key
 
@@ -278,7 +278,7 @@ dotnet add package System.IdentityModel.Tokens.Jwt --version 7.5.2
 ```sh
 cd example-webapp-with-auth
 cd WebApiServer
-dotnet ef migrations add init --project ../AuthDbMigrationsPsql -- --provider Postgres
+dotnet ef migrations add init --project ../AppDbMigrationsPsql -- --provider Postgres
 ```
 
 [1]: https://github.com/devel0/knowledge/blob/168e6cec6fdc0298b21d758c198d6f9210032ba8/doc/psql-schema-crawler.md

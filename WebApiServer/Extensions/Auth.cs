@@ -88,7 +88,7 @@ public static partial class Extensions
         {
             options.User.RequireUniqueEmail = true;
         })
-        .AddEntityFrameworkStores<AuthDbContext>()
+        .AddEntityFrameworkStores<AppDbContext>()
         .AddDefaultTokenProviders();
 
     /// <summary>

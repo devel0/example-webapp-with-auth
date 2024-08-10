@@ -9,10 +9,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace AuthDbMigrationsPsql.Migrations
+namespace AppDbMigrationsPsql.Migrations
 {
-    [DbContext(typeof(AuthDbContext))]
-    [Migration("20240526132706_init")]
+    [DbContext(typeof(AppDbContext))]
+    [Migration("20240810073546_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace AuthDbMigrationsPsql.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.5")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);

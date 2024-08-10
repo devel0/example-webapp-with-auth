@@ -1,8 +1,8 @@
 ﻿namespace ExampleWebApp.Backend.Data;
 
-public partial class AuthDbContext : IdentityDbContext<ApplicationUser>
+public partial class AppDbContext : IdentityDbContext<ApplicationUser>
 {
-    public AuthDbContext(DbContextOptions options)
+    public AppDbContext(DbContextOptions options)
         : base(options)
     {
 

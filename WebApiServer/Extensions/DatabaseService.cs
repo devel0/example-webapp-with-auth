@@ -14,14 +14,14 @@ public static partial class Extensions
         //
         // normal config for db providers
         //
-        webApplicationBuilder.Services.AddDbContext<AuthDbContext>(options =>
+        webApplicationBuilder.Services.AddDbContext<AppDbContext>(options =>
         {
             switch (provider)
             {
 
                 case CONFIG_VALUE_DbProvider_Postgres:
                     {
-                        options.UseNpgsql(connString, x => x.MigrationsAssembly("AuthDbMigrationsPsql"));
+                        options.UseNpgsql(connString, x => x.MigrationsAssembly("AppDbMigrationsPsql"));
                     }
                     break;
 
@@ -44,7 +44,7 @@ public static partial class Extensions
         {
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<WebApplication>>();
 
-            var db = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
             var appliedMigrations = (await db.Database.GetAppliedMigrationsAsync(cancellationToken)).ToList();
             var pendingMigrations = (await db.Database.GetPendingMigrationsAsync(cancellationToken)).ToList();
