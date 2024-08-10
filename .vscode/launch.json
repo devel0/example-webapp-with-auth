@@ -22,7 +22,7 @@
             },
             // Setup how to pass url to launch browser
             "launchBrowser": {
-                "enabled": true,
+                "enabled": false,
                 "linux": {
                     "command": "xdg-open",
                     // "args": "${auto-detect-url}/swagger/index.html"
