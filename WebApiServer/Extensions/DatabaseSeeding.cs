@@ -9,9 +9,10 @@ public static partial class Extensions
     public static async Task InitializeDatabaseAsync(this WebApplication webApplication,
         CancellationToken cancellationToken)
     {
+        var logger = webApplication.Logger;
+
         using var scope = webApplication.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<WebApplication>>();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();        
         var usermgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         var rolemgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var config = webApplication.Configuration;
@@ -39,7 +40,7 @@ public static partial class Extensions
             var confirmEmailToken = await usermgr.GenerateEmailConfirmationTokenAsync(user);
             await usermgr.ConfirmEmailAsync(user, confirmEmailToken);
 
-            logger.LogInformation($"Created admin");
+            // logger.LogInformation($"Created admin email:{adminEmail} pass:{adminPassword}");
         }
 
     }
