@@ -1,17 +1,17 @@
 # example-webapp-with-auth
 
 - [features](#features)
-- [quickstart](#quickstart)
-- [prerequisites](#prerequisites)
+- [quickstart (dev)](#quickstart-dev)
   - [local db](#local-db)
-- [test it](#test-it)
-- [db dia gen](#db-dia-gen)
+  - [vscode debug](#vscode-debug)
+- [dev notes](#dev-notes)
+  - [add more migrations](#add-more-migrations)
+  - [db dia gen](#db-dia-gen)
 - [production deployment](#production-deployment)
   - [db machine prerequisite](#db-machine-prerequisite)
   - [ssh config on development machine](#ssh-config-on-development-machine)
   - [target machine](#target-machine)
-  - [copy production files](#copy-production-files)
-  - [setup service](#setup-service)
+  - [publish to target machine](#publish-to-target-machine)
 - [how this project was built](#how-this-project-was-built)
 
 <hr/>
@@ -31,9 +31,7 @@
 - login public page and protected routes
 - theme light/dark, snacks
 
-## quickstart
-
-## prerequisites
+## quickstart (dev)
 
 ### local db
 
@@ -50,7 +48,7 @@ echo "localhost:*:*:postgres:$(cat ~/security/devel/postgres)" >> ~/.pgpass
 chmod 600 ~/.pgpass
 ```  
 
-- config user secrets replacing REPL_ vars
+- config user secrets replacing *REPL_* vars
 
 ```sh
 SEED_ADMIN_EMAIL=REPL_ADMIN_EMAIL
@@ -83,7 +81,7 @@ apt install postgresql-client-16
 echo "CREATE USER example_webapp_user WITH PASSWORD '$(cat ~/security/devel/ExampleWebApp/postgres-user)' CREATEDB" | psql -h localhost -U postgres
 ```
 
-## test it
+### vscode debug
 
 ```sh
 git clone https://github.com/devel0/example-webapp-with-auth.git
@@ -93,11 +91,10 @@ code .
 
 - choose `.NET Core Launch (web)` from run and debug then hit F5 ( this will start asp net web server on `https://webapp-test.searchathing.com/swagger/index.html` )
 
-- start vite
+- start frontend
 
 ```sh
-cd clientapp
-npm run dev
+./run-frontend.sh
 ```
 
 - choose `Launch Chrome` from run and debug then click the play icon ( this will start browser )
@@ -112,7 +109,15 @@ npm run dev
 
 ![](./doc/mainpage.png)
 
-## db dia gen
+## dev notes
+
+### add more migrations
+
+```sh
+./migr.sh add MIGRNAME
+```
+
+### db dia gen
 
 database diagram can be generated through `db-dia-gen.sh` script that uses schemacrawler ( [more][1] )
 
@@ -175,31 +180,23 @@ useradd -m user
 mkdir /root/secrets
 ```
 
-### copy production files
+### publish to target machine
 
-- from development machine:
+the syntax is
 
 ```sh
-rsync -arvx --delete WebApiServer/bin/Release/net8.0/linux-x64/publish/ main-test:/srv/app
+devel0@tuf:~/opensource/example-webapp-with-auth$ ./publish.sh 
+argmuments:
+  -h <sshhost>        ssh host where to publish ( ie. main-test )
+  -sn <servername>    nginx app servername ( ie. webapp-test.searchathing.com )
+  -id <appid>         app identifier ( ie. webapp-test )
+  -f                  force overwrite existing
 ```
 
-### setup service
-
-- from development machine:
+then invoke
 
 ```sh
-scp deploy/nginx.d/prod/webapp-test.conf main-test:/etc/nginx/conf.d
-scp deploy/service/webapp-test.service main-test:/etc/systemd/system
-scp deploy/webapp-test.env main-test:/root/secrets
-```
-
-- from target machine:
-
-```sh
-# tune secrets
-nano /root/secrets/webapp-test.env
-systemctl enable webapp-test
-service webapp-test start
+./publish.sh -h main-test -sn webapp-test.searchathing.com -id webapp-test
 ```
 
 ## how this project was built

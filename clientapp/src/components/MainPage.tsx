@@ -6,7 +6,7 @@ import ThemeChooser from './ThemeChooser'
 import { useEffect } from 'react'
 import { setSnack } from '../redux/slices/globalSlice'
 import { SnackNfoType } from '../types/SnackNfo'
-import { green, yellow } from '@mui/material/colors'
+import { green, orange, yellow } from '@mui/material/colors'
 import { getMainApi } from '../axios.manager'
 
 export const MainPage = () => {
@@ -22,8 +22,9 @@ export const MainPage = () => {
 
     return (
         <Box>
-            {import.meta.env.DEV && <Typography color={yellow[400]}>Development environment</Typography>}<br />
-            {import.meta.env.PROD && <Typography color={green[400]}>Production environment</Typography>}<br />
+            {import.meta.env.DEV && <Typography color={yellow[400]}>Development environment</Typography>}
+            {import.meta.env.PROD && <Typography color={green[400]}>Production environment</Typography>}
+            {import.meta.env.VITE_GITCOMMIT && <Typography color={orange[400]}>Git commit {import.meta.env.VITE_GITCOMMIT}</Typography>}<br />
             master page<br />
             current user: {global.currentUser?.userName}<br />
             roles: {global.currentUser?.roles}<br />

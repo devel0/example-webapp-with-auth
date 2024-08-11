@@ -12,7 +12,7 @@ Group=user
 SyslogIdentifier=ExampleWebApp
 KillSignal=SIGINT
 EnvironmentFile=/root/secrets/webapp-test.env
-ExecStart=/srv/app/WebApiServer
+ExecStart=/srv/webapp-test/bin/WebApiServer
 
 [Install]
 WantedBy=multi-user.target

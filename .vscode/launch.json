@@ -26,7 +26,7 @@
                 "linux": {
                     "command": "xdg-open",
                     // "args": "${auto-detect-url}/swagger/index.html"
-                    "args": "https://webapp-test.searchathing.com/swagger"
+                    "args": "https://dev-webapp-test.searchathing.com/swagger"
                 }
             },
             "env": {
@@ -45,7 +45,7 @@
             "name": "Launch Chrome",
             "request": "launch",
             "type": "chrome",            
-            "url": "https://webapp-test.searchathing.com/app",
+            "url": "https://dev-webapp-test.searchathing.com/app",
             "webRoot": "${workspaceFolder}/clientapp"
         },
     ]
