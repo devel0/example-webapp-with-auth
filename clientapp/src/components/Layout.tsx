@@ -6,7 +6,7 @@ import { useEffect } from 'react'
 import { setLoggedOut, setUrlWanted } from '../redux/slices/globalSlice'
 import { Box, Button, CssBaseline, LinearProgress } from '@mui/material'
 import { SnackComponent } from './SnackComponent'
-import { genAuthApi } from '../axios.manager'
+import { getAuthApi } from '../axios.manager'
 
 type Props = {
     child: JSX.Element
@@ -32,7 +32,7 @@ const MainLayout = (props: Props) => {
             Toolbar
 
             <Button onClick={async () => {                
-                const authApi = genAuthApi()
+                const authApi = getAuthApi()
                 await authApi.apiAuthLogoutGet()
 
                 dispatch(setLoggedOut())

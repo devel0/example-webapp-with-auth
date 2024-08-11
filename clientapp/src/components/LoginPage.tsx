@@ -9,10 +9,10 @@ import { GlobalState } from '../redux/states/GlobalState'
 import { useEffect } from 'react'
 import { setSnack, setSuccessfulLogin, setUrlWanted } from '../redux/slices/globalSlice'
 import { APP_URL_Home, APP_URL_Login, LOCAL_STORAGE_CURRENT_USER_NFO } from '../constants/general'
-import { genAuthApi } from '../axios.manager'
 import { CurrentUserNfo } from '../types/CurrentUserNfo'
 import { SnackNfoType } from '../types/SnackNfo'
 import { SnackComponent } from './SnackComponent'
+import { getAuthApi } from '../axios.manager'
 
 export const LoginPage = () => {
     const global = useAppSelector<GlobalState>((state) => state.global)
@@ -37,7 +37,7 @@ export const LoginPage = () => {
         event.preventDefault()
         const data = new FormData(event.currentTarget)
 
-        const authApi = genAuthApi()
+        const authApi = getAuthApi()
 
         const response = await authApi.apiAuthLoginPost({
             email: String(data.get("email")),

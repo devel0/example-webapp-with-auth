@@ -411,107 +411,6 @@ export interface UserListItemResponseDto {
 }
 
 /**
- * AdminApi - axios parameter creator
- * @export
- */
-export const AdminApiAxiosParamCreator = function (configuration?: Configuration) {
-    return {
-        /**
-         * 
-         * @summary Long running task.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        apiLongRunning: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/LongRunning`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-    }
-};
-
-/**
- * AdminApi - functional programming interface
- * @export
- */
-export const AdminApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = AdminApiAxiosParamCreator(configuration)
-    return {
-        /**
-         * 
-         * @summary Long running task.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async apiLongRunning(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiLongRunning(options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['AdminApi.apiLongRunning']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-    }
-};
-
-/**
- * AdminApi - factory interface
- * @export
- */
-export const AdminApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = AdminApiFp(configuration)
-    return {
-        /**
-         * 
-         * @summary Long running task.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        apiLongRunning(options?: any): AxiosPromise<void> {
-            return localVarFp.apiLongRunning(options).then((request) => request(axios, basePath));
-        },
-    };
-};
-
-/**
- * AdminApi - object-oriented interface
- * @export
- * @class AdminApi
- * @extends {BaseAPI}
- */
-export class AdminApi extends BaseAPI {
-    /**
-     * 
-     * @summary Long running task.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AdminApi
-     */
-    public apiLongRunning(options?: RawAxiosRequestConfig) {
-        return AdminApiFp(this.configuration).apiLongRunning(options).then((request) => request(this.axios, this.basePath));
-    }
-}
-
-
-
-/**
  * AuthApi - axios parameter creator
  * @export
  */
@@ -1069,6 +968,107 @@ export class AuthApi extends BaseAPI {
      */
     public apiAuthSetUserRolesPost(setUserRolesRequestDto?: SetUserRolesRequestDto, options?: RawAxiosRequestConfig) {
         return AuthApiFp(this.configuration).apiAuthSetUserRolesPost(setUserRolesRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * MainApi - axios parameter creator
+ * @export
+ */
+export const MainApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Long running api test.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiMainLongRunningGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/Main/LongRunning`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * MainApi - functional programming interface
+ * @export
+ */
+export const MainApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = MainApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Long running api test.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiMainLongRunningGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiMainLongRunningGet(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['MainApi.apiMainLongRunningGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * MainApi - factory interface
+ * @export
+ */
+export const MainApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = MainApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Long running api test.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiMainLongRunningGet(options?: any): AxiosPromise<void> {
+            return localVarFp.apiMainLongRunningGet(options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * MainApi - object-oriented interface
+ * @export
+ * @class MainApi
+ * @extends {BaseAPI}
+ */
+export class MainApi extends BaseAPI {
+    /**
+     * 
+     * @summary Long running api test.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MainApi
+     */
+    public apiMainLongRunningGet(options?: RawAxiosRequestConfig) {
+        return MainApiFp(this.configuration).apiMainLongRunningGet(options).then((request) => request(this.axios, this.basePath));
     }
 }
 

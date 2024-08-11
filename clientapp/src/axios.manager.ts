@@ -1,10 +1,9 @@
 import axios, { AxiosError, HttpStatusCode } from "axios"
-import { API_URL } from "./constants"
 import { Action, Dispatch } from "@reduxjs/toolkit"
 import { setGeneralNetwork, setSnack } from "./redux/slices/globalSlice"
 import { SnackNfoType } from "./types/SnackNfo"
-import { APP_URL_Login, LOCAL_STORAGE_CURRENT_USER_NFO } from "./constants/general"
-import { AuthApi, Configuration, AdminApi } from "../api"
+import { API_URL, APP_URL_Login, LOCAL_STORAGE_CURRENT_USER_NFO } from "./constants/general"
+import { AuthApi, MainApi, Configuration } from "../api"
 
 let dbgCnt = 0
 
@@ -13,7 +12,7 @@ export const ConfigAxios = (dispatch: Dispatch<Action>) => {
     axios.defaults.withCredentials = true
 
     axios.interceptors.request.use(
-        async (config) => {            
+        async (config) => {
             dispatch(setGeneralNetwork(true))
 
             return config
@@ -56,12 +55,28 @@ export const ConfigAxios = (dispatch: Dispatch<Action>) => {
 
 }
 
-export const genAdminApi = () => {
-    const config = new Configuration()
-    return new AdminApi(config, API_URL())
+//---
+
+let mainApi: MainApi | undefined = undefined
+
+export const getMainApi = () => {
+    if (mainApi === undefined) {
+        const config = new Configuration()
+        mainApi = new MainApi(config, API_URL())
+    }
+
+    return mainApi
 }
 
-export const genAuthApi = () => {
-    const config = new Configuration()
-    return new AuthApi(config, API_URL())
+//---
+
+let authApi: AuthApi | undefined = undefined
+
+export const getAuthApi = () => {
+    if (authApi === undefined) {
+        const config = new Configuration()
+        authApi = new AuthApi(config, API_URL())
+    }
+
+    return authApi
 }

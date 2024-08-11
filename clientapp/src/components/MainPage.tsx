@@ -6,8 +6,8 @@ import ThemeChooser from './ThemeChooser'
 import { useEffect } from 'react'
 import { setSnack } from '../redux/slices/globalSlice'
 import { SnackNfoType } from '../types/SnackNfo'
-import { genAdminApi } from '../axios.manager'
 import { green, yellow } from '@mui/material/colors'
+import { getMainApi } from '../axios.manager'
 
 export const MainPage = () => {
     const global = useAppSelector<GlobalState>((state) => state.global)
@@ -29,8 +29,8 @@ export const MainPage = () => {
             roles: {global.currentUser?.roles}<br />
             <ThemeChooser />
             <Button onClick={async () => {
-                const api = genAdminApi()
-                await api.apiLongRunning()
+                const api = getMainApi()
+                await api.apiMainLongRunningGet()
             }}>long running op</Button>
         </Box>
     )
