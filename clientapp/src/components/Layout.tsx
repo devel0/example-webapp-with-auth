@@ -1,13 +1,16 @@
 import { useLocation, useNavigate } from 'react-router-dom'
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
 import { GlobalState } from '../redux/states/GlobalState'
 import { APP_URL_Login } from '../constants/general'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { setLoggedOut, setUrlWanted } from '../redux/slices/globalSlice'
 import { Box, Button, CssBaseline, LinearProgress } from '@mui/material'
 import { SnackComponent } from './SnackComponent'
 import { getAuthApi } from '../axios.manager'
-import ResponsiveAppBar from './ResponsiveAppBar'
+import ResponsiveAppBar, { AppBarItem } from './ResponsiveAppBar'
+import { AboutDialog } from '../dialogs/AboutDialog';
 
 type Props = {
     child: JSX.Element
@@ -18,6 +21,7 @@ const MainLayout = (props: Props) => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
     const location = useLocation()
+    const [aboutDialogOpen, setAboutDialogOpen] = useState(false)
 
     useEffect(() => {
         if (!global.currentUser && location.pathname !== APP_URL_Login) {
@@ -26,24 +30,43 @@ const MainLayout = (props: Props) => {
         }
     }, [location.pathname, global.currentUser])
 
-    return (
-        <Box sx={{ width: '100%' }}>
-            {/* <CssBaseline /> */}
+    const menuPages: AppBarItem[] = [
+        {
+            label: 'About',
+            onClick: () => setAboutDialogOpen(true)
+        }
+    ]
 
-            <ResponsiveAppBar />
-
-            <Button onClick={async () => {
+    const menuSettings: AppBarItem[] = [
+        {
+            label: 'Profile',
+            icon: <AccountCircleIcon />
+        },
+        {
+            label: 'Logout',
+            icon: <LogoutIcon />,
+            onClick: async () => {
                 const authApi = getAuthApi()
                 await authApi.apiAuthLogoutGet()
 
                 dispatch(setLoggedOut())
-            }}>Logout</Button>
+            }
+        }
+    ]
+
+    return (
+        <Box sx={{ width: '100%' }}>
+            {/* <CssBaseline /> */}
+
+            <ResponsiveAppBar pages={menuPages} settings={menuSettings} />
 
             {global.generalNetwork && <LinearProgress />}
 
             <SnackComponent />
 
             {props.child}
+
+            <AboutDialog open={aboutDialogOpen} setOpen={setAboutDialogOpen} />
         </Box>
     )
 }

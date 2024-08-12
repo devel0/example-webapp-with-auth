@@ -8,6 +8,9 @@ export const API_URL = () => `https://${import.meta.env.VITE_SERVERNAME}`
 // APP
 //------------------------------------------------------------------
 
+export const APP_TITLE = "WebAppTest";
+export const APP_LOGO_TEXT: string | undefined = "WEBAPP";
+
 import { PaletteMode } from "@mui/material";
 
 export const APP_URL_BASE = "/app";
@@ -33,4 +36,7 @@ export const THEME_LIGHT = "light";
 
 export const THEME_INITIAL: PaletteMode = THEME_DARK;
 
+export const DEFAULT_SIZE_XSMALL = '0.5rem'
 export const DEFAULT_SIZE_SMALL = '1rem'
+export const DEFAULT_SIZE_LARGE = '2rem'
+export const DEFAULT_SIZE_XLARGE = '4rem'

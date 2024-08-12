@@ -21,14 +21,11 @@ export const MainPage = () => {
     }, [])
 
     return (
-        <Box>
-            {import.meta.env.DEV && <Typography color={yellow[400]}>Development environment</Typography>}
-            {import.meta.env.PROD && <Typography color={green[400]}>Production environment</Typography>}
-            {import.meta.env.VITE_GITCOMMIT && <Typography color={orange[400]}>Git commit {import.meta.env.VITE_GITCOMMIT}</Typography>}<br />
+        <Box>                        
             master page<br />
             current user: {global.currentUser?.userName}<br />
             roles: {global.currentUser?.roles}<br />
-            <ThemeChooser />
+            
             <Button onClick={async () => {
                 const api = getMainApi()
                 await api.apiMainLongRunningGet()
