@@ -7,6 +7,7 @@ import { setLoggedOut, setUrlWanted } from '../redux/slices/globalSlice'
 import { Box, Button, CssBaseline, LinearProgress } from '@mui/material'
 import { SnackComponent } from './SnackComponent'
 import { getAuthApi } from '../axios.manager'
+import ResponsiveAppBar from './ResponsiveAppBar'
 
 type Props = {
     child: JSX.Element
@@ -26,12 +27,12 @@ const MainLayout = (props: Props) => {
     }, [location.pathname, global.currentUser])
 
     return (
-        <Box>
-            <CssBaseline />
+        <Box sx={{ width: '100%' }}>
+            {/* <CssBaseline /> */}
 
-            Toolbar
+            <ResponsiveAppBar />
 
-            <Button onClick={async () => {                
+            <Button onClick={async () => {
                 const authApi = getAuthApi()
                 await authApi.apiAuthLogoutGet()
 

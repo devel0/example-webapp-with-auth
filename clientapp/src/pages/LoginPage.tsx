@@ -8,11 +8,12 @@ import { useNavigate } from 'react-router'
 import { GlobalState } from '../redux/states/GlobalState'
 import { useEffect } from 'react'
 import { setSnack, setSuccessfulLogin, setUrlWanted } from '../redux/slices/globalSlice'
-import { APP_URL_Home, APP_URL_Login, LOCAL_STORAGE_CURRENT_USER_NFO } from '../constants/general'
+import { APP_URL_Home, APP_URL_Login, DEFAULT_SIZE_SMALL, LOCAL_STORAGE_CURRENT_USER_NFO } from '../constants/general'
 import { CurrentUserNfo } from '../types/CurrentUserNfo'
 import { SnackNfoType } from '../types/SnackNfo'
-import { SnackComponent } from './SnackComponent'
+import { SnackComponent } from '../components/SnackComponent'
 import { getAuthApi } from '../axios.manager'
+import AppLogo from '../images/app-icon.svg?react'
 
 export const LoginPage = () => {
     const global = useAppSelector<GlobalState>((state) => state.global)
@@ -61,22 +62,29 @@ export const LoginPage = () => {
         else
             dispatch(setSnack({
                 msg: 'login error',
-                type: SnackNfoType.warning                
+                type: SnackNfoType.warning
             }))
     }
 
     return (
         <Box sx={{ width: '100%' }}>
-            <CssBaseline/>
+            <CssBaseline />
 
             <Box sx={{ alignSelf: 'center' }}>
                 <Container component="main" maxWidth="xs" >
+                    <Box sx={{
+                        mt: DEFAULT_SIZE_SMALL,
+                        display: 'flex',
+                        justifyContent: 'center'
+                    }}>
+                        <AppLogo width='50%' height={'auto'} />
+                    </Box>
 
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                         <TextField
                             margin="normal"
                             required
-                            fullWidth
+                            fullWidth                                                        
                             id="email"
                             label="Email Address"
                             name="email"

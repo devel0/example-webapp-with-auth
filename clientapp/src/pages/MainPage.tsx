@@ -2,7 +2,7 @@
 import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
 import { GlobalState } from '../redux/states/GlobalState'
 import { Box, Button, Typography } from '@mui/material'
-import ThemeChooser from './ThemeChooser'
+import ThemeChooser from '../components/ThemeChooser'
 import { useEffect } from 'react'
 import { setSnack } from '../redux/slices/globalSlice'
 import { SnackNfoType } from '../types/SnackNfo'

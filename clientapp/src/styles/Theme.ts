@@ -34,6 +34,18 @@ export const evalThemeChanged = (global: GlobalState) => {
         textTransform: "none",
       },
     } as TypographyOptions,
+
+    // https://github.com/mui/material-ui/issues/26607#issuecomment-856595593
+    components: {
+      MuiInputLabel: {
+        defaultProps: { shrink: true }
+      },
+      MuiOutlinedInput: {
+        defaultProps: {
+          notched: true
+        }
+      }
+    }
   };
 
   //
@@ -56,7 +68,7 @@ export const evalThemeChanged = (global: GlobalState) => {
     palette: {
       mode: THEME_LIGHT,
 
-      background: {        
+      background: {
         paper: light_bg_paper,
       },
     },

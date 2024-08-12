@@ -32,3 +32,5 @@ export const THEME_DARK = "dark";
 export const THEME_LIGHT = "light";
 
 export const THEME_INITIAL: PaletteMode = THEME_DARK;
+
+export const DEFAULT_SIZE_SMALL = '1rem'
