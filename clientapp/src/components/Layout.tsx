@@ -3,14 +3,15 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
 import { GlobalState } from '../redux/states/GlobalState'
-import { APP_URL_Login } from '../constants/general'
+import { APP_URL_Login, APP_URL_Users, DEFAULT_SIZE_SMALL, DEFAULT_SIZE_XSMALL } from '../constants/general'
 import { useEffect, useState } from 'react'
-import { setLoggedOut, setUrlWanted } from '../redux/slices/globalSlice'
+import { setLoggedOut, setSuccessfulLogin, setUrlWanted } from '../redux/slices/globalSlice'
 import { Box, Button, CssBaseline, LinearProgress } from '@mui/material'
 import { SnackComponent } from './SnackComponent'
 import { getAuthApi } from '../axios.manager'
 import ResponsiveAppBar, { AppBarItem } from './ResponsiveAppBar'
 import { AboutDialog } from '../dialogs/AboutDialog';
+import { CurrentUserNfo } from '../types/CurrentUserNfo';
 
 type Props = {
     child: JSX.Element
@@ -25,8 +26,22 @@ const MainLayout = (props: Props) => {
 
     useEffect(() => {
         if (location.pathname !== APP_URL_Login && (!global.currentUserInitialized || !global.currentUser)) {
+            const authApi = getAuthApi()
+            authApi.apiAuthCurrentUserGet().then(res => {
+                if (res.data.status === 'OK') {
+                    const currentUser: CurrentUserNfo = {
+                        userName: res.data.userName!,
+                        email: res.data.email!,
+                        roles: res.data.roles!
+                    }
+                    
+                    dispatch(setSuccessfulLogin(currentUser))
+                }
+                else {
             dispatch(setUrlWanted(location.pathname))
             navigate(APP_URL_Login)
+                }
+            })
         }
     }, [location.pathname, global.currentUser, global.currentUserInitialized])
 
