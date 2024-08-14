@@ -60,7 +60,9 @@ const MainLayout = (props: Props) => {
 
             <ResponsiveAppBar pages={menuPages} settings={menuSettings} />
 
+            <Box sx={{ minHeight: DEFAULT_SIZE_XSMALL }}>
             {global.generalNetwork && <LinearProgress />}
+            </Box>
 
             <SnackComponent />
 
