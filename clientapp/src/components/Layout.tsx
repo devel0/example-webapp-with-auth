@@ -24,11 +24,11 @@ const MainLayout = (props: Props) => {
     const [aboutDialogOpen, setAboutDialogOpen] = useState(false)
 
     useEffect(() => {
-        if (!global.currentUser && location.pathname !== APP_URL_Login) {
+        if (location.pathname !== APP_URL_Login && (!global.currentUserInitialized || !global.currentUser)) {
             dispatch(setUrlWanted(location.pathname))
             navigate(APP_URL_Login)
         }
-    }, [location.pathname, global.currentUser])
+    }, [location.pathname, global.currentUser, global.currentUserInitialized])
 
     const menuPages: AppBarItem[] = [
         {

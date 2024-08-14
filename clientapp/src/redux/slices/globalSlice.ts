@@ -26,6 +26,7 @@ export const globalSlice = createSlice({
     },
 
     setSuccessfulLogin: (state, action: PayloadAction<CurrentUserNfo>) => {
+      state.currentUserInitialized = true;
       state.currentUser = action.payload
     },
 
