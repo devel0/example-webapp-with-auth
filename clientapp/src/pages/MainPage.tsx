@@ -1,19 +1,19 @@
 
 import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
 import { GlobalState } from '../redux/states/GlobalState'
-import { Box, Button, Typography } from '@mui/material'
-import ThemeChooser from '../components/ThemeChooser'
+import { Box, Button } from '@mui/material'
 import { useEffect } from 'react'
 import { setSnack } from '../redux/slices/globalSlice'
 import { SnackNfoType } from '../types/SnackNfo'
-import { green, orange, yellow } from '@mui/material/colors'
 import { getMainApi } from '../axios.manager'
+import { APP_TITLE } from '../constants/general'
 
 export const MainPage = () => {
     const global = useAppSelector<GlobalState>((state) => state.global)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
+        document.title = `${APP_TITLE} - Dashboard`
         dispatch(setSnack({
             msg: 'main page snack test',
             type: SnackNfoType.info

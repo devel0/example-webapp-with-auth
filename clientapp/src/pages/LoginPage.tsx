@@ -78,7 +78,7 @@ export const LoginPage = () => {
                         display: 'flex',
                         justifyContent: 'center'
                     }}>
-                        <AppLogo width='50%' height={'auto'} />
+                        <AppLogo width={'50%'} height={'100%'} />
                     </Box>
 
                     <Box>

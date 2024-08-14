@@ -1,20 +1,25 @@
-import { Box, Dialog, Typography } from "@mui/material"
+import { Box, Dialog, Typography, useTheme } from "@mui/material"
 import { useState } from "react"
-import { APP_TITLE, DEFAULT_SIZE_LARGE, DEFAULT_SIZE_SMALL } from "../constants/general"
+import { APP_TITLE, DEFAULT_FONTWEIGHT_BOLD, DEFAULT_SIZE_LARGE, DEFAULT_SIZE_SMALL } from "../constants/general"
 import { green, yellow } from "@mui/material/colors"
 
 export const AboutDialog = (props: {
     open: boolean,
     setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
+    const theme = useTheme()
     const { open, setOpen } = props
 
     return (
         <Dialog
             open={open}
             onClose={() => setOpen(false)}>
-            <Box m={DEFAULT_SIZE_SMALL}>
-                About
+            <Box
+                sx={{ background: theme.palette.mode === 'light' ? 'white' : undefined }}
+                p={DEFAULT_SIZE_SMALL}>
+                <Typography fontWeight={DEFAULT_FONTWEIGHT_BOLD}>
+                    About
+                </Typography>
                 <hr />
                 {APP_TITLE}<br />
                 {import.meta.env.DEV && <Typography color={yellow[400]}>Development environment</Typography>}

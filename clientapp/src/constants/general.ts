@@ -4,6 +4,12 @@
 
 export const API_URL = () => `https://${import.meta.env.VITE_SERVERNAME}`
 
+export const ROLE_admin = "admin"
+export const ROLE_advanced = "advanced"
+export const ROLE_user = "user"
+
+export type ROLE = "admin" | "advanced" | "user"
+
 //------------------------------------------------------------------
 // APP
 //------------------------------------------------------------------
@@ -17,6 +23,7 @@ export const APP_URL_BASE = "/app";
 
 export const APP_URL_Home = `${APP_URL_BASE}`
 export const APP_URL_Login = `${APP_URL_BASE}/login`
+export const APP_URL_Users = `${APP_URL_BASE}/users`
 
 export const LOCAL_STORAGE_CURRENT_USER_NFO = "currentUserNfo";
 export const LOCAL_STORAGE_THEME = "theme";
@@ -40,3 +47,6 @@ export const DEFAULT_SIZE_XSMALL = '0.5rem'
 export const DEFAULT_SIZE_SMALL = '1rem'
 export const DEFAULT_SIZE_LARGE = '2rem'
 export const DEFAULT_SIZE_XLARGE = '4rem'
+
+export const DEFAULT_FONTWEIGHT_SEMIBOLD = 500
+export const DEFAULT_FONTWEIGHT_BOLD = 600

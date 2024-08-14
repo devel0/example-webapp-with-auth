@@ -38,8 +38,8 @@ const MainLayout = (props: Props) => {
                     dispatch(setSuccessfulLogin(currentUser))
                 }
                 else {
-            dispatch(setUrlWanted(location.pathname))
-            navigate(APP_URL_Login)
+                    dispatch(setUrlWanted(location.pathname))
+                    navigate(APP_URL_Login)
                 }
             })
         }
@@ -47,9 +47,13 @@ const MainLayout = (props: Props) => {
 
     const menuPages: AppBarItem[] = [
         {
+            label: 'Users',
+            onClick: () => navigate(APP_URL_Users)
+        },
+        {
             label: 'About',
             onClick: () => setAboutDialogOpen(true)
-        }
+        },
     ]
 
     const menuSettings: AppBarItem[] = [
@@ -76,7 +80,7 @@ const MainLayout = (props: Props) => {
             <ResponsiveAppBar pages={menuPages} settings={menuSettings} />
 
             <Box sx={{ minHeight: DEFAULT_SIZE_XSMALL }}>
-            {global.generalNetwork && <LinearProgress />}
+                {global.generalNetwork && <LinearProgress />}
             </Box>
 
             <SnackComponent />
