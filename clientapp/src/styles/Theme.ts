@@ -8,6 +8,7 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import { THEME_DARK, THEME_LIGHT, light_bg_paper } from "../constants/general";
 import { setCssVars } from "./CssVars";
+import { orange, red, yellow } from "@mui/material/colors";
 
 // palette { primary, secondary, error, warning, info, success }
 
@@ -56,6 +57,9 @@ export const evalThemeChanged = (global: GlobalState) => {
 
     palette: {
       mode: THEME_DARK,
+      error: {
+        main: orange[400]
+      }
     },
   };
 
