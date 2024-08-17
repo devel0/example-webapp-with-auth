@@ -13,8 +13,8 @@ import { APP_TITLE, APP_URL_Home, APP_URL_Login, DEFAULT_SIZE_SMALL, LOCAL_STORA
 import { CurrentUserNfo } from '../types/CurrentUserNfo'
 import { SnackNfoType } from '../types/SnackNfo'
 import { SnackComponent } from '../components/SnackComponent'
-import { getAuthApi } from '../axios.manager'
 import AppLogo from '../images/app-icon.svg?react'
+import { authApi } from '../fetch.manager'
 
 export const LoginPage = () => {
     const global = useAppSelector<GlobalState>((state) => state.global)
@@ -39,18 +39,18 @@ export const LoginPage = () => {
         event.preventDefault()
         const data = new FormData(event.currentTarget)
 
-        const authApi = getAuthApi()
-
         const response = await authApi.apiAuthLoginPost({
-            email: String(data.get("email")),
-            password: String(data.get("password")),
+            loginRequestDto: {
+                email: String(data.get("email")),
+                password: String(data.get("password")),
+            }
         });
 
-        if (response?.data?.status === 'OK') {
+        if (response?.status === 'OK') {
             const currentUser: CurrentUserNfo = {
-                userName: response.data.userName!,
-                email: response.data.email!,
-                roles: response.data.roles!
+                userName: response.userName!,
+                email: response.email!,
+                roles: response.roles!
             }
 
             dispatch(setSuccessfulLogin(currentUser));

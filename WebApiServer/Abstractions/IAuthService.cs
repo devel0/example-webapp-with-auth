@@ -13,16 +13,7 @@ public interface IAuthService
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Login response and JWT if successfully logged in.</returns>
     Task<LoginResponseDto> LoginAsync(
-        LoginRequestDto loginRequestDto, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Create user by given username, email, password.
-    /// </summary>
-    /// <param name="registerUserRequestDto">Username, email, password of user to add.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>Register user response.</returns>
-    Task<RegisterUserResponseDto> RegisterUserAsync(
-        RegisterUserRequestDto registerUserRequestDto, CancellationToken cancellationToken = default);
+        LoginRequestDto loginRequestDto, CancellationToken cancellationToken);
 
     /// <summary>
     /// Retrieve current logged in user name, email, roles.
@@ -30,7 +21,7 @@ public interface IAuthService
     /// <param name="cancellationToken">Cancellation token.</param>    
     /// <returns>Logged in user info or null if not authenticated.</returns>                
     Task<CurrentUserResponseDto> CurrentUserAsync(
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken);
 
     /// <summary>
     /// Immediate user lockout until given time or unlock if time is in the past ( UTC ).
@@ -40,21 +31,23 @@ public interface IAuthService
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns><see cref="ICommonResponseDto"/></returns>                
     Task<HttpStatusCode> LockoutUserAsync(
-        LockoutUserRequestDto lockoutUserRequestDto, CancellationToken cancellationToken = default);
+        LockoutUserRequestDto lockoutUserRequestDto, CancellationToken cancellationToken);
 
     /// <summary>
     /// Logout current user.
     /// </summary>    
     /// <param name="cancellationToken">Cancellation token.</param>
-    Task<HttpStatusCode> LogoutAsync(CancellationToken cancellationToken = default);
+    Task<HttpStatusCode> LogoutAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// List all users.
     /// </summary>    
+    /// <param name="username">If not null list only given user.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>List of users</returns>
     Task<List<UserListItemResponseDto>> ListUsersAsync(
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken,
+        string? username = null);
 
     /// <summary>
     /// List all roles.
@@ -62,7 +55,7 @@ public interface IAuthService
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>List of users roles</returns>
     Task<List<string>> ListRolesAsync(
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken);
 
     /// <summary>
     /// Change user roles
@@ -71,6 +64,18 @@ public interface IAuthService
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Set user response.</returns>
     Task<SetUserRolesResponseDto> SetUserRolesAsync(
-        SetUserRolesRequestDto setUserRolesRequestDto, CancellationToken cancellationToken = default);
+        SetUserRolesRequestDto setUserRolesRequestDto, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Create user by given username, email, password.
+    /// </summary>
+    /// <param name="registerUserRequestDto">Username, email, password of user to add.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Register user response.</returns>
+    Task<RegisterUserResponseDto> RegisterUserAsync(
+        RegisterUserRequestDto registerUserRequestDto, CancellationToken cancellationToken);
+
+    Task<EditUserResponseDto> EditUserAsync(
+        EditUserRequestDto editUserRequestDto, CancellationToken cancellationToken);
 
 }

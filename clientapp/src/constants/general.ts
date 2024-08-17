@@ -10,6 +10,8 @@ export const ROLE_user = "user"
 
 export type ROLE = "admin" | "advanced" | "user"
 
+export const ALL_ROLES = [ ROLE_admin, ROLE_advanced, ROLE_user ]
+
 //------------------------------------------------------------------
 // APP
 //------------------------------------------------------------------

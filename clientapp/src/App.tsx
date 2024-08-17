@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { ThemeProvider } from '@emotion/react'
 import { useAppDispatch, useAppSelector } from './redux/hooks/hooks'
 import './App.css'
-import { ConfigAxios } from './axios.manager'
 import { RouterProvider } from 'react-router-dom'
 import { GlobalState } from './redux/states/GlobalState'
 import { evalThemeChanged } from './styles/Theme'
@@ -14,10 +13,6 @@ function App() {
   const global = useAppSelector<GlobalState>((state) => state.global)
   const dispatch = useAppDispatch()
   const theme = React.useMemo(() => evalThemeChanged(global), [global.theme])
-
-  useEffect(() => {
-    ConfigAxios(dispatch)
-  }, [dispatch])
 
   return (
     <ThemeProvider theme={theme}>

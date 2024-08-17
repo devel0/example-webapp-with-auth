@@ -36,7 +36,7 @@ public class AuthService : IAuthService
 
     public async Task<LoginResponseDto> LoginAsync(
         LoginRequestDto loginRequestDto,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         ApplicationUser? user = null;
 
@@ -96,37 +96,6 @@ public class AuthService : IAuthService
         };
     }
 
-    public async Task<RegisterUserResponseDto> RegisterUserAsync(
-        RegisterUserRequestDto registerUserRequestDto,
-        CancellationToken cancellationToken = default)
-    {
-        var user = new ApplicationUser
-        {
-            UserName = registerUserRequestDto.UserName,
-            Email = registerUserRequestDto.Email
-        };
-
-        var createRes = await userManager.CreateAsync(user, registerUserRequestDto.Password);
-        if (createRes.Succeeded)
-        {
-            return new RegisterUserResponseDto
-            {
-                Status = RegisterUserStatus.OK,
-                Errors = new List<IdentityError>()
-            };
-        }
-        else
-        {
-            var status = RegisterUserStatus.IdentityError;
-
-            return new RegisterUserResponseDto
-            {
-                Status = status,
-                Errors = createRes.Errors.ToList()
-            };
-        }
-    }
-
     public async Task<HttpStatusCode> LockoutUserAsync(LockoutUserRequestDto lockoutUserRequestDto,
         CancellationToken cancellationToken = default)
     {
@@ -144,7 +113,7 @@ public class AuthService : IAuthService
             return HttpStatusCode.BadRequest;
     }
 
-    public async Task<CurrentUserResponseDto> CurrentUserAsync(CancellationToken cancellationToken = default)
+    public async Task<CurrentUserResponseDto> CurrentUserAsync(CancellationToken cancellationToken)
     {
         if (httpContextAccessor.HttpContext is null)
             return new CurrentUserResponseDto
@@ -190,7 +159,7 @@ public class AuthService : IAuthService
             };
     }
 
-    public async Task<HttpStatusCode> LogoutAsync(CancellationToken cancellationToken = default)
+    public async Task<HttpStatusCode> LogoutAsync(CancellationToken cancellationToken)
     {
         var httpContext = httpContextAccessor.HttpContext;
         if (httpContext is null)
@@ -205,11 +174,18 @@ public class AuthService : IAuthService
         return HttpStatusCode.OK;
     }
 
-    public async Task<List<UserListItemResponseDto>> ListUsersAsync(CancellationToken cancellationToken = default)
+    public async Task<List<UserListItemResponseDto>> ListUsersAsync(
+        CancellationToken cancellationToken,
+        string? username = null)
     {
         var res = new List<UserListItemResponseDto>();
 
-        var users = await userManager.Users.ToListAsync();
+        var q = userManager.Users;
+
+        if (username is not null)
+            q = q.Where(r => r.UserName == username);
+
+        var users = await q.ToListAsync();
 
         foreach (var user in users)
         {
@@ -246,7 +222,7 @@ public class AuthService : IAuthService
             .ToList();
     }
 
-    public async Task<List<string>> ListRolesAsync(CancellationToken cancellationToken = default)
+    public async Task<List<string>> ListRolesAsync(CancellationToken cancellationToken)
     {
         var allRoles = await AllRolesAsync();
 
@@ -315,6 +291,118 @@ public class AuthService : IAuthService
                 Status = SetUserRolesStatus.InternalError
             };
         }
+    }
+
+    public async Task<RegisterUserResponseDto> RegisterUserAsync(
+       RegisterUserRequestDto registerUserRequestDto,
+       CancellationToken cancellationToken)
+    {
+        var user = new ApplicationUser
+        {
+            UserName = registerUserRequestDto.UserName,
+            Email = registerUserRequestDto.Email
+        };
+
+        var createRes = await userManager.CreateAsync(user, registerUserRequestDto.Password);
+        if (createRes.Succeeded)
+        {
+            return new RegisterUserResponseDto
+            {
+                Status = RegisterUserStatus.OK,
+                Errors = new List<IdentityError>()
+            };
+        }
+        else
+        {
+            var status = RegisterUserStatus.IdentityError;
+
+            return new RegisterUserResponseDto
+            {
+                Status = status,
+                Errors = createRes.Errors.ToList()
+            };
+        }
+    }
+
+    public async Task<EditUserResponseDto> EditUserAsync(
+        EditUserRequestDto editUserRequestDto, CancellationToken cancellationToken)
+    {
+        if (editUserRequestDto.CreateNew)
+        {
+            if (editUserRequestDto.ChangePassword is null)
+                return new EditUserResponseDto
+                {
+                    Status = EditUserStatus.InvalidPassword
+                };
+
+            var registerRes = await RegisterUserAsync(new RegisterUserRequestDto
+            {
+                UserName = editUserRequestDto.UserName,
+                Email = editUserRequestDto.Email,
+                Password = editUserRequestDto.ChangePassword
+            }, cancellationToken);
+
+            if (registerRes.Status != RegisterUserStatus.OK)
+            {
+                return new EditUserResponseDto
+                {
+                    Status = registerRes.Status switch
+                    {
+                        RegisterUserStatus.IdentityError => EditUserStatus.IdentityError,
+                        _ => throw new NotImplementedException($"unhandled status {registerRes.Status}")
+                    },
+                    Errors = registerRes.Errors.Select(w => w.ToString() ?? "").ToList()
+                };
+            }
+        }
+
+        var user = await userManager.FindByNameAsync(editUserRequestDto.UserName);
+
+        if (user is null)
+        {
+            return new EditUserResponseDto
+            {
+                Status = EditUserStatus.UserNotFound
+            };
+        }
+
+        if (user.UserName != editUserRequestDto.UserName)
+        {
+            var editUsernameRes = await userManager.SetUserNameAsync(user, editUserRequestDto.UserName);
+            if (!editUsernameRes.Succeeded)
+                return new EditUserResponseDto
+                {
+                    Status = EditUserStatus.IdentityError,
+                    Errors = editUsernameRes.Errors.Select(w => w.ToString() ?? "").ToList()
+                };
+        }
+
+        {
+            var changeRolesRes = await SetUserRolesAsync(new SetUserRolesRequestDto
+            {
+                UserName = editUserRequestDto.UserName,
+                Roles = editUserRequestDto.Roles
+            }, cancellationToken);
+
+            if (changeRolesRes.Status != SetUserRolesStatus.OK)
+            {
+                return new EditUserResponseDto
+                {
+                    Status = changeRolesRes.Status switch
+                    {
+                        SetUserRolesStatus.AdminRolesReadOnly => EditUserStatus.AdminRolesReadOnly,
+                        SetUserRolesStatus.InternalError => EditUserStatus.InternalError,
+                        SetUserRolesStatus.UserNotFound => EditUserStatus.UserNotFound,
+                        _ => throw new NotImplementedException($"unhandled status {changeRolesRes.Status}")
+                    }
+                };
+            }
+        }
+
+        return new EditUserResponseDto
+        {
+            Status = EditUserStatus.OK
+        };
     }
 
 }

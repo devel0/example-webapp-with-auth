@@ -21,6 +21,7 @@ public static partial class Constants
     public const int STATUS_AdminRolesReadOnly = 6;
     public const int STATUS_UserNotFound = 7;
     public const int STATUS_InvalidHttpContext = 8;
+    public const int STATUS_InvalidPassword= 9;
 
     public const int STATUS_Custom = 100;
 

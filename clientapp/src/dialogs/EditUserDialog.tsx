@@ -1,23 +1,36 @@
-import { Box, Button, Dialog, Grid, Table, TableBody, TableCell, TableRow, TextField, Typography, useTheme } from "@mui/material"
+import { Box, Button, Card, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Modal, Table, TableBody, TableCell, TableRow, TextField, Typography, useTheme } from "@mui/material"
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAppDispatch, useAppSelector } from "../redux/hooks/hooks"
 import { GlobalState } from "../redux/states/GlobalState"
-import { DEFAULT_FONTWEIGHT_BOLD, DEFAULT_SIZE_SMALL, DEFAULT_SIZE_XSMALL, ROLE } from "../constants/general"
+import { ALL_ROLES, API_URL, DEFAULT_FONTWEIGHT_BOLD, DEFAULT_SIZE_SMALL, DEFAULT_SIZE_XSMALL, ROLE } from "../constants/general"
 import { useEffect, useState } from "react";
 import { passwordIsValid } from "../utils/password-validator";
 import { emailIsValid } from "../utils/email-validator";
 import { usernameIsValid } from "../utils/username-validator";
+import { HttpStatusCode } from "axios";
+import { setSnack } from "../redux/slices/globalSlice";
+import { SnackNfoType } from "../types/SnackNfo";
+import { nullOrUndefined } from "../utils/utils";
+import { DraggablePaperComponent } from "../utils/draggable-dialog";
+import { createApi } from "@reduxjs/toolkit/query";
+import { ApiException } from "../types/ApiException";
+import { authApi } from "../fetch.manager";
+import { ResponseError } from "../../api";
 
-export interface NewUserData {
+export interface EditUserData {
+    isNew: boolean,
     username: string,
     email: string,
     password: string,
     roles: ROLE[]
 }
 
+// export const PASSWORD_UNCHANGED = "********"
+
 export const NewUserDataSample = () => {
-    let res: NewUserData = {
+    let res: EditUserData = {
+        isNew: true,
         username: '',
         email: '',
         password: '',
@@ -26,13 +39,14 @@ export const NewUserDataSample = () => {
     return res
 }
 
-export const NewUserDialog = (props: {
+export const EditUserDialog = (props: {
     open: boolean,
     setOpen: React.Dispatch<React.SetStateAction<boolean>>,
-    userData: NewUserData,
-    setUserData: React.Dispatch<React.SetStateAction<NewUserData>>,
+    userData: EditUserData,
+    setUserData: React.Dispatch<React.SetStateAction<EditUserData>>,
+    refreshList: () => void
 }) => {
-    const { open, setOpen, userData, setUserData } = props
+    const { open, setOpen, userData, setUserData, refreshList } = props
     const global = useAppSelector<GlobalState>((state) => state.global)
     const dispatch = useAppDispatch()
     const theme = useTheme()
@@ -65,20 +79,17 @@ export const NewUserDialog = (props: {
         setEmailValid(q)
         if (q === false) res = false
 
-        q = passwordIsValid(userData.password).isValid
-        setPasswordValid(q)
-        if (q === false) res = false
+        if (userData.isNew === true || userData.password.trim().length > 0) {
+            q = passwordIsValid(userData.password).isValid
+            setPasswordValid(q)
+            if (q === false) res = false
+        }
 
         return res
     }
 
     const resetFormData = () => {
-        setUserData({
-            username: '',
-            email: '',
-            password: '',
-            roles: []
-        })
+        setUserData(NewUserDataSample())
     }
 
     const formIsEmpty = () =>
@@ -91,17 +102,22 @@ export const NewUserDialog = (props: {
         <Dialog
             open={open}
             onClose={(e, reason) => {
-                if (!formIsEmpty() && reason && reason === "backdropClick")
+                if (!formIsEmpty() && reason && (reason === "backdropClick" || reason === 'escapeKeyDown'))
                     return; // modal dialog
                 setOpen(false)
             }}>
-            <Box
-                sx={{ background: theme.palette.mode === 'light' ? 'white' : undefined }}
-                p={DEFAULT_SIZE_SMALL}>
+
+            <DialogTitle>
                 <Typography fontWeight={DEFAULT_FONTWEIGHT_BOLD}>
-                    New user
+                    {userData.isNew === true ? 'New user' : `Edit user ${userData.username}`}
                 </Typography>
                 <hr />
+            </DialogTitle>
+
+            <DialogContent sx={{
+                background: theme.palette.mode === 'light' ? 'white' : undefined,
+            }}>
+
                 <Table>
                     <TableBody>
                         <TableRow>
@@ -138,6 +154,7 @@ export const NewUserDialog = (props: {
                                     type="password"
                                     value={userData.password}
                                     onChange={e => setUserData({ ...userData, password: e.target.value })}
+                                    placeholder="Type to change password"
                                     helperText={passwordValid === false && passwordIsValid(userData.password).errors.map((errorMsg, errorMsgIdx) =>
                                         <Typography key={`pass-err-${errorMsgIdx}`}>{errorMsg}</Typography>)}
                                     inputProps={{ // avoid browser autocomplete
@@ -149,12 +166,43 @@ export const NewUserDialog = (props: {
                                 />
                             </TableCell>
                         </TableRow>
+
+                        {ALL_ROLES.map((role, roleIdx) => <TableRow key={`role-${role}`}>
+                            <TableCell valign="top">{role}</TableCell>
+                            <TableCell>
+                                <Checkbox
+                                    checked={userData?.roles?.indexOf(role as ROLE) !== -1}
+                                    onChange={e => {
+                                        const roleIdx = (userData.roles ?? []).indexOf(role as ROLE)
+                                        console.log(`roleIdx = ${roleIdx}`)
+
+                                        if (e.target.checked === true) {
+                                            if (roleIdx === -1) {
+                                                if (nullOrUndefined(userData.roles))
+                                                    userData.roles = []
+                                                userData.roles!.push(role as ROLE)
+                                                setUserData({ ...userData })
+                                            }
+                                        }
+                                        else {
+                                            if (roleIdx !== -1) {
+                                                userData.roles!.splice(roleIdx, 1)
+                                                setUserData({ ...userData })
+                                            }
+                                        }
+                                    }}
+                                />
+                            </TableCell>
+                        </TableRow>)}
                     </TableBody>
                 </Table>
+            </DialogContent>
 
-                <hr />
-
-                <Box sx={{ display: 'flex', mt: DEFAULT_SIZE_SMALL }}>
+            <DialogActions>
+                <Box sx={{
+                    display: 'flex',
+                    mt: DEFAULT_SIZE_SMALL
+                }}>
                     <Box sx={{ flexGrow: 1 }} />
                     <Button
                         variant='outlined'
@@ -167,18 +215,50 @@ export const NewUserDialog = (props: {
                         Cancel
                     </Button>
                     <Button
-                        onClick={() => {
+                        onClick={async () => {
                             setAutoValidate(true)
-                            if (validate())
-                                setOpen(false)
-                        }}
+                            if (validate()) {
+
+                                try {
+                                    await authApi.apiAuthEditUserPost({
+                                        editUserRequestDto: {
+                                            createNew: userData.isNew,
+                                            userName: userData.username,
+                                            email: userData.email,
+                                            changePassword: userData.password,
+                                            roles: userData.roles
+                                        }
+                                    })
+
+                                    dispatch(setSnack({
+                                        msg: `User ${userData.username} ${userData.isNew ? 'created' : 'changes applied'}`,
+                                        type: SnackNfoType.success
+                                    }))
+
+                                    await refreshList()
+                                    setOpen(false)
+                                }
+                                catch (_ex) {
+                                    const ex = _ex as ResponseError
+                                    if (ex.response.status === HttpStatusCode.NotFound) {
+                                        dispatch(setSnack({
+                                            msg: 'NOT FOUND!!!',
+                                            type: SnackNfoType.error
+                                        }))
+                                    }
+                                    console.log(ex);
+                                }
+                            }
+                        }
+                        }
                         variant='outlined'>
                         <DoneOutlineIcon sx={{ mr: DEFAULT_SIZE_XSMALL }} />
-                        Create
+                        {userData.isNew === true ? 'Create' : 'Apply'}
                     </Button>
                 </Box>
-            </Box>
-        </Dialog>
+            </DialogActions>
+
+        </Dialog >
     )
 
 }

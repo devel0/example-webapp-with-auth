@@ -10,12 +10,15 @@ public class AuthController : ControllerBase
 {
 
     readonly IAuthService authService;
+    readonly CancellationToken cancellationToken;
 
     public AuthController(
-        IAuthService authService
+        IAuthService authService,
+        CancellationToken cancellationToken
         )
     {
         this.authService = authService;
+        this.cancellationToken = cancellationToken;
     }
 
     /// <summary>
@@ -24,7 +27,7 @@ public class AuthController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<CurrentUserResponseDto>> CurrentUser()
     {
-        var res = await authService.CurrentUserAsync();
+        var res = await authService.CurrentUserAsync(cancellationToken);
 
         switch (res.Status)
         {
@@ -40,25 +43,6 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Create user by given username, email, password.
-    /// </summary>
-    [HttpPost]
-    [Authorize(Roles = ROLE_admin)]
-    public async Task<ActionResult<RegisterUserResponseDto>> RegisterUser(
-        [FromBody] RegisterUserRequestDto registerUserRequestDto)
-    {
-        var res = await authService.RegisterUserAsync(registerUserRequestDto);
-
-        switch (res.Status)
-        {
-            case RegisterUserStatus.IdentityError:
-                return BadRequest();
-        }
-
-        return res;
-    }
-
-    /// <summary>
     /// Immediate user lockout until given time or unlock if time is in the past ( UTC ).
     /// Note that this happens when access token expires.
     /// </summary>    
@@ -67,7 +51,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> LockoutUser(
         [FromBody] LockoutUserRequestDto lockoutUserRequestDto)
     {
-        var res = await authService.LockoutUserAsync(lockoutUserRequestDto);
+        var res = await authService.LockoutUserAsync(lockoutUserRequestDto, cancellationToken);
 
         return StatusCode((int)res);
     }
@@ -80,7 +64,7 @@ public class AuthController : ControllerBase
     public async Task<ActionResult<LoginResponseDto>> Login(
         [FromBody] LoginRequestDto loginRequestDto)
     {
-        var res = await authService.LoginAsync(loginRequestDto);
+        var res = await authService.LoginAsync(loginRequestDto, cancellationToken);
 
         switch (res.Status)
         {
@@ -101,19 +85,21 @@ public class AuthController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Logout()
     {
-        var res = await authService.LogoutAsync();
+        var res = await authService.LogoutAsync(cancellationToken);
 
         return StatusCode((int)res);
     }
 
     /// <summary>
-    /// List all users.
+    /// List all users or specific if param given.
     /// </summary>    
     [HttpGet]
     [Authorize(Roles = ROLE_admin)]
-    public async Task<ActionResult<List<UserListItemResponseDto>>> ListUsers()
+    public async Task<ActionResult<List<UserListItemResponseDto>>> ListUsers(
+        string? username = null
+    )
     {
-        var res = await authService.ListUsersAsync();
+        var res = await authService.ListUsersAsync(cancellationToken, username);
 
         return res;
     }
@@ -125,7 +111,7 @@ public class AuthController : ControllerBase
     [Authorize(Roles = ROLE_admin)]
     public async Task<ActionResult<List<string>>> ListRoles()
     {
-        var res = await authService.ListRolesAsync();
+        var res = await authService.ListRolesAsync(cancellationToken);
 
         return res;
     }
@@ -137,7 +123,7 @@ public class AuthController : ControllerBase
     [Authorize(Roles = ROLE_admin)]
     public async Task<ActionResult<SetUserRolesResponseDto>> SetUserRoles(SetUserRolesRequestDto setUserRolesRequestDto)
     {
-        var res = await authService.SetUserRolesAsync(setUserRolesRequestDto);
+        var res = await authService.SetUserRolesAsync(setUserRolesRequestDto, cancellationToken);
 
         switch (res.Status)
         {
@@ -152,6 +138,55 @@ public class AuthController : ControllerBase
         }
 
         return res;
+    }
+
+
+    /// <summary>
+    /// Create user by given username, email, password.
+    /// </summary>
+    [HttpPost]
+    [Authorize(Roles = ROLE_admin)]
+    public async Task<ActionResult<RegisterUserResponseDto>> RegisterUser(
+        [FromBody] RegisterUserRequestDto registerUserRequestDto)
+    {
+        var res = await authService.RegisterUserAsync(registerUserRequestDto, cancellationToken);
+
+        switch (res.Status)
+        {
+            case RegisterUserStatus.IdentityError:
+                return BadRequest();
+        }
+
+        return res;
+    }
+
+    /// <summary>
+    /// Edit user data
+    /// </summary>    
+    [HttpPost]
+    public async Task<ActionResult> EditUser(EditUserRequestDto editUser)
+    {
+        var res = await authService.EditUserAsync(editUser, cancellationToken);
+
+        switch (res.Status)
+        {
+            case EditUserStatus.AdminRolesReadOnly:
+                return Problem("admin roles are readonly");
+
+            case EditUserStatus.InternalError:
+                return StatusCode((int)HttpStatusCode.InternalServerError, res.Errors);
+
+            case EditUserStatus.IdentityError:            
+                return Forbid();            
+
+            case EditUserStatus.InvalidPassword:
+                return Problem("Invalid password");
+
+            case EditUserStatus.UserNotFound:
+                return NotFound();
+        }
+
+        return Ok();
     }
 
 }

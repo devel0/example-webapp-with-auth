@@ -5,8 +5,8 @@ import { Box, Button } from '@mui/material'
 import { useEffect } from 'react'
 import { setSnack } from '../redux/slices/globalSlice'
 import { SnackNfoType } from '../types/SnackNfo'
-import { getMainApi } from '../axios.manager'
 import { APP_TITLE } from '../constants/general'
+import { mainApi } from '../fetch.manager'
 
 export const MainPage = () => {
     const global = useAppSelector<GlobalState>((state) => state.global)
@@ -27,8 +27,7 @@ export const MainPage = () => {
             roles: {global.currentUser?.roles}<br />
             
             <Button onClick={async () => {
-                const api = getMainApi()
-                await api.apiMainLongRunningGet()
+                await mainApi.apiMainLongRunningGet()
             }}>long running op</Button>
         </Box>
     )
