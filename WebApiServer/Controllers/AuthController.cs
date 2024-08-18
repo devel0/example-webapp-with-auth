@@ -165,8 +165,8 @@ public class AuthController : ControllerBase
     /// </summary>    
     [HttpPost]
     public async Task<ActionResult> EditUser(EditUserRequestDto editUser)
-    {
-        var res = await authService.EditUserAsync(editUser, cancellationToken);
+    {        
+        var res = await authService.EditUserAsync(editUser, cancellationToken);                
 
         switch (res.Status)
         {

@@ -1,6 +1,7 @@
 import { PaletteMode } from "@mui/material";
 import { LOCAL_STORAGE_CURRENT_USER_NFO, LOCAL_STORAGE_THEME, THEME_INITIAL } from "../../constants/general";
 import { CurrentUserNfo } from "../../types/CurrentUserNfo";
+import { SnackNfo } from "../../types/SnackNfo";
 
 export interface GlobalState {
   theme: PaletteMode;
@@ -13,21 +14,10 @@ export interface GlobalState {
 
   // snacks
 
-  snackSuccessOpen: boolean;
-  snackSuccessMsg: string;
-  snackSuccessDuration: number | null;
-
-  snackErrorOpen: boolean;
-  snackErrorMsg: string;
-  snackErrorDuration: number | null;
-
-  snackWarningOpen: boolean;
-  snackWarningMsg: string;
-  snackWarningDuration: number | null;
-
-  snackInfoOpen: boolean;
-  snackInfoMsg: string;
-  snackInfoDuration: number | null;
+  snackSuccess: SnackNfo;
+  snackError: SnackNfo;
+  snackWarning: SnackNfo;
+  snackInfo: SnackNfo;
 }
 
 // retrieve authenticated user info from local storage
@@ -44,6 +34,15 @@ let currentTheme = THEME_INITIAL;
   if (themeSaved as PaletteMode) currentTheme = themeSaved as PaletteMode;
 }
 
+const defaultSnackNfo = () => {
+  return {
+    open: false,
+    title: "",
+    msg: "",
+    duration: 6000
+  } as SnackNfo
+}
+
 export const GlobalInitialState: GlobalState = {
   theme: currentTheme,
   urlWanted: undefined,
@@ -54,20 +53,9 @@ export const GlobalInitialState: GlobalState = {
 
   // snacks
 
-  snackSuccessOpen: false,
-  snackSuccessMsg: "",
-  snackSuccessDuration: 6000,
-
-  snackErrorOpen: false,
-  snackErrorMsg: "",
-  snackErrorDuration: 6000,
-
-  snackWarningOpen: false,
-  snackWarningMsg: "",
-  snackWarningDuration: 6000,
-
-  snackInfoOpen: false,
-  snackInfoMsg: "",
-  snackInfoDuration: 6000,
+  snackSuccess: defaultSnackNfo(),
+  snackError: defaultSnackNfo(),
+  snackWarning: defaultSnackNfo(),
+  snackInfo: defaultSnackNfo()
 
 };

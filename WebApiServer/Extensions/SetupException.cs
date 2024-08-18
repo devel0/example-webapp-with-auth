@@ -20,16 +20,35 @@ public static partial class Extensions
 
                 var ex = exceptionHandlerPathFeature?.Error;
 
-                if (ex?.InnerException is PostgresException psqlException)
+                string? msg = "";
+
+                if (ex is not null)
                 {
-                    var msg = psqlException.Message?.Lines().FirstOrDefault();
-                    await context.Response.WriteAsync(msg ?? "db exception");
+
+                    if (ex.InnerException is PostgresException psqlException)
+                        msg = psqlException.Message.Lines().FirstOrDefault();
+
+                    else
+                        msg = ex.Message.Lines().FirstOrDefault();
+
                 }
 
-                else
+                var title = "Exception";
+                var detail = msg;
+                var type = "https://tools.ietf.org/html/rfc9110#section-15.6.1"; // internal server error
+
+                if (context.RequestServices.GetService<IProblemDetailsService>() is { } problemDetailsService)
                 {
-                    var msg = ex.Message?.Lines().FirstOrDefault();
-                    await context.Response.WriteAsync(msg ?? "internal error");
+                    await problemDetailsService.WriteAsync(new ProblemDetailsContext
+                    {
+                        HttpContext = context,
+                        ProblemDetails =
+                        {
+                            Title = title,
+                            Detail = detail,
+                            Type = type
+                        }
+                    });
                 }
             });
         });

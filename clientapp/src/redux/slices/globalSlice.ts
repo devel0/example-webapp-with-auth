@@ -48,42 +48,35 @@ export const globalSlice = createSlice({
     //-----------------------------------------------------------------------------------
 
     setSnack: (state, action: PayloadAction<SnackNfo>) => {
+      const nfo = action.payload;
 
-      switch (action.payload.type) {
+      switch (nfo.type) {
         case SnackNfoType.success:
-          state.snackSuccessMsg = action.payload.msg;
-          state.snackSuccessOpen = true;
-          state.snackSuccessDuration =
-            action.payload.duration === null
-              ? null
-              : action.payload.duration ?? 6000;
+          state.snackSuccess.title = nfo.title;
+          state.snackSuccess.msg = nfo.msg;
+          state.snackSuccess.open = true;
+          state.snackSuccess.duration = nfo.duration === null ? null : (nfo.duration ?? 6000);
           break;
 
         case SnackNfoType.info:
-          state.snackInfoMsg = action.payload.msg;
-          state.snackInfoOpen = true;
-          state.snackInfoDuration =
-            action.payload.duration === null
-              ? null
-              : action.payload.duration ?? 6000;
+          state.snackInfo.title = nfo.title;
+          state.snackInfo.msg = nfo.msg;
+          state.snackInfo.open = true;
+          state.snackInfo.duration = nfo.duration === null ? null : (nfo.duration ?? 6000);
           break;
 
         case SnackNfoType.warning:
-          state.snackWarningMsg = action.payload.msg;
-          state.snackWarningOpen = true;
-          state.snackWarningDuration =
-            action.payload.duration === null
-              ? null
-              : action.payload.duration ?? 6000;
+          state.snackWarning.title = nfo.title;
+          state.snackWarning.msg = nfo.msg;
+          state.snackWarning.open = true;
+          state.snackWarning.duration = nfo.duration === null ? null : (nfo.duration ?? 6000);
           break;
 
         case SnackNfoType.error:
-          state.snackErrorMsg = action.payload.msg;
-          state.snackErrorOpen = true;
-          state.snackErrorDuration =
-            action.payload.duration === null
-              ? null
-              : action.payload.duration ?? 6000;
+          state.snackError.title = nfo.title;
+          state.snackError.msg = nfo.msg;
+          state.snackError.open = true;
+          state.snackError.duration = nfo.duration === null ? null : (nfo.duration ?? 6000);
           break;
       }
     },
@@ -91,19 +84,19 @@ export const globalSlice = createSlice({
     unsetSnack: (state, action: PayloadAction<SnackNfoType>) => {
       switch (action.payload) {
         case SnackNfoType.success:
-          state.snackSuccessOpen = false;
+          state.snackSuccess.open = false;
           break;
 
         case SnackNfoType.info:
-          state.snackInfoOpen = false;
+          state.snackSuccess.open = false;
           break;
 
         case SnackNfoType.warning:
-          state.snackWarningOpen = false;
+          state.snackWarning.open = false;
           break;
 
         case SnackNfoType.error:
-          state.snackErrorOpen = false;
+          state.snackError.open = false;
           break;
       }
     },
@@ -114,11 +107,11 @@ export const globalSlice = createSlice({
 });
 
 export const {
-  
+
   setUrlWanted,
   setGeneralNetwork,
   setSuccessfulLogin,
-  setLoggedOut,  
+  setLoggedOut,
   setTheme,
 
   setSnack, unsetSnack

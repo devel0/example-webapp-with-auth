@@ -1,8 +1,9 @@
-import { Alert, Box, Snackbar } from '@mui/material'
+import { Alert, Box, Snackbar, Typography } from '@mui/material'
 import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
 import { GlobalState } from '../redux/states/GlobalState'
 import { unsetSnack } from '../redux/slices/globalSlice'
 import { SnackNfoType } from '../types/SnackNfo'
+import { DEFAULT_FONTWEIGHT_BOLD } from '../constants/general'
 
 export const SnackComponent = () => {
     const global = useAppSelector<GlobalState>((state) => state.global)
@@ -20,57 +21,72 @@ export const SnackComponent = () => {
         <Snackbar
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             // TransitionComponent={SlideTransition}
-            open={global.snackSuccessOpen} autoHideDuration={global.snackSuccessDuration}
-            key={`succ${global.snackSuccessMsg}`}
-            message={global.snackSuccessMsg}
+            open={global.snackSuccess.open} autoHideDuration={global.snackSuccess.duration}
+            key={`snack-succ`}
+            // message={global.snackSuccess.msg}
             onClose={() => dispatch(unsetSnack(SnackNfoType.success))}>
             <Alert
                 onClose={() => dispatch(unsetSnack(SnackNfoType.success))}
                 severity="success"
                 sx={{ width: '100%', mt: 4 }}>
-                {global.snackSuccessMsg}
+                {global.snackSuccess.title && <Typography fontWeight={DEFAULT_FONTWEIGHT_BOLD}>
+                    {global.snackSuccess.title}
+                </Typography>}
+                <Typography>{global.snackSuccess.msg}</Typography>
             </Alert>
         </Snackbar>
 
         <Snackbar
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             // TransitionComponent={SlideTransition}
-            open={global.snackErrorOpen} autoHideDuration={global.snackErrorDuration}
-            key={`err${global.snackErrorMsg}`}
+            open={global.snackError.open} autoHideDuration={global.snackError.duration}
+            key={`snack-err`}
+            // message={global.snackError.msg}
             onClose={() => dispatch(unsetSnack(SnackNfoType.error))}>
             <Alert
                 onClose={() => dispatch(unsetSnack(SnackNfoType.error))}
                 severity="error"
                 sx={{ width: '100%', mt: 4 }}>
-                {global.snackErrorMsg}
+                {global.snackError.title && <Typography fontWeight={DEFAULT_FONTWEIGHT_BOLD}>
+                    {global.snackError.title}
+                </Typography>}
+                <Typography>{global.snackError.msg}</Typography>
             </Alert>
         </Snackbar>
 
         <Snackbar
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             // TransitionComponent={SlideTransition}
-            open={global.snackWarningOpen} autoHideDuration={global.snackWarningDuration}
-            key={`warn${global.snackWarningMsg}`}
+            open={global.snackWarning.open} autoHideDuration={global.snackWarning.duration}
+            key={`snack-wrn`}
+            // message={global.snackWarning.msg}
             onClose={() => dispatch(unsetSnack(SnackNfoType.warning))}>
             <Alert
                 onClose={() => dispatch(unsetSnack(SnackNfoType.warning))}
                 severity="warning"
                 sx={{ width: '100%', mt: 4 }}>
-                {global.snackWarningMsg}
+                {global.snackWarning.title && <Typography fontWeight={DEFAULT_FONTWEIGHT_BOLD}>
+                    {global.snackWarning.title}
+                </Typography>}
+                <Typography>{global.snackWarning.msg}</Typography>
             </Alert>
         </Snackbar>
 
         <Snackbar
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             // TransitionComponent={SlideTransition}
-            open={global.snackInfoOpen} autoHideDuration={global.snackInfoDuration}
-            key={`nfo${global.snackInfoMsg}`}
+            open={global.snackInfo.open} autoHideDuration={global.snackInfo.duration}
+            key={`snack-nfo`}
+            // message={global.snackInfo.msg}
             onClose={() => dispatch(unsetSnack(SnackNfoType.info))}>
             <Alert
                 onClose={() => dispatch(unsetSnack(SnackNfoType.info))}
                 severity="info"
                 sx={{ width: '100%', mt: 4 }}>
-                {global.snackInfoMsg}
+                {global.snackInfo.title && <Typography fontWeight={DEFAULT_FONTWEIGHT_BOLD}>
+                    {global.snackInfo.title}
+                </Typography>}
+                <Typography>{global.snackInfo.msg}</Typography>
             </Alert>
         </Snackbar>
     </Box>

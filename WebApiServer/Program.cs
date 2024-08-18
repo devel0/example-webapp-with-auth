@@ -40,6 +40,8 @@ builder.Services.SetupRoles();
 // add controllers
 builder.Services.SetupControllers();
 
+builder.Services.AddProblemDetails();
+
 // setup json serialization behaviors
 builder.Services.SetupJson();
 
