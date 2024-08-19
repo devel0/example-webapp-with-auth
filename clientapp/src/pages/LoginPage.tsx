@@ -15,11 +15,19 @@ import { SnackNfoType } from '../types/SnackNfo'
 import { SnackComponent } from '../components/SnackComponent'
 import AppLogo from '../images/app-icon.svg?react'
 import { authApi } from '../fetch.manager'
+import { useParams } from 'react-router-dom'
 
 export const LoginPage = () => {
     const global = useAppSelector<GlobalState>((state) => state.global)
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
+    const params = useParams()
+
+    useEffect(() => {
+        if (params.from) {
+            dispatch(setUrlWanted(params.from))
+        }
+    }, [params])
 
     useEffect(() => {
         if (global.currentUserInitialized && global.currentUser) {

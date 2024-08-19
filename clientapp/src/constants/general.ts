@@ -24,7 +24,7 @@ import { PaletteMode } from "@mui/material";
 export const APP_URL_BASE = "/app";
 
 export const APP_URL_Home = `${APP_URL_BASE}`
-export const APP_URL_Login = `${APP_URL_BASE}/login`
+export const APP_URL_Login = `${APP_URL_BASE}/login/:from?`
 export const APP_URL_Users = `${APP_URL_BASE}/users`
 
 export const LOCAL_STORAGE_CURRENT_USER_NFO = "currentUserNfo";

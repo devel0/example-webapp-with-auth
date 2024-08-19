@@ -7,13 +7,13 @@ import { Outlet } from "react-router-dom";
 import Layout from './Layout';
 
 const ProtectedRoutes = () => {
-    const global = useAppSelector<GlobalState>((state) => state.global)
+    const global = useAppSelector<GlobalState>((state) => state.global)    
 
     return global.currentUser
         ?
         <Layout child={<Outlet />} />
         :
-        <Navigate to="/app/login" replace />;
+        <Navigate to={`/app/login/${encodeURIComponent(location.pathname)}`} replace />;
 };
 
 export default ProtectedRoutes;

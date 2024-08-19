@@ -17,7 +17,7 @@ export const globalSlice = createSlice({
     //-----------------------------------------------------------------------------------    
 
     setUrlWanted: (state, action: PayloadAction<string | undefined>) => {
-      console.log(`setting urlWatned to ${action.payload}`);
+      // console.log(`setting urlWatned to ${action.payload}`);
       state.urlWanted = action.payload;
     },
 
