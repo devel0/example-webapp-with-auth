@@ -5,7 +5,7 @@ namespace ExampleWebApp.Backend.WebApi;
 /// </summary>
 [ApiController]
 [Authorize]
-[Route($"{API_BASE_URL}/[controller]/[action]")]
+[Route($"{API_PREFIX}/[controller]/[action]")]
 public class MainController : ControllerBase
 {
     readonly CancellationToken cancellationToken;

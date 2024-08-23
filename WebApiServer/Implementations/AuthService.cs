@@ -11,6 +11,7 @@ public class AuthService : IAuthService
     readonly ILogger<AuthService> logger;
     readonly IConfiguration configuration;
     readonly IAuthenticationService authenticationService;
+    readonly IUtilService util;
 
     public AuthService(
         UserManager<ApplicationUser> userManager,
@@ -21,7 +22,9 @@ public class AuthService : IAuthService
         IHostEnvironment environment,
         ILogger<AuthService> logger,
         IConfiguration configuration,
-        IAuthenticationService authenticationService)
+        IAuthenticationService authenticationService,
+        IUtilService util
+        )
     {
         this.userManager = userManager;
         this.roleManager = roleManager;
@@ -32,13 +35,14 @@ public class AuthService : IAuthService
         this.logger = logger;
         this.configuration = configuration;
         this.authenticationService = authenticationService;
+        this.util = util;
     }
 
     public async Task<LoginResponseDto> LoginAsync(
         LoginRequestDto loginRequestDto,
         CancellationToken cancellationToken)
     {
-        ApplicationUser? user = null;
+        ApplicationUser? user;
 
         if (loginRequestDto.UserName is not null)
             user = await userManager.FindByNameAsync(loginRequestDto.UserName);
@@ -53,10 +57,25 @@ public class AuthService : IAuthService
             user = await userManager.FindByEmailAsync(loginRequestDto.Email);
         }
 
-        if (user is null || !await userManager.CheckPasswordAsync(user, loginRequestDto.Password))
+        if (user is null)
             return new LoginResponseDto
             {
-                Status = LoginStatus.InvalidAuthentication
+                Status = LoginStatus.InvalidAuthentication,
+                Errors = [$"can't find {loginRequestDto.UserName} user or {loginRequestDto.Email} email"]
+            };
+
+        if (!await userManager.CheckPasswordAsync(user, loginRequestDto.Password))
+            return new LoginResponseDto
+            {
+                Status = LoginStatus.InvalidAuthentication,
+                Errors = [$"check password failed for {user.UserName} user"]
+            };
+
+        if (await userManager.IsLockedOutAsync(user))
+            return new LoginResponseDto
+            {
+                Status = LoginStatus.InvalidAuthentication,
+                Errors = [$"user {user.UserName} is locked out"]
             };
 
         var username = user.UserName;
@@ -66,7 +85,7 @@ public class AuthService : IAuthService
             throw new Exception("username or email null");
 
         var accessToken = jwtService.GenerateAccessToken(username, email, claims);
-        var refreshToken = jwtService.GetValidRefreshToken(username);
+        var refreshToken = jwtService.GenerateRefreshToken(username);
 
         var persist = false;
         await signInManager.SignInWithClaimsAsync(user, persist, claims);
@@ -84,7 +103,6 @@ public class AuthService : IAuthService
 
         environment.SetCookieOptions(configuration, opts, setExpiresAsRefreshToken: true);
         httpContext.Response.Cookies.Append(WEB_CookieName_XAccessToken, accessToken, opts);
-        httpContext.Response.Cookies.Append(WEB_CookieName_XUsername, userName, opts);
         httpContext.Response.Cookies.Append(WEB_CookieName_XRefreshToken, refreshToken, opts);
 
         return new LoginResponseDto
@@ -96,24 +114,7 @@ public class AuthService : IAuthService
         };
     }
 
-    public async Task<HttpStatusCode> LockoutUserAsync(LockoutUserRequestDto lockoutUserRequestDto,
-        CancellationToken cancellationToken = default)
-    {
-        var user = await userManager.FindByNameAsync(lockoutUserRequestDto.UserName);
-        if (user is not null)
-        {
-
-            logger.LogInformation($"User [{user}] locked out until {lockoutUserRequestDto.LockoutEnd}");
-            await userManager.SetLockoutEndDateAsync(user, lockoutUserRequestDto.LockoutEnd);
-
-            return HttpStatusCode.OK;
-        }
-
-        else
-            return HttpStatusCode.BadRequest;
-    }
-
-    public async Task<CurrentUserResponseDto> CurrentUserAsync(CancellationToken cancellationToken)
+    public async Task<CurrentUserResponseDto> CurrentUserNfoAsync(CancellationToken cancellationToken)
     {
         if (httpContextAccessor.HttpContext is null)
             return new CurrentUserResponseDto
@@ -134,7 +135,6 @@ public class AuthService : IAuthService
                     Status = CurrentUserStatus.InvalidAuthentication
                 };
 
-            // TODO: modularize cookie management
             var accessToken = httpContextAccessor.HttpContext.Request.Cookies[WEB_CookieName_XAccessToken];
 
             if (accessToken is null)
@@ -143,12 +143,15 @@ public class AuthService : IAuthService
                     Status = CurrentUserStatus.AccessTokenNotFound
                 };
 
+            var roles = quser.Claims.GetRoles().ToHashSet();
+
             return new CurrentUserResponseDto
             {
                 Status = CurrentUserStatus.OK,
                 UserName = userName,
                 Email = email,
-                Roles = quser.Claims.GetRoles()
+                Roles = roles,
+                Permissions = PermissionsFromRoles(roles)
             };
         }
 
@@ -166,7 +169,6 @@ public class AuthService : IAuthService
             return HttpStatusCode.BadRequest;
 
         httpContext.Response.Cookies.Delete(WEB_CookieName_XAccessToken);
-        httpContext.Response.Cookies.Delete(WEB_CookieName_XUsername);
         httpContext.Response.Cookies.Delete(WEB_CookieName_XRefreshToken);
 
         await signInManager.SignOutAsync();
@@ -204,6 +206,7 @@ public class AuthService : IAuthService
                 AccessFailedCount = user.AccessFailedCount,
                 EmailConfirmed = user.EmailConfirmed,
                 LockoutEnd = user.LockoutEnd,
+                LockoutEnabled = user.LockoutEnabled,
                 PhoneNumber = user.PhoneNumber,
                 PhoneNumberConfirmed = user.PhoneNumberConfirmed,
                 Roles = roles,
@@ -235,174 +238,362 @@ public class AuthService : IAuthService
         return new List<string>(allRoles);
     }
 
-    public async Task<SetUserRolesResponseDto> SetUserRolesAsync(SetUserRolesRequestDto setUserRolesRequestDto,
-        CancellationToken cancellationToken = default)
-    {
-        if (setUserRolesRequestDto.UserName == configuration.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName))
-        {
-            logger.LogWarning($"Can't change admin roles");
-            return new SetUserRolesResponseDto
-            {
-                Status = SetUserRolesStatus.AdminRolesReadOnly
-            };
-        }
-
-        var user = await userManager.FindByNameAsync(setUserRolesRequestDto.UserName);
-
-        if (user is null)
-        {
-            logger.LogWarning($"Can't find user [{setUserRolesRequestDto.UserName}]");
-            return new SetUserRolesResponseDto
-            {
-                Status = SetUserRolesStatus.UserNotFound
-            };
-        }
-
-        var allRoles = await AllRolesAsync();
-        var userRoles = await userManager.GetRolesAsync(user);
-        var userRolesToSet = setUserRolesRequestDto.Roles.Where(roleToSet => allRoles.Contains(roleToSet)).ToList();
-
-        if (userRoles is not null)
-        {
-            var rolesToAdd = userRolesToSet.Where(roleToSet => !userRoles.Contains(roleToSet));
-            var rolesToRemove = userRoles.Where(userRole => !userRolesToSet.Contains(userRole));
-
-            await userManager.AddToRolesAsync(user, rolesToAdd);
-            await userManager.RemoveFromRolesAsync(user, rolesToRemove);
-
-            logger.LogInformation(
-                $"Added [{string.Join(',', rolesToAdd)}] roles ; " +
-                $"Removed [{string.Join(',', rolesToRemove)}] roles ; " +
-                $"username:{setUserRolesRequestDto.UserName}");
-
-            return new SetUserRolesResponseDto
-            {
-                Status = SetUserRolesStatus.OK,
-                RolesAdded = rolesToAdd.ToList(),
-                RolesRemoved = rolesToRemove.ToList()
-            };
-        }
-
-        else
-        {
-            logger.LogError($"There are no roles for user {setUserRolesRequestDto.UserName}");
-            return new SetUserRolesResponseDto
-            {
-                Status = SetUserRolesStatus.InternalError
-            };
-        }
-    }
-
-    public async Task<RegisterUserResponseDto> RegisterUserAsync(
-       RegisterUserRequestDto registerUserRequestDto,
-       CancellationToken cancellationToken)
-    {
-        var user = new ApplicationUser
-        {
-            UserName = registerUserRequestDto.UserName,
-            Email = registerUserRequestDto.Email
-        };
-
-        var createRes = await userManager.CreateAsync(user, registerUserRequestDto.Password);
-        if (createRes.Succeeded)
-        {
-            return new RegisterUserResponseDto
-            {
-                Status = RegisterUserStatus.OK,
-                Errors = new List<IdentityError>()
-            };
-        }
-        else
-        {
-            var status = RegisterUserStatus.IdentityError;
-
-            return new RegisterUserResponseDto
-            {
-                Status = status,
-                Errors = createRes.Errors.ToList()
-            };
-        }
-    }
-
     public async Task<EditUserResponseDto> EditUserAsync(
         EditUserRequestDto editUserRequestDto, CancellationToken cancellationToken)
     {
-        if (editUserRequestDto.CreateNew)
-        {
-            if (editUserRequestDto.ChangePassword is null)
-                return new EditUserResponseDto
-                {
-                    Status = EditUserStatus.InvalidPassword
-                };
+        var curUserNfo = await CurrentUserNfoAsync(cancellationToken);
+        if (curUserNfo.Status != CurrentUserStatus.OK)
+            throw new Exception($"can't retrieve current user");
 
-            var registerRes = await RegisterUserAsync(new RegisterUserRequestDto
-            {
-                UserName = editUserRequestDto.UserName,
-                Email = editUserRequestDto.Email,
-                Password = editUserRequestDto.ChangePassword
-            }, cancellationToken);
+        var curUser = await userManager.FindByNameAsync(curUserNfo.UserName);
+        if (curUser is null)
+            throw new Exception($"can't retrieve {curUserNfo.UserName} user.");
 
-            if (registerRes.Status != RegisterUserStatus.OK)
-            {
-                return new EditUserResponseDto
-                {
-                    Status = registerRes.Status switch
-                    {
-                        RegisterUserStatus.IdentityError => EditUserStatus.IdentityError,
-                        _ => throw new NotImplementedException($"unhandled status {registerRes.Status}")
-                    },
-                    Errors = registerRes.Errors.Select(w => w.ToString() ?? "").ToList()
-                };
-            }
-        }
-
-        var user = await userManager.FindByNameAsync(editUserRequestDto.UserName);
-
-        if (user is null)
-        {
-            return new EditUserResponseDto
-            {
-                Status = EditUserStatus.UserNotFound
-            };
-        }
-
-        if (user.UserName != editUserRequestDto.UserName)
-        {
-            var editUsernameRes = await userManager.SetUserNameAsync(user, editUserRequestDto.UserName);
-            if (!editUsernameRes.Succeeded)
-                return new EditUserResponseDto
-                {
-                    Status = EditUserStatus.IdentityError,
-                    Errors = editUsernameRes.Errors.Select(w => w.ToString() ?? "").ToList()
-                };
-        }
-
-        {
-            var changeRolesRes = await SetUserRolesAsync(new SetUserRolesRequestDto
-            {
-                UserName = editUserRequestDto.UserName,
-                Roles = editUserRequestDto.Roles
-            }, cancellationToken);
-
-            if (changeRolesRes.Status != SetUserRolesStatus.OK)
-            {
-                return new EditUserResponseDto
-                {
-                    Status = changeRolesRes.Status switch
-                    {
-                        SetUserRolesStatus.AdminRolesReadOnly => EditUserStatus.AdminRolesReadOnly,
-                        SetUserRolesStatus.InternalError => EditUserStatus.InternalError,
-                        SetUserRolesStatus.UserNotFound => EditUserStatus.UserNotFound,
-                        _ => throw new NotImplementedException($"unhandled status {changeRolesRes.Status}")
-                    }
-                };
-            }
-        }
-
-        return new EditUserResponseDto
+        var res = new EditUserResponseDto
         {
             Status = EditUserStatus.OK
         };
+
+        //
+        // new user
+        //
+        if (string.IsNullOrWhiteSpace(editUserRequestDto.ExistingUsername))
+        {
+            if (editUserRequestDto.EditRoles is null || editUserRequestDto.EditRoles.Count == 0)
+                return new EditUserResponseDto
+                {
+                    Status = EditUserStatus.PermissionsError,
+                    Errors = ["Can't create user with no roles."]
+                };
+
+            if (!curUserNfo.Permissions.Contains(UserPermission.CreateAdminUser) &&
+                !curUserNfo.Permissions.Contains(UserPermission.CreateAdvancedUser) &&
+                !curUserNfo.Permissions.Contains(UserPermission.CreateNormalUser))
+                return new EditUserResponseDto
+                {
+                    Status = EditUserStatus.PermissionsError,
+                    Errors = ["Can't create any user."]
+                };
+
+            var reqCreateAdmin = (editUserRequestDto.EditRoles ?? []).Contains(ROLE_admin);
+            var reqCreateAdv = (editUserRequestDto.EditRoles ?? []).Contains(ROLE_advanced);
+            var reqCreateNormal = (editUserRequestDto.EditRoles ?? []).Contains(ROLE_normal);
+
+            if (reqCreateAdmin && !curUserNfo.Permissions.Contains(UserPermission.CreateAdminUser))
+                return new EditUserResponseDto
+                {
+                    Status = EditUserStatus.PermissionsError,
+                    Errors = ["Can't create admin user."]
+                };
+
+            if (reqCreateAdv && !curUserNfo.Permissions.Contains(UserPermission.CreateAdvancedUser))
+                return new EditUserResponseDto
+                {
+                    Status = EditUserStatus.PermissionsError,
+                    Errors = ["Can't create advanced user."]
+                };
+
+            if (reqCreateNormal && !curUserNfo.Permissions.Contains(UserPermission.CreateNormalUser))
+                return new EditUserResponseDto
+                {
+                    Status = EditUserStatus.PermissionsError,
+                    Errors = ["Can't create normal user."]
+                };
+
+            var user = new ApplicationUser
+            {
+                UserName = editUserRequestDto.EditUsername,
+                Email = editUserRequestDto.EditEmail
+            };
+
+            if (editUserRequestDto.EditPassword is null) throw new ArgumentNullException(nameof(editUserRequestDto.EditPassword));
+
+            var createRes = await userManager.CreateAsync(user, editUserRequestDto.EditPassword);
+            if (!createRes.Succeeded)
+                return new EditUserResponseDto
+                {
+                    Status = EditUserStatus.IdentityError,
+                    Errors = createRes.Errors.Select(w => w.Description).ToList()
+                };
+
+            if (editUserRequestDto.EditRoles is not null && editUserRequestDto.EditRoles.Count > 0)
+            {
+                var roleRes = await userManager.AddToRolesAsync(user, editUserRequestDto.EditRoles);
+                if (!roleRes.Succeeded)
+                    return new EditUserResponseDto
+                    {
+                        Status = EditUserStatus.IdentityError,
+                        Errors = createRes.Errors.Select(w => w.Description).ToList()
+                    };
+            }
+        }
+
+        //
+        // existing user
+        //
+        else
+        {
+            var editExistingUser = await userManager.FindByNameAsync(editUserRequestDto.ExistingUsername);
+            if (editExistingUser is null)
+                return new EditUserResponseDto
+                {
+                    Status = EditUserStatus.UserNotFound
+                };
+
+            if (editUserRequestDto.EditUsername is not null)
+                return new EditUserResponseDto
+                {
+                    Status = EditUserStatus.CannotChangeUsername
+                };
+
+            //---------------------------------------
+            // edit lockout
+            //---------------------------------------
+            if (editUserRequestDto.EditLockoutEnd is not null)
+            {
+                var editExistingUserRoles = await userManager.GetRolesAsync(editExistingUser);
+                var editExistingUserMaxRole = MaxRole(editExistingUserRoles ?? []);
+
+                if (editExistingUserMaxRole is null)
+                    throw new InternalError($"Can't edit other user {editExistingUser.UserName} that has no roles");
+
+                var hasPermission = false;
+
+                switch (editExistingUserMaxRole)
+                {
+                    case ROLE_admin:
+                        hasPermission = curUserNfo.Permissions.Contains(UserPermission.LockoutAdminUser);
+                        break;
+
+                    case ROLE_advanced:
+                        hasPermission = curUserNfo.Permissions.Contains(UserPermission.LockoutAdvancedUser);
+                        break;
+
+                    case ROLE_normal:
+                        hasPermission = curUserNfo.Permissions.Contains(UserPermission.LockoutNormalUser);
+                        break;
+
+                    default:
+                        throw new NotImplementedException($"can't edit other user {editExistingUser.UserName} with unknown role {editExistingUserMaxRole}");
+                }
+
+                if (!hasPermission)
+                    return new EditUserResponseDto
+                    {
+                        Status = EditUserStatus.PermissionsError,
+                        Errors = [$"Can't edit other user (role:{editExistingUserMaxRole}) lockout."]
+                    };
+
+                var lockoutRes = await userManager.SetLockoutEndDateAsync(editExistingUser, editUserRequestDto.EditLockoutEnd);
+
+                if (!lockoutRes.Succeeded)
+                    return new EditUserResponseDto
+                    {
+                        Status = EditUserStatus.IdentityError,
+                        Errors = lockoutRes.Errors.Select(w => w.Description).ToList()
+                    };
+            }
+
+            //---------------------------------------
+            // edit roles
+            //---------------------------------------
+            if (editUserRequestDto.EditRoles is not null)
+            {
+                if (!curUserNfo.Permissions.Contains(UserPermission.ChangeUserRoles))
+                    return new EditUserResponseDto
+                    {
+                        Status = EditUserStatus.PermissionsError,
+                        Errors = ["Can't edit user roles."]
+                    };
+
+                var allRoles = await AllRolesAsync();
+                var userRoles = await userManager.GetRolesAsync(editExistingUser);
+                var userRolesToSet = editUserRequestDto.EditRoles.Where(allRoles.Contains).ToList();
+
+                if (userRoles is not null)
+                {
+                    var rolesToAdd = userRolesToSet.Where(roleToSet => !userRoles.Contains(roleToSet));
+                    var rolesToRemove = userRoles.Where(userRole => !userRolesToSet.Contains(userRole));
+
+                    await userManager.AddToRolesAsync(editExistingUser, rolesToAdd);
+                    await userManager.RemoveFromRolesAsync(editExistingUser, rolesToRemove);
+
+                    res.RolesAdded = rolesToAdd.ToList();
+                    res.RolesRemoved = rolesToRemove.ToList();
+                }
+
+                else
+                {
+                    return new EditUserResponseDto
+                    {
+                        Status = EditUserStatus.PermissionsError,
+                        Errors = ["Can't edit user with no roles."]
+                    };
+                }
+            }
+
+            //---------------------------------------
+            // edit email
+            //---------------------------------------
+            if (editUserRequestDto.EditEmail is not null)
+            {
+                ApplicationUser? userToModify = null;
+
+                //
+                // edit itself email
+                //
+                if (editUserRequestDto.ExistingUsername == curUserNfo.UserName)
+                {
+                    if (!curUserNfo.Permissions.Contains(UserPermission.ChangeOwnEmail))
+                        return new EditUserResponseDto
+                        {
+                            Status = EditUserStatus.PermissionsError,
+                            Errors = ["Can't edit own email."]
+                        };
+
+                    userToModify = curUser;
+                }
+
+                //
+                // edit other user email
+                //
+                else
+                {
+                    var editExistingUserRoles = await userManager.GetRolesAsync(editExistingUser);
+                    var editExistingUserMaxRole = MaxRole(editExistingUserRoles ?? []);
+
+                    if (editExistingUserMaxRole is null)
+                        throw new InternalError($"Can't edit other user {editExistingUser.UserName} that has no roles");
+
+                    var hasPermission = false;
+
+                    switch (editExistingUserMaxRole)
+                    {
+                        case ROLE_admin:
+                            hasPermission = curUserNfo.Permissions.Contains(UserPermission.ChangeAdminUserEmail);
+                            break;
+
+                        case ROLE_advanced:
+                            hasPermission = curUserNfo.Permissions.Contains(UserPermission.ChangeAdvancedUserEmail);
+                            break;
+
+                        case ROLE_normal:
+                            hasPermission = curUserNfo.Permissions.Contains(UserPermission.ChangeNormalUserEmail);
+                            break;
+
+                        default:
+                            throw new NotImplementedException($"can't edit other user {editExistingUser.UserName} with unknown role {editExistingUserMaxRole}");
+                    }
+
+                    if (!hasPermission)
+                        return new EditUserResponseDto
+                        {
+                            Status = EditUserStatus.PermissionsError,
+                            Errors = [$"Can't edit other user (role:{editExistingUserMaxRole}) email."]
+                        };
+
+                    userToModify = editExistingUser;
+                }
+
+                if (userToModify is not null)
+                {
+                    var token = await userManager.GenerateChangeEmailTokenAsync(userToModify, editUserRequestDto.EditEmail);
+                    if (token is null)
+                        throw new Exception($"Can't retrieve change email token for {userToModify.UserName} user.");
+
+                    var changeEmailRes = await userManager.ChangeEmailAsync(userToModify, editUserRequestDto.EditEmail, token);
+                    if (!changeEmailRes.Succeeded)
+                        return new EditUserResponseDto
+                        {
+                            Status = EditUserStatus.IdentityError,
+                            Errors = changeEmailRes.Errors.Select(w => w.Description).ToList()
+                        };
+                }
+            }
+
+            //---------------------------------------
+            // edit password
+            //---------------------------------------
+            if (editUserRequestDto.EditPassword is not null)
+            {
+                ApplicationUser? userToModify = null;
+
+                //
+                // edit itself password
+                //
+                if (editUserRequestDto.ExistingUsername == curUserNfo.UserName)
+                {
+                    if (!curUserNfo.Permissions.Contains(UserPermission.ChangeOwnPassword))
+                        return new EditUserResponseDto
+                        {
+                            Status = EditUserStatus.PermissionsError,
+                            Errors = ["Can't edit own password."]
+                        };
+
+                    userToModify = curUser;
+                }
+
+                //
+                // edit other user password
+                //
+                else
+                {
+                    var editExistingUserRoles = await userManager.GetRolesAsync(editExistingUser);
+                    var editExistingUserMaxRole = MaxRole(editExistingUserRoles ?? []);
+
+                    if (editExistingUserMaxRole is null)
+                        throw new InternalError($"Can't edit other user {editExistingUser.UserName} that has no roles");
+
+                    var hasPermission = false;
+
+                    switch (editExistingUserMaxRole)
+                    {
+                        case ROLE_admin:
+                            hasPermission = curUserNfo.Permissions.Contains(UserPermission.ResetAdminUserPassword);
+                            break;
+
+                        case ROLE_advanced:
+                            hasPermission = curUserNfo.Permissions.Contains(UserPermission.ResetAdvancedUserPassword);
+                            break;
+
+                        case ROLE_normal:
+                            hasPermission = curUserNfo.Permissions.Contains(UserPermission.ResetNormalUserPassword);
+                            break;
+
+                        default:
+                            throw new NotImplementedException($"can't edit other user {editExistingUser.UserName} with unknown role {editExistingUserMaxRole}");
+                    }
+
+                    if (!hasPermission)
+                        return new EditUserResponseDto
+                        {
+                            Status = EditUserStatus.PermissionsError,
+                            Errors = [$"Can't edit other user (role:{editExistingUserMaxRole}) password."]
+                        };
+
+                    userToModify = editExistingUser;
+                }
+
+                if (userToModify is not null)
+                {
+                    var token = await userManager.GeneratePasswordResetTokenAsync(userToModify);
+                    if (token is null)
+                        throw new Exception($"Can't retrieve reset password token for {userToModify.UserName} user.");
+
+                    var resetPasswordRes = await userManager.ResetPasswordAsync(userToModify, token, editUserRequestDto.EditPassword);
+                    if (!resetPasswordRes.Succeeded)
+                        return new EditUserResponseDto
+                        {
+                            Status = EditUserStatus.IdentityError,
+                            Errors = resetPasswordRes.Errors.Select(w => w.Description).ToList()
+                        };
+                }
+
+            }
+
+        }
+
+        return res;
     }
 
 }

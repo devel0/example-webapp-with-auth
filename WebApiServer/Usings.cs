@@ -46,6 +46,7 @@ global using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
 
 // examplewebapp
 global using static ExampleWebApp.Backend.WebApi.Constants;
+global using static ExampleWebApp.Backend.WebApi.Types.Toolkit;
 global using ExampleWebApp.Backend.Data;
 global using ExampleWebApp.Backend.Data.Types;
 global using ExampleWebApp.Backend.WebApi;

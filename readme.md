@@ -61,7 +61,7 @@ dotnet user-secrets init
 dotnet user-secrets set "SeedUsers:Admin:Email" "$SEED_ADMIN_EMAIL"
 dotnet user-secrets set "SeedUsers:Admin:Password" "$SEED_ADMIN_PASS"
 dotnet user-secrets set "DbProvider" "$DB_PROVIDER"
-dotnet user-secrets set "ConnectionStrings:Sample" "$DB_CONN_STRING"
+dotnet user-secrets set "ConnectionStrings:Main" "$DB_CONN_STRING"
 dotnet user-secrets set "JwtSettings:Key" "$JWTKEY"
 ```
 
@@ -262,7 +262,7 @@ DB_CONN_STRING="Host=localhost; Database=ExampleWebApp; Username=example_webapp_
 dotnet user-secrets set "SeedUsers:Admin:Email" "$SEED_ADMIN_EMAIL"
 dotnet user-secrets set "SeedUsers:Admin:Password" "$SEED_ADMIN_PASS"
 dotnet user-secrets set "DbProvider" "$DB_PROVIDER"
-dotnet user-secrets set "ConnectionStrings:Sample" "$DB_CONN_STRING"
+dotnet user-secrets set "ConnectionStrings:Main" "$DB_CONN_STRING"
 
 dotnet add package Microsoft.IdentityModel.Tokens --version 7.5.2
 dotnet add package System.IdentityModel.Tokens.Jwt --version 7.5.2

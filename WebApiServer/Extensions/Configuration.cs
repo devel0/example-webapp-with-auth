@@ -3,6 +3,19 @@ namespace ExampleWebApp.Backend.WebApi;
 public static partial class Extensions
 {
 
+    public static void SetConfigVar(this IConfiguration configuration, string path, string value)
+    {
+        if (path.Contains(':'))
+        {
+            var ss = path.Split(':');
+            var sectionPath = string.Join(':', ss.Take(ss.Length - 1));
+            var section = configuration.GetRequiredSection(sectionPath);
+            section[ss.Last()] = value;
+        }
+        else
+            configuration[path] = value;
+    }
+
     /// <summary>
     /// Helper to retrieve configuration from environment or appsettings if found.
     /// From the environment the same config key variable will be searched within colon replaced by underline.
@@ -36,5 +49,8 @@ public static partial class Extensions
 
         return value;
     }
+
+    public static bool IsUnitTest(this IConfiguration configuration) =>
+        configuration.GetConfigVar<bool>(CONFIG_KEY_IsUnitTest);
 
 }

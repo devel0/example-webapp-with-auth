@@ -20,18 +20,8 @@ public interface IAuthService
     /// </summary>    
     /// <param name="cancellationToken">Cancellation token.</param>    
     /// <returns>Logged in user info or null if not authenticated.</returns>                
-    Task<CurrentUserResponseDto> CurrentUserAsync(
+    Task<CurrentUserResponseDto> CurrentUserNfoAsync(
         CancellationToken cancellationToken);
-
-    /// <summary>
-    /// Immediate user lockout until given time or unlock if time is in the past ( UTC ).
-    /// Note that this happens when access token expires.
-    /// </summary>    
-    /// <param name="lockoutUserRequestDto">User to lockout info..</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns><see cref="ICommonResponseDto"/></returns>                
-    Task<HttpStatusCode> LockoutUserAsync(
-        LockoutUserRequestDto lockoutUserRequestDto, CancellationToken cancellationToken);
 
     /// <summary>
     /// Logout current user.
@@ -58,23 +48,12 @@ public interface IAuthService
         CancellationToken cancellationToken);
 
     /// <summary>
-    /// Change user roles
-    /// </summary>    
-    /// <param name="setUserRolesRequestDto">Data with username and roles to set.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>Set user response.</returns>
-    Task<SetUserRolesResponseDto> SetUserRolesAsync(
-        SetUserRolesRequestDto setUserRolesRequestDto, CancellationToken cancellationToken);
-
-    /// <summary>
-    /// Create user by given username, email, password.
+    /// Create or edit given user.
+    /// Privileges are managed by the authenticated user roles ( <see cref="ROLE_admin"/>, <see cref="ROLE_advanced"/>, <see cref="ROLE_normal"/>    ).
     /// </summary>
-    /// <param name="registerUserRequestDto">Username, email, password of user to add.</param>
+    /// <param name="editUserRequestDto">Edit user request data.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>Register user response.</returns>
-    Task<RegisterUserResponseDto> RegisterUserAsync(
-        RegisterUserRequestDto registerUserRequestDto, CancellationToken cancellationToken);
-
+    /// <returns>
     Task<EditUserResponseDto> EditUserAsync(
         EditUserRequestDto editUserRequestDto, CancellationToken cancellationToken);
 

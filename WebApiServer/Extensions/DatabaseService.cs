@@ -8,7 +8,12 @@ public static partial class Extensions
     /// </summary>    
     public static void ConfigureDatabase(this WebApplicationBuilder webApplicationBuilder)
     {
-        var connString = webApplicationBuilder.Configuration.GetConfigVar(CONFIG_KEY_ConnectionString);
+        var isUnitTest = webApplicationBuilder.Configuration.GetConfigVar<bool>(CONFIG_KEY_IsUnitTest);
+
+        var connString = isUnitTest ?
+            webApplicationBuilder.Configuration.GetConfigVar(CONFIG_KEY_UnitTestConnectionString) :
+            webApplicationBuilder.Configuration.GetConfigVar(CONFIG_KEY_ConnectionString);
+            
         var provider = webApplicationBuilder.Configuration.GetConfigVar(CONFIG_KEY_DbProvider);
 
         //
@@ -28,7 +33,7 @@ public static partial class Extensions
                 default: throw new NotImplementedException($"provider {provider} not implemented");
             }
 
-            options                
+            options
                 .EnableSensitiveDataLogging();
 
         });

@@ -8,22 +8,22 @@ public enum CurrentUserStatus
     /// <summary>
     /// Authentication valid.
     /// </summary>        
-    OK = STATUS_OK,
+    OK,
 
     /// <summary>
     /// Invalid authentication.
     /// </summary>        
-    InvalidAuthentication = STATUS_InvalidAuthentication,
+    InvalidAuthentication,
 
     /// <summary>
     /// Invalid argument.
     /// </summary>        
-    InvalidArgument = STATUS_InvalidArgument,
+    InvalidArgument,
 
     /// <summary>
     /// Invalid argument.
     /// </summary>        
-    AccessTokenNotFound = STATUS_Custom + 0
+    AccessTokenNotFound
 }
 
 /// <summary>
@@ -50,6 +50,11 @@ public class CurrentUserResponseDto
     /// <summary>
     /// List of roles associated to this user.
     /// </summary>    
-    public List<string> Roles { get; set; } = new List<string>();
+    public HashSet<string> Roles { get; set; } = new();
+
+    /// <summary>
+    /// Permissions related to this user roles.
+    /// </summary>
+    public HashSet<UserPermission> Permissions { get; set; } = new();
 
 }

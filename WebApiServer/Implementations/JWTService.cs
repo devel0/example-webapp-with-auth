@@ -75,7 +75,7 @@ public class JWTService : IJWTService
         if (email is null) throw new Exception("email not set");
 
         var resToken = GenerateAccessToken(claimsUsername, email, userManager.GetJWTClaims(quser));
-        var resRefreshToken = GetValidRefreshToken(claimsUsername);
+        var resRefreshToken = RotateRefreshToken(claimsUsername, refreshToken);
 
         return new RenewAccessTokenNfo
         {
@@ -86,34 +86,8 @@ public class JWTService : IJWTService
         };
     }
 
-    public string GetValidRefreshToken(string userName)
+    public string GenerateRefreshToken(string userName)
     {
-        var qrefreshToken = dbContext.UserRefreshTokens
-            .Where(x => x.UserName == userName)
-            .ToList();
-
-        var existingValidRefreshTokens = new List<UserRefreshToken>();
-
-        foreach (var rt in qrefreshToken)
-        {
-            if (rt.Expires < DateTimeOffset.UtcNow) // remove expired refresh token            
-                dbContext.UserRefreshTokens.Remove(rt);
-
-            else // reuse existing valid refresh token                            
-                existingValidRefreshTokens.Add(rt);
-        }
-
-        if (existingValidRefreshTokens.Count > 1)
-        {
-            var rt = existingValidRefreshTokens.OrderByDescending(w => w.Issued).First();
-
-            // reuse recent refresh token
-
-            return rt.RefreshToken;
-        }
-
-        // generate new refresh token
-
         string refreshToken;
 
         var randomNumber = new byte[32];
@@ -136,6 +110,28 @@ public class JWTService : IJWTService
         dbContext.UserRefreshTokens.Add(newRt);
 
         dbContext.SaveChanges();
+
+        return refreshToken;
+    }
+
+    public string? RotateRefreshToken(string userName, string refreshTokenToRotate)
+    {
+        var qRefreshTokens = dbContext.UserRefreshTokens
+            .Where(r => r.UserName == userName && (r.Expires < DateTimeOffset.UtcNow || r.RefreshToken == refreshTokenToRotate))
+            .ToList();
+
+        var refreshTokenToRotateFound = qRefreshTokens.Any(w => w.RefreshToken == refreshTokenToRotate);
+
+        if (!refreshTokenToRotateFound) return null;
+
+        if (qRefreshTokens.Count > 0)
+            dbContext.UserRefreshTokens.RemoveRange(qRefreshTokens);
+
+        // generate new refresh token
+
+        var refreshToken = GenerateRefreshToken(userName);
+
+        logger.LogTrace($"user {userName} refresh token rotated");
 
         return refreshToken;
     }
@@ -171,7 +167,7 @@ public class JWTService : IJWTService
 
         var utcNow = DateTimeOffset.UtcNow;
 
-        if (utcNow >= qrefresh.Expires) return false; // refresh token expired
+        if (utcNow >= qrefresh.Expires) return false; // refresh token expired        
 
         return true;
     }

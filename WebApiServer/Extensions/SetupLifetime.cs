@@ -10,13 +10,25 @@ public static partial class Extensions
     {
 
         var life = app.Services.GetRequiredService<IHostApplicationLifetime>();
+        var configuration = app.Services.GetRequiredService<IConfiguration>();
         life.ApplicationStopping.Register(() =>
         {
-            app.Logger.LogInformation("Backend application stopping");
+            if (!configuration.IsUnitTest())
+                app.Logger.LogInformation("Backend application stopping");
             cts.Cancel();
         });
-        life.ApplicationStarted.Register(() => app.Logger.LogInformation("Backend application started"));
-        life.ApplicationStopped.Register(() => app.Logger.LogInformation("Backend application stopped"));
+
+        life.ApplicationStarted.Register(() =>
+        {
+            if (!configuration.IsUnitTest())
+                app.Logger.LogInformation("Backend application started");
+        });
+
+        life.ApplicationStopped.Register(() =>
+        {
+            if (!configuration.IsUnitTest())
+                app.Logger.LogInformation("Backend application stopped");
+        });
 
         return life;
 

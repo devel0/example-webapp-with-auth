@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.SetupLogger();
 
 // load config from appsettings, environment and user-secrets
-builder.SetupAppSettings();
+builder.Configuration.SetupAppSettings(builder.Environment.EnvironmentName);
 
 // configure database connection string and provider
 builder.ConfigureDatabase();
@@ -77,7 +77,8 @@ if (corsAllowedOrigins is not null)
     app.UseCors(APP_CORS_POLICY_NAME);
 }
 
-app.UseHttpsRedirection();
+if (app.Environment.IsProduction())
+    app.UseHttpsRedirection();
 
 // adds authentication middleware
 app.UseAuthentication();
@@ -113,12 +114,18 @@ app.MapSpaStaticFiles();
 // start app
 await app.StartAsync();
 
-app.Logger.LogInformation($"Environment: {app.Environment.EnvironmentName}");
+if (!app.Configuration.IsUnitTest())
+{
+    app.Logger.LogInformation($"Environment: {app.Environment.EnvironmentName}");
 
-app.Logger.LogInformation($"Listening on {string.Join(" ", app.Urls.Select(w => w.ToString()))}");
+    app.Logger.LogInformation($"Listening on {string.Join(" ", app.Urls.Select(w => w.ToString()))}");
+}
 
 // wait for app graceful shutdown
 await app.WaitForShutdownAsync();
 
 // app run
 app.Run();
+
+// follow is for unit testing
+public partial class Program { }

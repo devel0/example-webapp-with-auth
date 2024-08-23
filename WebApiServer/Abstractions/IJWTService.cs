@@ -55,10 +55,16 @@ public interface IJWTService
     RenewAccessTokenNfo? RenewAccessToken(string accessToken, string refreshToken);
 
     /// <summary>
-    /// Purge expired refresh tokens and reuse latest valid refresh token if there are more than one,
-    /// else creates a new rotate refresh token and return that.
+    /// Create a new refresh token for given username.
+    /// </summary>
+    /// <param name="userName">Username which associate a new refresh token.</param>
+    /// <returns>New valid refresh token associated to the given username.</returns>
+    string GenerateRefreshToken(string userName);
+
+    /// <summary>
+    /// Purge expired refresh tokens and rotate given refresh token.
     /// </summary>    
-    string GetValidRefreshToken(string userName);
+    string? RotateRefreshToken(string userName, string refreshTokenToRotate);
 
     /// <summary>
     /// Retrieve principal from accessToken even its expired.

@@ -9,22 +9,22 @@ public enum LoginStatus
     /// <summary>
     /// Login vaild.
     /// </summary>
-    OK = STATUS_OK,
+    OK,
 
     /// <summary>
     /// Missing username or email.
     /// </summary>
-    UsernameOrEmailRequired = STATUS_InvalidArgument,
+    UsernameOrEmailRequired,
 
     /// <summary>
     /// Invalid authentication.
     /// </summary>    
-    InvalidAuthentication = STATUS_InvalidAuthentication,
+    InvalidAuthentication,
 
     /// <summary>
     /// Authentication http context.
     /// </summary>    
-    InvalidHttpContext = STATUS_InvalidHttpContext
+    InvalidHttpContext
 }
 
 /// <summary>
@@ -52,5 +52,7 @@ public class LoginResponseDto
     /// User roles.
     /// </summary>
     public List<string> Roles { get; set; } = new List<string>();
+
+    public List<string> Errors { get; set; } = new();
 
 }

@@ -32,9 +32,14 @@ public class UserListItemResponseDto
     public required bool EmailConfirmed { get; set; }
 
     /// <summary>
-    /// Lockout end (UTC).
+    /// Lockout end (UTC). <see cref="LockoutEnabled"/>.
     /// </summary>
     public required DateTimeOffset? LockoutEnd { get; set; }
+
+    /// <summary>
+    /// If true the user is lockout until <see cref="LockoutEnd"/>.
+    /// </summary>
+    public required bool LockoutEnabled { get; set; }
 
     /// <summary>
     /// User phone number.

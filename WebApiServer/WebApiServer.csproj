@@ -39,6 +39,11 @@
     <None Include="Misc/SwaggerDark.css" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <!-- WEBAPI test https://learn.microsoft.com/it-it/aspnet/core/test/integration-tests?view=aspnetcore-8.0 -->
+  <!-- <ItemGroup>
+    <InternalsVisibleTo Include="Test" />
+  </ItemGroup> -->
+
   <!-- publish clientapp static files -->
 
   <PropertyGroup>

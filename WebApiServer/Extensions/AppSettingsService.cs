@@ -8,7 +8,7 @@ public static partial class Extensions
     /// with autoreload on change ; add configuration from either user-secrets (development) and
     /// from environment variables ( replacing : with __ )
     /// </summary>    
-    public static void SetupAppSettings(this WebApplicationBuilder builder)
+    public static void SetupAppSettings(this IConfigurationBuilder config, string environmentName)
     {
         var appsettingsBase = Path.Combine(
             AppDomain.CurrentDomain.BaseDirectory,
@@ -16,9 +16,9 @@ public static partial class Extensions
 
         var appsettingsEnv = Path.Combine(
             AppDomain.CurrentDomain.BaseDirectory,
-            $"appsettings.{builder.Environment.EnvironmentName}.json");
+            $"appsettings.{environmentName}.json");
 
-        builder.Configuration
+        config
             .AddJsonFile(
                 appsettingsBase,
                 optional: false,

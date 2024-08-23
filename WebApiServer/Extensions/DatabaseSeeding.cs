@@ -27,14 +27,14 @@ public static partial class Extensions
             {
                 UserName = adminUserName,
                 Email = adminEmail
-            };
+            };            
 
             var res = await usermgr.CreateAsync(user, adminPassword);
             if (!res.Succeeded)
                 throw new Exception($"Unable to create initial user {string.Join(";", res.Errors.Select(w => w.Description))}");
 
             await rolemgr.CreateAsync(new IdentityRole(ROLE_admin));
-            await rolemgr.CreateAsync(new IdentityRole(ROLE_user));
+            await rolemgr.CreateAsync(new IdentityRole(ROLE_normal));
 
             await usermgr.AddToRoleAsync(user, ROLE_admin);
             var confirmEmailToken = await usermgr.GenerateEmailConfirmationTokenAsync(user);

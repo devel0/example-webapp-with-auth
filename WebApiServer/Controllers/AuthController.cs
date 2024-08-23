@@ -5,19 +5,22 @@ namespace ExampleWebApp.Backend.WebApi;
 /// </summary>
 [ApiController]
 [Authorize]
-[Route($"{API_BASE_URL}/[controller]/[action]")]
+[Route($"{API_PREFIX}/[controller]/[action]")]
 public class AuthController : ControllerBase
 {
 
     readonly IAuthService authService;
     readonly CancellationToken cancellationToken;
+    readonly ILogger logger;
 
     public AuthController(
         IAuthService authService,
+        ILogger<AuthController> logger,
         CancellationToken cancellationToken
         )
     {
         this.authService = authService;
+        this.logger = logger;
         this.cancellationToken = cancellationToken;
     }
 
@@ -27,33 +30,23 @@ public class AuthController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<CurrentUserResponseDto>> CurrentUser()
     {
-        var res = await authService.CurrentUserAsync(cancellationToken);
+        var res = await authService.CurrentUserNfoAsync(cancellationToken);
 
         switch (res.Status)
         {
+            case CurrentUserStatus.OK:
+                return res;
+
             case CurrentUserStatus.AccessTokenNotFound:
             case CurrentUserStatus.InvalidAuthentication:
                 return Unauthorized();
 
             case CurrentUserStatus.InvalidArgument:
                 return BadRequest();
+
+            default:
+                throw new NotImplementedException($"{nameof(CurrentUserResponseDto)}.{nameof(CurrentUserResponseDto.Status)} == {res.Status}");
         }
-
-        return res;
-    }
-
-    /// <summary>
-    /// Immediate user lockout until given time or unlock if time is in the past ( UTC ).
-    /// Note that this happens when access token expires.
-    /// </summary>    
-    [HttpPost]
-    [Authorize(Roles = ROLE_admin)]
-    public async Task<IActionResult> LockoutUser(
-        [FromBody] LockoutUserRequestDto lockoutUserRequestDto)
-    {
-        var res = await authService.LockoutUserAsync(lockoutUserRequestDto, cancellationToken);
-
-        return StatusCode((int)res);
     }
 
     /// <summary>
@@ -68,15 +61,22 @@ public class AuthController : ControllerBase
 
         switch (res.Status)
         {
+            case LoginStatus.OK:
+                return res;
+
             case LoginStatus.InvalidAuthentication:
             case LoginStatus.UsernameOrEmailRequired:
-                return Unauthorized();
+                {
+                    // logger.LogTrace($"Unauth reason {string.Join(';', res.Errors)}");
+                    return Unauthorized();
+                }
 
             case LoginStatus.InvalidHttpContext:
                 return BadRequest();
-        }
 
-        return res;
+            default:
+                throw new NotImplementedException($"{nameof(LoginResponseDto)}.{nameof(LoginResponseDto.Status)} == {res.Status}");
+        }
     }
 
     /// <summary>
@@ -117,76 +117,32 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Change user roles
-    /// </summary>    
-    [HttpPost]
-    [Authorize(Roles = ROLE_admin)]
-    public async Task<ActionResult<SetUserRolesResponseDto>> SetUserRoles(SetUserRolesRequestDto setUserRolesRequestDto)
-    {
-        var res = await authService.SetUserRolesAsync(setUserRolesRequestDto, cancellationToken);
-
-        switch (res.Status)
-        {
-            case SetUserRolesStatus.AdminRolesReadOnly:
-                return Forbid();
-
-            case SetUserRolesStatus.InternalError:
-                return StatusCode((int)HttpStatusCode.InternalServerError);
-
-            case SetUserRolesStatus.UserNotFound:
-                return NotFound();
-        }
-
-        return res;
-    }
-
-
-    /// <summary>
-    /// Create user by given username, email, password.
-    /// </summary>
-    [HttpPost]
-    [Authorize(Roles = ROLE_admin)]
-    public async Task<ActionResult<RegisterUserResponseDto>> RegisterUser(
-        [FromBody] RegisterUserRequestDto registerUserRequestDto)
-    {
-        var res = await authService.RegisterUserAsync(registerUserRequestDto, cancellationToken);
-
-        switch (res.Status)
-        {
-            case RegisterUserStatus.IdentityError:
-                return BadRequest();
-        }
-
-        return res;
-    }
-
-    /// <summary>
     /// Edit user data
     /// </summary>    
     [HttpPost]
-    public async Task<ActionResult> EditUser(EditUserRequestDto editUser)
-    {        
-        var res = await authService.EditUserAsync(editUser, cancellationToken);                
+    [Authorize(Roles = $"{ROLE_admin},{ROLE_advanced},{ROLE_normal}")]
+    public async Task<ActionResult<EditUserResponseDto>> EditUser(EditUserRequestDto editUser)
+    {
+        var res = await authService.EditUserAsync(editUser, cancellationToken);
 
         switch (res.Status)
         {
-            case EditUserStatus.AdminRolesReadOnly:
-                return Problem("admin roles are readonly");
-
-            case EditUserStatus.InternalError:
-                return StatusCode((int)HttpStatusCode.InternalServerError, res.Errors);
-
-            case EditUserStatus.IdentityError:            
-                return Forbid();            
-
-            case EditUserStatus.InvalidPassword:
-                return Problem("Invalid password");
+            case EditUserStatus.OK:
+                return res;
 
             case EditUserStatus.UserNotFound:
                 return NotFound();
+
+            case EditUserStatus.IdentityError:
+            case EditUserStatus.PermissionsError:
+                return Problem(
+                    string.Join(';', res.Errors),
+                    statusCode: (int)HttpStatusCode.Forbidden);
+
+            default:
+                throw new NotImplementedException($"{nameof(EditUserResponseDto)}.{nameof(EditUserResponseDto.Status)} == {res.Status}");
         }
 
-        return Ok();
     }
 
 }

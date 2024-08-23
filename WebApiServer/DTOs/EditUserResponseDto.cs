@@ -3,29 +3,27 @@ namespace ExampleWebApp.Backend.WebApi;
 public enum EditUserStatus
 {
     /// <summary>
-    /// Registration ok.
+    /// Edit user ok.
     /// </summary>    
-    OK = STATUS_OK,   
+    OK,
 
     /// <summary>
-    /// Can't change admin role.
+    /// asp net core IdentityError, see Errors for details.
     /// </summary>    
-    AdminRolesReadOnly = STATUS_AdminRolesReadOnly,
+    IdentityError,
 
-    IdentityError = STATUS_IdentityError,
+    /// <summary>
+    /// Username cannot be changed.
+    /// </summary>    
+    CannotChangeUsername,
 
     /// <summary>
     /// User not found.
     /// </summary>    
-    UserNotFound = STATUS_UserNotFound,
+    UserNotFound,
 
-    /// <summary>
-    /// Internal error.
-    /// </summary>    
-    InternalError = STATUS_InternalError,
+    PermissionsError
 
-       
-    InvalidPassword = STATUS_InvalidPassword,
 }
 
 public class EditUserResponseDto
@@ -35,6 +33,16 @@ public class EditUserResponseDto
     /// API specific status response.
     /// </summary>    
     public required EditUserStatus Status { get; set; }
+
+    /// <summary>
+    /// Roles added.
+    /// </summary>    
+    public List<string> RolesAdded { get; set; } = new();
+
+    /// <summary>
+    /// Roles removed.
+    /// </summary>    
+    public List<string> RolesRemoved { get; set; } = new();
 
     /// <summary>
     /// List of edit user errors if any.

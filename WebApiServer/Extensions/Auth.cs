@@ -87,6 +87,9 @@ public static partial class Extensions
         .AddIdentity<ApplicationUser, IdentityRole>(options =>
         {
             options.User.RequireUniqueEmail = true;
+            options.Password.RequiredLength = PASSWORD_MIN_LENGTH;
+            options.Lockout.DefaultLockoutTimeSpan = LOGIN_FAIL_LOCKOUT_DURATION;
+            options.Lockout.MaxFailedAccessAttempts = MAX_LOGIN_FAIL_ATTEMPTS;
         })
         .AddEntityFrameworkStores<AppDbContext>()
         .AddDefaultTokenProviders();
@@ -106,14 +109,12 @@ public static partial class Extensions
     /// </summary>    
     /// <param name="validateIssuer">Will validate issuer (default: true).</param>
     /// <param name="validateAudience">Will validate audience (default: true).</param>
-    /// <param name="validateLifetime">Will validate access token lifetime (default: true).</param>
-    /// <param name="validateIssuerSigningKey">Will validate issuer signing key (default: true).</param>
+    /// <param name="validateLifetime">Will validate access token lifetime (default: true).</param>    
     /// <returns></returns>
     public static TokenValidationParameters GetTokenVaildationParameters(this IConfiguration configuration,
         bool validateIssuer = true,
         bool validateAudience = true,
-        bool validateLifetime = true,
-        bool validateIssuerSigningKey = true) =>
+        bool validateLifetime = true) =>
         new TokenValidationParameters
         {
             ValidateIssuer = validateIssuer,
@@ -182,13 +183,10 @@ public static partial class Extensions
 
                                     if (res is not null)
                                     {
-                                        logger.LogTrace("refreshing token");
-
                                         var opts = new CookieOptions();
 
                                         hostEnvironment.SetCookieOptions(builder.Configuration, opts, setExpiresAsRefreshToken: true);
                                         context.HttpContext.Response.Cookies.Append(WEB_CookieName_XAccessToken, res.AccessToken, opts);
-                                        context.HttpContext.Response.Cookies.Append(WEB_CookieName_XUsername, res.UserName, opts);
                                         context.HttpContext.Response.Cookies.Append(WEB_CookieName_XRefreshToken, res.RefreshToken, opts);
 
                                         context.Principal = res.Principal;
@@ -215,10 +213,10 @@ public static partial class Extensions
     /// Configure given CookieBuilder to set Secure, HttpOnly and Strict SameSite options on created cookies.    
     /// </summary>
     public static void SetCookieOptions(this IHostEnvironment environment, CookieBuilder cookieBuilder)
-    {        
+    {
         cookieBuilder.SecurePolicy = CookieSecurePolicy.Always;
         cookieBuilder.HttpOnly = true;
-        cookieBuilder.SameSite = SameSiteMode.Strict;        
+        cookieBuilder.SameSite = SameSiteMode.Strict;
     }
 
     /// <summary>
@@ -244,90 +242,5 @@ public static partial class Extensions
         }
     }
 
-    /// <summary>
-    /// Extracts X data from Set-Cookie cookie in given response headers.
-    /// </summary>
-    public static JwtCookies GetJwtCookiesFromResponse(this HttpResponseHeaders headers)
-    {
-        string? accessToken = null;
-        string? userName = null;
-        string? refreshToken = null;
-
-        foreach (var hdr in headers)
-        {
-            switch (hdr.Key)
-            {
-                case WEB_HeadersCollection_SetCookie:
-                    {
-                        var cookies = SetCookieHeaderValue.ParseList(hdr.Value.ToList());
-
-                        foreach (var cookie in cookies)
-                        {
-                            switch (cookie.Name.Value)
-                            {
-                                case WEB_CookieName_XAccessToken: accessToken = cookie.Value.Value; break;
-                                case WEB_CookieName_XUsername: userName = cookie.Value.Value; break;
-                                case WEB_CookieName_XRefreshToken: refreshToken = cookie.Value.Value; break;
-                            }
-                        }
-                    }
-                    break;
-            }
-        }
-
-        return new JwtCookies
-        {
-            AccessToken = accessToken,
-            UserName = userName,
-            RefreshToken = refreshToken
-        };
-    }
-
-    /// <summary>
-    /// Extract X data from cookies in given request headers dictionary.
-    /// </summary>
-    public static JwtCookies GetJwtCookiesFromRequest(this IHeaderDictionary headers)
-    {
-        string? accessToken = null;
-        string? userName = null;
-        string? refreshToken = null;
-
-        foreach (var cookie in headers.Cookie)
-        {
-            if (cookie is null) continue;
-
-            var cookies = cookie.Split(';');
-
-            foreach (var cookieKeyValue in cookies)
-            {
-                var ss = cookieKeyValue.Split('=');
-
-                if (ss.Length == 2)
-                {
-                    var cookieKey = ss[0].Trim();
-                    var cookieVal = ss[1].Trim();
-
-                    switch (cookieKey)
-                    {
-                        case WEB_CookieName_XAccessToken: accessToken = HttpUtility.UrlDecode(cookieVal); break;
-                        case WEB_CookieName_XUsername: userName = HttpUtility.UrlDecode(cookieVal); break;
-                        case WEB_CookieName_XRefreshToken:
-                            {
-                                refreshToken = HttpUtility.UrlDecode(cookieVal);
-                            }
-                            break;
-                    }
-                }
-
-            }
-        }
-
-        return new JwtCookies
-        {
-            AccessToken = accessToken,
-            UserName = userName,
-            RefreshToken = refreshToken
-        };
-    }
 
 }
