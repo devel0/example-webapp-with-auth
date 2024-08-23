@@ -24,7 +24,7 @@ export const LoginPage = () => {
     const params = useParams()
 
     useEffect(() => {
-        if (params.from) {
+        if (params.from && params.from !== ':from') {
             dispatch(setUrlWanted(params.from))
         }
     }, [params])
