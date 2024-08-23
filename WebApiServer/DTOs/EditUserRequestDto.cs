@@ -32,6 +32,11 @@ public class EditUserRequestDto
     public IList<string>? EditRoles { get; set; }
 
     /// <summary>
+    /// If true the user can't login after previous release access token expires.
+    /// </summary>
+    public bool? EditDisabled { get; set; }
+
+    /// <summary>
     /// Set the end date of lockout.
     /// The user will be unable to login until <see cref="EditLockoutEnd"/>.
     /// If <see cref="EditLockoutEnd"/> is set in the past the user will be re-enabled immediately.

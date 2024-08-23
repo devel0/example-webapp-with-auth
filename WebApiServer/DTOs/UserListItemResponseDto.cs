@@ -21,6 +21,8 @@ public class UserListItemResponseDto
     /// </summary>
     public required IList<string> Roles { get; set; }
 
+    public required bool Disabled { get; set; }
+
     /// <summary>
     /// Access failed count.
     /// </summary>    

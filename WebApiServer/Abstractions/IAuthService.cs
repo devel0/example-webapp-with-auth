@@ -45,6 +45,12 @@ public interface IAuthService
         string? username = null);
 
     /// <summary>
+    /// Delete given user.
+    /// </summary>
+    Task<DeleteUserResponseDto> DeleteUserAsync(
+        string usernameToDelete, CancellationToken cancellationToken);
+
+    /// <summary>
     /// List all roles.
     /// </summary>    
     /// <param name="cancellationToken">Cancellation token.</param>

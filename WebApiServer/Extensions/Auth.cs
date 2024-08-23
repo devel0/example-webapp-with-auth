@@ -56,7 +56,7 @@ public static partial class Extensions
 
         if (rolesToAdd.Count > 0)
         {
-            webApplication.Logger.LogInformation($"Adding [{string.Join(',', rolesToAdd)}] roles");
+            // webApplication.Logger.LogInformation($"Adding [{string.Join(',', rolesToAdd)}] roles");
 
             foreach (var roleToAdd in rolesToAdd)
             {

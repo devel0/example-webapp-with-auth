@@ -123,6 +123,38 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
+    /// Delete user.
+    /// </summary>    
+    [HttpPost]
+    [Authorize(Roles = $"{ROLE_admin},{ROLE_advanced},{ROLE_normal}")]
+    public async Task<ActionResult<DeleteUserResponseDto>> DeleteUser(
+        DeleteUserRequestDto deleteUserReq)
+    {
+        var res = await authService.DeleteUserAsync(deleteUserReq.UsernameToDelete, cancellationToken);
+
+        switch (res.Status)
+        {
+            case DeleteUserStatus.OK:
+                return res;
+
+            case DeleteUserStatus.UserNotFound:
+                return NotFound();
+
+            case DeleteUserStatus.IdentityError:
+            case DeleteUserStatus.PermissionsError:
+            case DeleteUserStatus.CannotDeleteLastActiveAdmin:
+                return Problem(
+                    title: $"{res.Status}",
+                    detail: string.Join(';', res.Errors),
+                    statusCode: (int)HttpStatusCode.Forbidden);
+
+            default:
+                throw new NotImplementedException($"{nameof(DeleteUserResponseDto)}.{nameof(DeleteUserResponseDto.Status)} == {res.Status}");
+        }
+
+    }
+
+    /// <summary>
     /// Edit user data
     /// </summary>    
     [HttpPost]
@@ -141,8 +173,10 @@ public class AuthController : ControllerBase
 
             case EditUserStatus.IdentityError:
             case EditUserStatus.PermissionsError:
+            case EditUserStatus.CannotChangeUsername:
                 return Problem(
-                    string.Join(';', res.Errors),
+                    title: $"{res.Status}",
+                    detail: string.Join(';', res.Errors),                    
                     statusCode: (int)HttpStatusCode.Forbidden);
 
             default:

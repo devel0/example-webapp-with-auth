@@ -78,6 +78,36 @@ public enum UserPermission
     /// </summary>
     LockoutNormalUser,
 
+    /// <summary>
+    /// Delete user which max role is "admin".
+    /// </summary>
+    DeleteAdminUser,
+
+    /// <summary>
+    /// Delete user which max role is "advanced".
+    /// </summary>
+    DeleteAdvancedUser,
+
+    /// <summary>
+    /// Delete user which max role is "normal".
+    /// </summary>
+    DeleteNormalUser,
+
+    /// <summary>
+    /// Disable user which max role is "admin".
+    /// </summary>
+    DisableAdminUser,
+
+    /// <summary>
+    /// Disable user which max role is "advanced".
+    /// </summary>
+    DisableAdvancedUser,
+
+    /// <summary>
+    /// Disable user which max role is "normal".
+    /// </summary>
+    DisableNormalUser,
+
 }
 
 public static class Toolkit
@@ -107,6 +137,8 @@ public static class Toolkit
             permHs.Add(UserPermission.ResetNormalUserPassword);
 
             permHs.Add(UserPermission.LockoutNormalUser);
+            permHs.Add(UserPermission.DeleteNormalUser);
+            permHs.Add(UserPermission.DisableNormalUser);
         }
 
         if (roles.Contains(ROLE_normal))

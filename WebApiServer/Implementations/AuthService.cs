@@ -90,6 +90,13 @@ public class AuthService : IAuthService
                 Errors = [$"can't find {loginRequestDto.UserName} user or {loginRequestDto.Email} email"]
             };
 
+        if (user.Disabled == true)
+            return new LoginResponseDto
+            {
+                Status = LoginStatus.InvalidAuthentication,
+                Errors = [$"user {user.UserName} disabled"]
+            };
+
         if (!await userManager.CheckPasswordAsync(user, loginRequestDto.Password))
             return new LoginResponseDto
             {
@@ -227,6 +234,7 @@ public class AuthService : IAuthService
 
             res.Add(new UserListItemResponseDto
             {
+                Disabled = user.Disabled,
                 UserName = user.UserName,
                 Email = user.Email,
                 AccessFailedCount = user.AccessFailedCount,
@@ -262,6 +270,81 @@ public class AuthService : IAuthService
         }
 
         return new List<string>(allRoles);
+    }
+
+    public async Task<DeleteUserResponseDto> DeleteUserAsync(
+        string usernameToDelete, CancellationToken cancellationToken)
+    {
+        var curUserNfo = await CurrentUserNfoAsync(cancellationToken);
+        if (curUserNfo.Status != CurrentUserStatus.OK)
+            throw new Exception($"can't retrieve current user.");
+
+        var curUser = await userManager.FindByNameAsync(curUserNfo.UserName);
+        if (curUser is null)
+            throw new Exception($"can't retrieve {curUserNfo.UserName} user.");
+
+        var userToDelete = await userManager.FindByNameAsync(usernameToDelete);
+        if (userToDelete is null)
+            return new DeleteUserResponseDto
+            {
+                Status = DeleteUserStatus.UserNotFound
+            };
+
+        var editExistingUserRoles = await userManager.GetRolesAsync(userToDelete);
+        var editExistingUserMaxRole = MaxRole(editExistingUserRoles ?? []);
+
+        // check if deleting last active admin
+        if (editExistingUserMaxRole == ROLE_admin)
+        {
+            var users = await ListUsersAsync(cancellationToken);
+            var q = users.Where(r => r.UserName != usernameToDelete && !r.Disabled).Count();
+
+            if (q == 0)
+                return new DeleteUserResponseDto
+                {
+                    Status = DeleteUserStatus.CannotDeleteLastActiveAdmin
+                };
+        }
+
+        var hasPermission = false;
+
+        switch (editExistingUserMaxRole)
+        {
+            case ROLE_admin:
+                hasPermission = curUserNfo.Permissions.Contains(UserPermission.DeleteAdminUser);
+                break;
+
+            case ROLE_advanced:
+                hasPermission = curUserNfo.Permissions.Contains(UserPermission.DeleteAdminUser);
+                break;
+
+            case ROLE_normal:
+                hasPermission = curUserNfo.Permissions.Contains(UserPermission.DeleteNormalUser);
+                break;
+
+            default:
+                throw new NotImplementedException($"can't edit other user {userToDelete.UserName} with unknown role {editExistingUserMaxRole}");
+        }
+
+        if (!hasPermission)
+            return new DeleteUserResponseDto
+            {
+                Status = DeleteUserStatus.PermissionsError,
+                Errors = [$"Can't delete user (role:{editExistingUserMaxRole})."]
+            };
+
+        var deleteRes = await userManager.DeleteAsync(userToDelete);
+        if (!deleteRes.Succeeded)
+            return new DeleteUserResponseDto
+            {
+                Status = DeleteUserStatus.IdentityError,
+                Errors = deleteRes.Errors.Select(w => w.Description).ToList()
+            };
+
+        return new DeleteUserResponseDto
+        {
+            Status = DeleteUserStatus.OK
+        };
     }
 
     public async Task<EditUserResponseDto> EditUserAsync(
@@ -417,6 +500,56 @@ public class AuthService : IAuthService
                     {
                         Status = EditUserStatus.IdentityError,
                         Errors = lockoutRes.Errors.Select(w => w.Description).ToList()
+                    };
+            }
+
+            //---------------------------------------
+            // edit disabled
+            //---------------------------------------
+            if (editUserRequestDto.EditDisabled is not null)
+            {
+                var editExistingUserRoles = await userManager.GetRolesAsync(editExistingUser);
+                var editExistingUserMaxRole = MaxRole(editExistingUserRoles ?? []);
+
+                if (editExistingUserMaxRole is null)
+                    throw new InternalError($"Can't edit other user {editExistingUser.UserName} that has no roles");
+
+                var hasPermission = false;
+
+                switch (editExistingUserMaxRole)
+                {
+                    case ROLE_admin:
+                        hasPermission = curUserNfo.Permissions.Contains(UserPermission.DisableAdminUser);
+                        break;
+
+                    case ROLE_advanced:
+                        hasPermission = curUserNfo.Permissions.Contains(UserPermission.DisableAdvancedUser);
+                        break;
+
+                    case ROLE_normal:
+                        hasPermission = curUserNfo.Permissions.Contains(UserPermission.DisableNormalUser);
+                        break;
+
+                    default:
+                        throw new NotImplementedException($"can't disable user {editExistingUser.UserName} with unknown role {editExistingUserMaxRole}");
+                }
+
+                if (!hasPermission)
+                    return new EditUserResponseDto
+                    {
+                        Status = EditUserStatus.PermissionsError,
+                        Errors = [$"Can't disable user (role:{editExistingUserMaxRole})."]
+                    };
+
+                editExistingUser.Disabled = editUserRequestDto.EditDisabled == true;
+
+                var updateRes = await userManager.UpdateAsync(editExistingUser);
+
+                if (!updateRes.Succeeded)
+                    return new EditUserResponseDto
+                    {
+                        Status = EditUserStatus.IdentityError,
+                        Errors = updateRes.Errors.Select(w => w.Description).ToList()
                     };
             }
 

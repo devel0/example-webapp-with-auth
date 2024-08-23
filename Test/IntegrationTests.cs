@@ -534,7 +534,7 @@ public class IntegrationTests
         var config = testFactory.Services.GetRequiredService<IConfiguration>();
         var util = testFactory.Services.GetRequiredService<IUtilService>();
         var logger = testFactory.Services.GetRequiredService<ILogger<IntegrationTests>>();
-        
+
         var adminUsername = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
         var adminEmail = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Email);
         var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
@@ -669,6 +669,50 @@ public class IntegrationTests
 
                 if (currentUser.Permissions.Contains(UserPermission.CreateNormalUser))
                     Assert.Equal(HttpStatusCode.OK, editUserRes.StatusCode);
+                else
+                    Assert.Equal(HttpStatusCode.Forbidden, editUserRes.StatusCode);
+            }
+
+            //------------------------------------------------------------------
+            logger.LogTrace($"  {UserPermission.DisableAdminUser}");
+            {
+                editUserRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.EditUser)}/", new EditUserRequestDto
+                {
+                    ExistingUsername = otherAdminUsername,
+                    EditDisabled = true
+                })).ApplySetCookies(client);
+
+                if (currentUser.Permissions.Contains(UserPermission.DisableAdminUser))
+                {
+                    Assert.Equal(HttpStatusCode.OK, editUserRes.StatusCode);
+
+                    // counterverify
+
+                    var testLoginRes = await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
+                    {
+                        UserName = otherAdminUsername,
+                        Password = adminPassword
+                    });/*.ApplySetCookies(client);*/
+
+                    Assert.Equal(HttpStatusCode.Unauthorized, testLoginRes.StatusCode);
+
+                    // re-enable
+                    editUserRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.EditUser)}/", new EditUserRequestDto
+                    {
+                        ExistingUsername = otherAdminUsername,
+                        EditDisabled = false
+                    })).ApplySetCookies(client);
+
+                    Assert.Equal(HttpStatusCode.OK, editUserRes.StatusCode);
+
+                    testLoginRes = await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
+                    {
+                        UserName = otherAdminUsername,
+                        Password = adminPassword
+                    });/*.ApplySetCookies(client);*/
+
+                    Assert.Equal(HttpStatusCode.OK, testLoginRes.StatusCode);
+                }
                 else
                     Assert.Equal(HttpStatusCode.Forbidden, editUserRes.StatusCode);
             }
@@ -1012,5 +1056,246 @@ public class IntegrationTests
 
     }
 
+    /// <summary>
+    /// Test <see cref="AuthController.DeleteUser(string)"/>
+    /// </summary>
+    [Fact]
+    public async Task TestDeleteUser()
+    {
+        using var testFactory = new TestFactory();
+        await testFactory.InitAsync();
+        var client = testFactory.Client;
+        var config = testFactory.Services.GetRequiredService<IConfiguration>();
+        var util = testFactory.Services.GetRequiredService<IUtilService>();
+        var logger = testFactory.Services.GetRequiredService<ILogger<IntegrationTests>>();
+
+        var adminUsername = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
+        var adminEmail = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Email);
+        var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
+        var adminRoles = new[] { ROLE_admin };
+
+        var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
+        {
+            UserName = adminUsername,
+            Password = adminPassword
+        })).ApplySetCookies(client);
+
+        Assert.Equal(HttpStatusCode.OK, loginRes.StatusCode);
+
+        // create advanced user
+
+        var advancedUsername = "advancedUsername";
+        var advancedEmail = "advanced@test.com";
+        var advancedPassword = "advancedPass1!";
+        var advancedRoles = new[] { ROLE_advanced };
+
+        var deleteUserRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.EditUser)}/", new EditUserRequestDto
+        {
+            EditUsername = advancedUsername,
+            EditEmail = advancedEmail,
+            EditPassword = advancedPassword,
+            EditRoles = advancedRoles
+        })).ApplySetCookies(client);
+
+        Assert.Equal(HttpStatusCode.OK, deleteUserRes.StatusCode);
+
+        // create normal user
+
+        var normalUsername = "normalUsername";
+        var normalEmail = "normal@test.com";
+        var normalPassword = "normalPass1!";
+        var normalRoles = new[] { ROLE_normal };
+
+        deleteUserRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.EditUser)}/", new EditUserRequestDto
+        {
+            EditUsername = normalUsername,
+            EditEmail = normalEmail,
+            EditPassword = normalPassword,
+            EditRoles = normalRoles
+        })).ApplySetCookies(client);
+
+        Assert.Equal(HttpStatusCode.OK, deleteUserRes.StatusCode);
+
+        UserCredentialNfo[] userCredentials = {
+            new UserCredentialNfo(adminUsername, adminEmail, adminPassword, "adm"),
+            new UserCredentialNfo(advancedUsername, advancedEmail, advancedPassword, "adv"),
+            new UserCredentialNfo(normalUsername, normalEmail, normalPassword, "nrm"),
+        };
+
+        foreach (var _userCredential in userCredentials.WithIndex())
+        {
+            var userCredential = _userCredential.item;
+            var userCredentialIdx = _userCredential.idx;
+
+            // other users created by admin
+            var otherAdminUsername = $"{userCredential.testPrefix}_adminUser";
+            var otherAdvancedUsername = $"{userCredential.testPrefix}_advancedUser";
+            var otherNormalUsername = $"{userCredential.testPrefix}_normalUser";
+
+            // create other users
+            {
+                logger.LogTrace($"Allocate other test users");
+
+                // logout
+                var adminLogoutRes = (await client.GetAsync($"{AuthApiPrefix}/{nameof(AuthController.Logout)}")).ApplySetCookies(client);
+
+                Assert.Equal(HttpStatusCode.OK, adminLogoutRes.StatusCode);
+
+                // login
+                loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
+                {
+                    UserName = adminUsername,
+                    Password = adminPassword
+                })).ApplySetCookies(client);
+
+                Assert.Equal(HttpStatusCode.OK, loginRes.StatusCode);
+
+                //------------------------------------------------------------------
+                logger.LogTrace($"  {otherAdminUsername}");
+                {
+                    deleteUserRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.EditUser)}/", new EditUserRequestDto
+                    {
+                        EditUsername = otherAdminUsername,
+                        EditEmail = $"{otherAdminUsername}@test.com",
+                        EditPassword = adminPassword,
+                        EditRoles = adminRoles
+                    })).ApplySetCookies(client);
+
+                    Assert.Equal(HttpStatusCode.OK, deleteUserRes.StatusCode);
+                }
+
+                //------------------------------------------------------------------
+                logger.LogTrace($"  {otherAdvancedUsername}");
+                {
+                    deleteUserRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.EditUser)}/", new EditUserRequestDto
+                    {
+                        EditUsername = otherAdvancedUsername,
+                        EditEmail = $"{otherAdvancedUsername}@test.com",
+                        EditPassword = advancedPassword,
+                        EditRoles = advancedRoles
+                    })).ApplySetCookies(client);
+
+                    Assert.Equal(HttpStatusCode.OK, deleteUserRes.StatusCode);
+                }
+
+                //------------------------------------------------------------------
+                logger.LogTrace($"  {otherNormalUsername}");
+                {
+                    deleteUserRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.EditUser)}/", new EditUserRequestDto
+                    {
+                        EditUsername = otherNormalUsername,
+                        EditEmail = $"{otherNormalUsername}@test.com",
+                        EditPassword = normalPassword,
+                        EditRoles = normalRoles
+                    })).ApplySetCookies(client);
+
+                    Assert.Equal(HttpStatusCode.OK, deleteUserRes.StatusCode);
+                }
+            }
+
+            logger.LogTrace($"Testing {userCredential.username} Delete capabiilties");
+
+            // logout
+            var logoutRes = (await client.GetAsync($"{AuthApiPrefix}/{nameof(AuthController.Logout)}")).ApplySetCookies(client);
+
+            Assert.Equal(HttpStatusCode.OK, logoutRes.StatusCode);
+
+            // login
+            loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
+            {
+                UserName = userCredential.username,
+                Password = userCredential.password
+            })).ApplySetCookies(client);
+
+            Assert.Equal(HttpStatusCode.OK, loginRes.StatusCode);
+
+            // current user
+            var currentUserRes = (await client.GetAsync($"{AuthApiPrefix}/{nameof(AuthController.CurrentUser)}")).ApplySetCookies(client);
+
+            Assert.Equal(HttpStatusCode.OK, currentUserRes.StatusCode);
+
+            var currentUser = await currentUserRes.DeserializeAsync<CurrentUserResponseDto>(util);
+            Assert.NotNull(currentUser);
+
+            //------------------------------------------------------------------
+            logger.LogTrace($"  {UserPermission.DeleteAdminUser}");
+            {
+                deleteUserRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.DeleteUser)}/", new DeleteUserRequestDto
+                {
+                    UsernameToDelete = otherAdminUsername
+                })).ApplySetCookies(client);
+
+                if (currentUser.Permissions.Contains(UserPermission.DeleteAdminUser))
+                {
+                    Assert.Equal(HttpStatusCode.OK, deleteUserRes.StatusCode);
+
+                    // counterverify
+
+                    var testLoginRes = await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
+                    {
+                        UserName = otherAdminUsername,
+                        Password = adminPassword
+                    });/*.ApplySetCookies(client);*/
+
+                    Assert.Equal(HttpStatusCode.Unauthorized, testLoginRes.StatusCode);                     
+                }
+                else
+                    Assert.Equal(HttpStatusCode.Forbidden, deleteUserRes.StatusCode);
+            }
+
+            //------------------------------------------------------------------
+            logger.LogTrace($"  {UserPermission.DeleteAdvancedUser}");
+            {
+                deleteUserRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.DeleteUser)}/", new DeleteUserRequestDto
+                {
+                    UsernameToDelete = otherAdvancedUsername
+                })).ApplySetCookies(client);
+
+                if (currentUser.Permissions.Contains(UserPermission.DeleteAdvancedUser))
+                {
+                    Assert.Equal(HttpStatusCode.OK, deleteUserRes.StatusCode);
+
+                    // counterverify
+
+                    var testLoginRes = await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
+                    {
+                        UserName = otherAdvancedUsername,
+                        Password = advancedPassword
+                    });/*.ApplySetCookies(client);*/
+
+                    Assert.Equal(HttpStatusCode.Unauthorized, testLoginRes.StatusCode);                     
+                }
+                else
+                    Assert.Equal(HttpStatusCode.Forbidden, deleteUserRes.StatusCode);
+            }
+
+            //------------------------------------------------------------------
+            logger.LogTrace($"  {UserPermission.DeleteNormalUser}");
+            {
+                deleteUserRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.DeleteUser)}/", new DeleteUserRequestDto
+                {
+                    UsernameToDelete = otherNormalUsername
+                })).ApplySetCookies(client);
+
+                if (currentUser.Permissions.Contains(UserPermission.DeleteNormalUser))
+                {
+                    Assert.Equal(HttpStatusCode.OK, deleteUserRes.StatusCode);
+
+                    // counterverify
+
+                    var testLoginRes = await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
+                    {
+                        UserName = otherNormalUsername,
+                        Password = normalPassword
+                    });/*.ApplySetCookies(client);*/
+
+                    Assert.Equal(HttpStatusCode.Unauthorized, testLoginRes.StatusCode);                     
+                }
+                else
+                    Assert.Equal(HttpStatusCode.Forbidden, deleteUserRes.StatusCode);
+            }
+        }
+
+    }
 
 }
