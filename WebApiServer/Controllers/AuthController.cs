@@ -25,6 +25,12 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
+    /// Retrieve auth options.
+    /// </summary>    
+    [HttpGet]
+    public ActionResult<AuthOptions> AuthOptions() => Ok(authService.AuthOptions());
+
+    /// <summary>
     /// Retrieve current logged in user name, email, roles.
     /// </summary>    
     [HttpGet]

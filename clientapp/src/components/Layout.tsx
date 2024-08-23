@@ -35,7 +35,7 @@ const MainLayout = (props: Props) => {
                         const currentUser: CurrentUserNfo = {
                             userName: res.userName!,
                             email: res.email!,
-                            roles: res.roles!
+                            roles: Array.from(res.roles ?? [])
                         }
 
                         dispatch(setSuccessfulLogin(currentUser))

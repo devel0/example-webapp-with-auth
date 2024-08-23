@@ -3,10 +3,9 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks/hooks"
 import { GlobalState } from "../redux/states/GlobalState"
 import { useEffect, useState } from "react"
 import { APP_TITLE, DEFAULT_SIZE_SMALL, ROLE } from "../constants/general"
-import { UserListItemResponseDto } from "../../api"
+import { EditUserRequestDto, UserListItemResponseDto } from "../../api"
 import { DataGrid, GridColDef } from "@mui/x-data-grid"
-import { EditUserData, EditUserDialog, NewUserDataSample } from "../dialogs/EditUserDialog"
-import { SetUserRolesDialog } from "../dialogs/SetUserRolesDialog"
+import { EditUserDialog, NewUserDataSample } from "../dialogs/EditUserDialog"
 import { HttpStatusCode } from "axios"
 import { authApi } from "../fetch.manager"
 
@@ -14,10 +13,9 @@ export const UsersPage = () => {
     const global = useAppSelector<GlobalState>((state) => state.global)
     const dispatch = useAppDispatch()
     const [users, setUsers] = useState<UserListItemResponseDto[]>([])
-    const [editUserDialogOpen, setEditUserDialogOpen] = useState(false)
-    const [userRolesDialogOpen, setUserRolesDialogOpen] = useState(false)
+    const [editUserDialogOpen, setEditUserDialogOpen] = useState(false)    
     const [selectedUsername, setSelectedUsername] = useState("")
-    const [userData, setUserData] = useState<EditUserData>(NewUserDataSample())
+    const [userData, setUserData] = useState<EditUserRequestDto>(NewUserDataSample())
 
     useEffect(() => {
         document.title = `${APP_TITLE} - Users`
@@ -69,20 +67,17 @@ export const UsersPage = () => {
                     if (res.length > 0) {
                         const user = res[0]
                         setUserData({
-                            isNew: false,
-                            username: user.userName!,
-                            email: user.email!,
-                            password: '', //PASSWORD_UNCHANGED,
-                            roles: (user.roles ?? []) as ROLE[]
+                            existingUsername: user.userName!,
+                            editUsername: null,
+                            editEmail: user.email,
+                            editLockoutEnd: null,
+                            editPassword: null,
+                            editRoles: user.roles,
                         })
                         setEditUserDialogOpen(true)
                     }
                 }}>
                     Edit
-                </Button>
-
-                <Button onClick={() => setUserRolesDialogOpen(true)}>
-                    Roles
                 </Button>
             </Box>
 
@@ -103,14 +98,7 @@ export const UsersPage = () => {
                 userData={userData}
                 setUserData={setUserData}
                 refreshList={refreshList}
-            />}
-
-            <SetUserRolesDialog
-                open={userRolesDialogOpen}
-                setOpen={setUserRolesDialogOpen}
-                username={selectedUsername}
-                refreshList={refreshList}
-            />
+            />}          
 
         </Box>
     )

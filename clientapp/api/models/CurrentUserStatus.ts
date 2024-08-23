@@ -18,17 +18,17 @@
  * 
  * OK (Authentication valid.)
  * 
- * InvalidArgument (Invalid argument.)
- * 
  * InvalidAuthentication (Invalid authentication.)
+ * 
+ * InvalidArgument (Invalid argument.)
  * 
  * AccessTokenNotFound (Invalid argument.)
  * @export
  */
 export const CurrentUserStatus = {
     OK: 'OK',
-    InvalidArgument: 'InvalidArgument',
     InvalidAuthentication: 'InvalidAuthentication',
+    InvalidArgument: 'InvalidArgument',
     AccessTokenNotFound: 'AccessTokenNotFound'
 } as const;
 export type CurrentUserStatus = typeof CurrentUserStatus[keyof typeof CurrentUserStatus];

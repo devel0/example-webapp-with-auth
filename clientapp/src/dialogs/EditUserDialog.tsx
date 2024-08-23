@@ -16,25 +16,18 @@ import { DraggablePaperComponent } from "../utils/draggable-dialog";
 import { createApi } from "@reduxjs/toolkit/query";
 import { ApiException } from "../types/ApiException";
 import { authApi } from "../fetch.manager";
-import { ResponseError } from "../../api";
-
-export interface EditUserData {
-    isNew: boolean,
-    username: string,
-    email: string,
-    password: string,
-    roles: ROLE[]
-}
+import { AuthOptions, EditUserRequestDto, ResponseError } from "../../api";
 
 // export const PASSWORD_UNCHANGED = "********"
 
 export const NewUserDataSample = () => {
-    let res: EditUserData = {
-        isNew: true,
-        username: '',
-        email: '',
-        password: '',
-        roles: []
+    let res: EditUserRequestDto = {
+        existingUsername: null,
+        editUsername: null,
+        editEmail: null,
+        editPassword: null,
+        editLockoutEnd: null,
+        editRoles: null
     }
     return res
 }
@@ -42,8 +35,8 @@ export const NewUserDataSample = () => {
 export const EditUserDialog = (props: {
     open: boolean,
     setOpen: React.Dispatch<React.SetStateAction<boolean>>,
-    userData: EditUserData,
-    setUserData: React.Dispatch<React.SetStateAction<EditUserData>>,
+    userData: EditUserRequestDto,
+    setUserData: React.Dispatch<React.SetStateAction<EditUserRequestDto>>,
     refreshList: () => void
 }) => {
     const { open, setOpen, userData, setUserData, refreshList } = props
@@ -54,33 +47,49 @@ export const EditUserDialog = (props: {
     const [usernameValid, setUsernameValid] = useState<boolean | undefined>(undefined)
     const [emailValid, setEmailValid] = useState<boolean | undefined>(undefined)
     const [passwordValid, setPasswordValid] = useState<boolean | undefined>(undefined)
+    const [authOptions, setAuthOptions] = useState<AuthOptions | undefined>(undefined)
 
     useEffect(() => {
-        if (autoValidate) validate()
-        else { // set errors on initial
-            setUsernameValid(undefined)
-            setEmailValid(undefined)
-            setPasswordValid(undefined)
+        authApi.apiAuthAuthOptionsGet().then(res => {
+            setAuthOptions(res)
+        })
+    }, [])
+
+    useEffect(() => {
+        if (authOptions) {
+            if (autoValidate) validate()
+            else { // set errors on initial
+                setUsernameValid(undefined)
+                setEmailValid(undefined)
+                setPasswordValid(undefined)
+            }
         }
-    }, [autoValidate, userData])
+    }, [authOptions, autoValidate, userData])
 
     useEffect(() => { // set autovalidate on close
         if (open === false) setAutoValidate(false)
     }, [open])
 
     const validate = () => {
+        if (authOptions === undefined) return false
+
         let res = true
+        let q = false
 
-        let q = usernameIsValid(userData.username).isValid
-        setUsernameValid(q)
-        if (q === false) res = false
+        if (nullOrUndefined(userData.existingUsername)) {
+            q = usernameIsValid(authOptions, userData.editUsername).isValid
+            setUsernameValid(q)
+            if (q === false) res = false
+        }
 
-        q = emailIsValid(userData.email).isValid
-        setEmailValid(q)
-        if (q === false) res = false
+        if (userData.editEmail !== null && userData.editEmail !== undefined) {
+            q = emailIsValid(userData.editEmail).isValid
+            setEmailValid(q)
+            if (q === false) res = false
+        }
 
-        if (userData.isNew === true || userData.password.trim().length > 0) {
-            q = passwordIsValid(userData.password).isValid
+        if (userData.editPassword !== null && userData.editPassword !== undefined) {
+            q = passwordIsValid(authOptions, userData.editPassword).isValid
             setPasswordValid(q)
             if (q === false) res = false
         }
@@ -92,24 +101,24 @@ export const EditUserDialog = (props: {
         setUserData(NewUserDataSample())
     }
 
-    const formIsEmpty = () =>
-        userData.username.trim().length === 0 &&
-        userData.email.trim().length === 0 &&
-        userData.password.trim().length === 0 &&
-        userData.roles.length === 0
+    // const formIsEmpty = () =>
+    //     userData.username.trim().length === 0 &&
+    //     userData.email.trim().length === 0 &&
+    //     userData.password.trim().length === 0 &&
+    //     userData.roles.length === 0
 
-    return (
+    return authOptions && (
         <Dialog
             open={open}
             onClose={(e, reason) => {
-                if (!formIsEmpty() && reason && (reason === "backdropClick" || reason === 'escapeKeyDown'))
+                if (reason && (reason === "backdropClick" || reason === 'escapeKeyDown'))
                     return; // modal dialog
                 setOpen(false)
             }}>
 
             <DialogTitle>
                 <Typography fontWeight={DEFAULT_FONTWEIGHT_BOLD}>
-                    {userData.isNew === true ? 'New user' : `Edit user ${userData.username}`}
+                    {nullOrUndefined(userData.existingUsername) ? 'New user' : `Edit user ${userData.existingUsername}`}
                 </Typography>
                 <hr />
             </DialogTitle>
@@ -123,13 +132,18 @@ export const EditUserDialog = (props: {
                         <TableRow>
                             <TableCell valign="top">Username</TableCell>
                             <TableCell>
-                                <TextField
-                                    error={usernameValid === false}
-                                    value={userData.username}
-                                    onChange={e => setUserData({ ...userData, username: e.target.value })}
-                                    helperText={usernameValid === false && usernameIsValid(userData.username).errors.map((errorMsg, errorMsgIdx) =>
-                                        <Typography key={`username-err-${errorMsgIdx}`}>{errorMsg}</Typography>)}
-                                />
+                                {userData.existingUsername ?
+                                    <Typography>
+                                        {userData.existingUsername}
+                                    </Typography>
+                                    :
+                                    <TextField
+                                        error={usernameValid === false}
+                                        value={userData.editUsername}
+                                        onChange={e => setUserData({ ...userData, editUsername: e.target.value })}
+                                        helperText={usernameValid === false && usernameIsValid(authOptions, userData.editUsername).errors.map((errorMsg, errorMsgIdx) =>
+                                            <Typography key={`username-err-${errorMsgIdx}`}>{errorMsg}</Typography>)}
+                                    />}
                             </TableCell>
                         </TableRow>
 
@@ -138,9 +152,9 @@ export const EditUserDialog = (props: {
                             <TableCell>
                                 <TextField
                                     error={emailValid === false}
-                                    value={userData.email}
-                                    onChange={e => setUserData({ ...userData, email: e.target.value })}
-                                    helperText={emailValid === false && emailIsValid(userData.email).errors.map((errorMsg, errorMsgIdx) =>
+                                    value={userData.editEmail}
+                                    onChange={e => setUserData({ ...userData, editEmail: e.target.value })}
+                                    helperText={emailValid === false && emailIsValid(userData.editEmail ?? '').errors.map((errorMsg, errorMsgIdx) =>
                                         <Typography key={`email-err-${errorMsgIdx}`}>{errorMsg}</Typography>)}
                                 />
                             </TableCell>
@@ -152,10 +166,10 @@ export const EditUserDialog = (props: {
                                 <TextField
                                     error={passwordValid === false}
                                     type="password"
-                                    value={userData.password}
-                                    onChange={e => setUserData({ ...userData, password: e.target.value })}
+                                    value={userData.editPassword}
+                                    onChange={e => setUserData({ ...userData, editPassword: e.target.value })}
                                     placeholder="Type to change password"
-                                    helperText={passwordValid === false && passwordIsValid(userData.password).errors.map((errorMsg, errorMsgIdx) =>
+                                    helperText={passwordValid === false && passwordIsValid(authOptions, userData.editPassword ?? '').errors.map((errorMsg, errorMsgIdx) =>
                                         <Typography key={`pass-err-${errorMsgIdx}`}>{errorMsg}</Typography>)}
                                     inputProps={{ // avoid browser autocomplete
                                         autoComplete: 'new-password',
@@ -171,22 +185,22 @@ export const EditUserDialog = (props: {
                             <TableCell valign="top">{role}</TableCell>
                             <TableCell>
                                 <Checkbox
-                                    checked={userData?.roles?.indexOf(role as ROLE) !== -1}
+                                    checked={userData?.editRoles?.indexOf(role as ROLE) !== -1}
                                     onChange={e => {
-                                        const roleIdx = (userData.roles ?? []).indexOf(role as ROLE)
+                                        const roleIdx = (userData.editRoles ?? []).indexOf(role as ROLE)
                                         console.log(`roleIdx = ${roleIdx}`)
 
                                         if (e.target.checked === true) {
                                             if (roleIdx === -1) {
-                                                if (nullOrUndefined(userData.roles))
-                                                    userData.roles = []
-                                                userData.roles!.push(role as ROLE)
+                                                if (nullOrUndefined(userData.editRoles))
+                                                    userData.editRoles = []
+                                                userData.editRoles!.push(role as ROLE)
                                                 setUserData({ ...userData })
                                             }
                                         }
                                         else {
                                             if (roleIdx !== -1) {
-                                                userData.roles!.splice(roleIdx, 1)
+                                                userData.editRoles!.splice(roleIdx, 1)
                                                 setUserData({ ...userData })
                                             }
                                         }
@@ -221,17 +235,11 @@ export const EditUserDialog = (props: {
 
                                 try {
                                     await authApi.apiAuthEditUserPost({
-                                        editUserRequestDto: {
-                                            createNew: userData.isNew,
-                                            userName: userData.username,
-                                            email: userData.email,
-                                            changePassword: userData.password,
-                                            roles: userData.roles
-                                        }
+                                        editUserRequestDto: userData
                                     })
 
                                     dispatch(setSnack({
-                                        msg: `User ${userData.username} ${userData.isNew ? 'created' : 'changes applied'}`,
+                                        msg: `User ${userData.existingUsername ?? userData.editUsername} ${userData.existingUsername === undefined ? 'created' : 'changes applied'}`,
                                         type: SnackNfoType.success
                                     }))
 
@@ -253,7 +261,7 @@ export const EditUserDialog = (props: {
                         }
                         variant='outlined'>
                         <DoneOutlineIcon sx={{ mr: DEFAULT_SIZE_XSMALL }} />
-                        {userData.isNew === true ? 'Create' : 'Apply'}
+                        {userData.existingUsername === undefined ? 'Create' : 'Apply'}
                     </Button>
                 </Box>
             </DialogActions>

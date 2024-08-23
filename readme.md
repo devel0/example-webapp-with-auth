@@ -5,6 +5,7 @@
   - [local db](#local-db)
   - [vscode debug](#vscode-debug)
 - [dev notes](#dev-notes)
+  - [run tests](#run-tests)
   - [add more migrations](#add-more-migrations)
   - [db dia gen](#db-dia-gen)
 - [production deployment](#production-deployment)
@@ -27,8 +28,11 @@
   - step by step how this project was built by git commit
 - configuration user-secrets, environment variables, and appsettings.json, appsettings.[Environment].json with autoreload on change
 - jwt auth secure, httponly, strict samesite
+- user roles admin, advanced, normal with static [UserPermission][2] matrix
+- auth controller [edit user][3] to create, edit username, password, email, roles, lockout
 - react redux
 - login public page and protected routes
+- user manager gui with user role permissions related capabilities
 - theme light/dark, snacks
 
 ## quickstart (dev)
@@ -110,6 +114,18 @@ code .
 ![](./doc/mainpage.png)
 
 ## dev notes
+
+### run tests
+
+```sh
+dotnet test
+```
+
+or run specific test with ( replace `TEST` with one from `dotnet test -t` )
+
+```sh
+dotnet test --filter=TEST
+```
 
 ### add more migrations
 
@@ -278,4 +294,15 @@ cd WebApiServer
 dotnet ef migrations add init --project ../AppDbMigrationsPsql -- --provider Postgres
 ```
 
+- Add integration tests
+
+```sh
+cd example-webapp-with-auth
+dotnet new xunit -n Test
+cd Test
+dotnet add package Microsoft.AspNetCore.Mvc.Testing --version 8.0.8
+```
+
 [1]: https://github.com/devel0/knowledge/blob/168e6cec6fdc0298b21d758c198d6f9210032ba8/doc/psql-schema-crawler.md
+[2]: https://github.com/devel0/example-webapp-with-auth/blob/a04204f9014596509dcacd1af04a8579000d2fd6/WebApiServer/Types/UserPermission.cs#L89
+[3]: https://github.com/devel0/example-webapp-with-auth/blob/a04204f9014596509dcacd1af04a8579000d2fd6/WebApiServer/DTOs/EditUserRequestDto.cs#L6

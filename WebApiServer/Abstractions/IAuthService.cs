@@ -7,6 +7,11 @@ public interface IAuthService
 {
 
     /// <summary>
+    /// Get auth options required for username and password.
+    /// </summary>
+    AuthOptions AuthOptions();
+
+    /// <summary>
     /// Login user by given username or email and auth password.
     /// </summary>
     /// <param name="loginRequestDto">User login info.</param>

@@ -20,45 +20,49 @@ import { mapValues } from '../runtime';
  */
 export interface EditUserRequestDto {
     /**
-     * True for new user, false to change existing one.
-     * @type {boolean}
-     * @memberof EditUserRequestDto
-     */
-    createNew: boolean;
-    /**
-     * User name.
+     * Existing User name or null to create a new one using ExampleWebApp.Backend.WebApi.EditUserRequestDto.EditUsername.
      * @type {string}
      * @memberof EditUserRequestDto
      */
-    userName: string | null;
+    existingUsername?: string | null;
     /**
-     * User email.
+     * New email or null to leave unchanged.
      * @type {string}
      * @memberof EditUserRequestDto
      */
-    email: string | null;
+    editEmail?: string | null;
     /**
-     * Non null password to change the password.
+     * New username or null to leave unchanged.
      * @type {string}
      * @memberof EditUserRequestDto
      */
-    changePassword?: string | null;
+    editUsername?: string | null;
     /**
-     * Roles to set to the user.
+     * New password or null to leave unchanged.
+     * @type {string}
+     * @memberof EditUserRequestDto
+     */
+    editPassword?: string | null;
+    /**
+     * Roles to set to the user or null to leave unchanged.
      * @type {Array<string>}
      * @memberof EditUserRequestDto
      */
-    roles: Array<string> | null;
+    editRoles?: Array<string> | null;
+    /**
+     * Set the end date of lockout.
+     * The user will be unable to login until ExampleWebApp.Backend.WebApi.EditUserRequestDto.EditLockoutEnd.
+     * If ExampleWebApp.Backend.WebApi.EditUserRequestDto.EditLockoutEnd is set in the past the user will be re-enabled immediately.
+     * @type {Date}
+     * @memberof EditUserRequestDto
+     */
+    editLockoutEnd?: Date | null;
 }
 
 /**
  * Check if a given object implements the EditUserRequestDto interface.
  */
 export function instanceOfEditUserRequestDto(value: object): value is EditUserRequestDto {
-    if (!('createNew' in value) || value['createNew'] === undefined) return false;
-    if (!('userName' in value) || value['userName'] === undefined) return false;
-    if (!('email' in value) || value['email'] === undefined) return false;
-    if (!('roles' in value) || value['roles'] === undefined) return false;
     return true;
 }
 
@@ -72,11 +76,12 @@ export function EditUserRequestDtoFromJSONTyped(json: any, ignoreDiscriminator: 
     }
     return {
         
-        'createNew': json['createNew'],
-        'userName': json['userName'],
-        'email': json['email'],
-        'changePassword': json['changePassword'] == null ? undefined : json['changePassword'],
-        'roles': json['roles'],
+        'existingUsername': json['existingUsername'] == null ? undefined : json['existingUsername'],
+        'editEmail': json['editEmail'] == null ? undefined : json['editEmail'],
+        'editUsername': json['editUsername'] == null ? undefined : json['editUsername'],
+        'editPassword': json['editPassword'] == null ? undefined : json['editPassword'],
+        'editRoles': json['editRoles'] == null ? undefined : json['editRoles'],
+        'editLockoutEnd': json['editLockoutEnd'] == null ? undefined : (new Date(json['editLockoutEnd'])),
     };
 }
 
@@ -86,11 +91,12 @@ export function EditUserRequestDtoToJSON(value?: EditUserRequestDto | null): any
     }
     return {
         
-        'createNew': value['createNew'],
-        'userName': value['userName'],
-        'email': value['email'],
-        'changePassword': value['changePassword'],
-        'roles': value['roles'],
+        'existingUsername': value['existingUsername'],
+        'editEmail': value['editEmail'],
+        'editUsername': value['editUsername'],
+        'editPassword': value['editPassword'],
+        'editRoles': value['editRoles'],
+        'editLockoutEnd': value['editLockoutEnd'] == null ? undefined : ((value['editLockoutEnd'] as any).toISOString()),
     };
 }
 

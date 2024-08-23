@@ -38,6 +38,32 @@ public class AuthService : IAuthService
         this.util = util;
     }
 
+    public AuthOptions AuthOptions()
+    {
+        var res = new AuthOptions
+        {
+            Username = new UsernameAuthOptions
+            {
+                AllowedUserNameCharacters = userManager.Options.User.AllowedUserNameCharacters,
+            },
+
+            Password = new PasswordAuthOptions
+            {
+
+                RequireDigit = userManager.Options.Password.RequireDigit,
+                RequiredLength = userManager.Options.Password.RequiredLength,
+                RequiredUniqueChars = userManager.Options.Password.RequiredUniqueChars,
+                RequireLowercase = userManager.Options.Password.RequireLowercase,
+                RequireNonAlphanumeric = userManager.Options.Password.RequireNonAlphanumeric,
+                RequireUppercase = userManager.Options.Password.RequireUppercase,
+
+            }
+
+        };
+
+        return res;
+    }
+
     public async Task<LoginResponseDto> LoginAsync(
         LoginRequestDto loginRequestDto,
         CancellationToken cancellationToken)
@@ -412,11 +438,14 @@ public class AuthService : IAuthService
 
                 if (userRoles is not null)
                 {
-                    var rolesToAdd = userRolesToSet.Where(roleToSet => !userRoles.Contains(roleToSet));
-                    var rolesToRemove = userRoles.Where(userRole => !userRolesToSet.Contains(userRole));
+                    var rolesToAdd = userRolesToSet.Where(roleToSet => !userRoles.Contains(roleToSet)).ToList();
+                    var rolesToRemove = userRoles.Where(userRole => !userRolesToSet.Contains(userRole)).ToList();
 
-                    await userManager.AddToRolesAsync(editExistingUser, rolesToAdd);
-                    await userManager.RemoveFromRolesAsync(editExistingUser, rolesToRemove);
+                    if (rolesToAdd.Count > 0)
+                        await userManager.AddToRolesAsync(editExistingUser, rolesToAdd);
+
+                    if (rolesToRemove.Count > 0)
+                        await userManager.RemoveFromRolesAsync(editExistingUser, rolesToRemove);
 
                     res.RolesAdded = rolesToAdd.ToList();
                     res.RolesRemoved = rolesToRemove.ToList();
@@ -442,7 +471,8 @@ public class AuthService : IAuthService
                 //
                 // edit itself email
                 //
-                if (editUserRequestDto.ExistingUsername == curUserNfo.UserName)
+                if (editUserRequestDto.ExistingUsername == curUserNfo.UserName &&
+                    curUserNfo.Email != editUserRequestDto.EditEmail)
                 {
                     if (!curUserNfo.Permissions.Contains(UserPermission.ChangeOwnEmail))
                         return new EditUserResponseDto
@@ -457,7 +487,7 @@ public class AuthService : IAuthService
                 //
                 // edit other user email
                 //
-                else
+                else if (editExistingUser.Email != editUserRequestDto.EditEmail)
                 {
                     var editExistingUserRoles = await userManager.GetRolesAsync(editExistingUser);
                     var editExistingUserMaxRole = MaxRole(editExistingUserRoles ?? []);

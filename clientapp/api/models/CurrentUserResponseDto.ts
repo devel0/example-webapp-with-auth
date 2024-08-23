@@ -19,6 +19,12 @@ import {
     CurrentUserStatusFromJSONTyped,
     CurrentUserStatusToJSON,
 } from './CurrentUserStatus';
+import type { UserPermission } from './UserPermission';
+import {
+    UserPermissionFromJSON,
+    UserPermissionFromJSONTyped,
+    UserPermissionToJSON,
+} from './UserPermission';
 
 /**
  * M:ExampleWebApp.Backend.WebApi.AuthController.CurrentUser api response data.
@@ -46,10 +52,16 @@ export interface CurrentUserResponseDto {
     email?: string | null;
     /**
      * List of roles associated to this user.
-     * @type {Array<string>}
+     * @type {Set<string>}
      * @memberof CurrentUserResponseDto
      */
-    roles?: Array<string> | null;
+    roles?: Set<string> | null;
+    /**
+     * Permissions related to this user roles.
+     * @type {Set<UserPermission>}
+     * @memberof CurrentUserResponseDto
+     */
+    permissions?: Set<UserPermission> | null;
 }
 
 /**
@@ -74,6 +86,7 @@ export function CurrentUserResponseDtoFromJSONTyped(json: any, ignoreDiscriminat
         'userName': json['userName'] == null ? undefined : json['userName'],
         'email': json['email'] == null ? undefined : json['email'],
         'roles': json['roles'] == null ? undefined : json['roles'],
+        'permissions': json['permissions'] == null ? undefined : (new Set((json['permissions'] as Array<any>).map(UserPermissionFromJSON))),
     };
 }
 
@@ -86,7 +99,8 @@ export function CurrentUserResponseDtoToJSON(value?: CurrentUserResponseDto | nu
         'status': CurrentUserStatusToJSON(value['status']),
         'userName': value['userName'],
         'email': value['email'],
-        'roles': value['roles'],
+        'roles': value['roles'] == null ? undefined : Array.from(value['roles'] as Set<any>),
+        'permissions': value['permissions'] == null ? undefined : (Array.from(value['permissions'] as Set<any>).map(UserPermissionToJSON)),
     };
 }
 

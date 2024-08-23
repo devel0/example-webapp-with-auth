@@ -25,7 +25,9 @@ export const router = createBrowserRouter(
     {
 
       element: <ProtectedRoutes />,
-      errorElement: <RouteNotFound />,
+
+      errorElement: import.meta.env.PROD ? <RouteNotFound /> : undefined,
+
       children: [
 
         // home

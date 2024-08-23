@@ -15,36 +15,27 @@
 
 import * as runtime from '../runtime';
 import type {
+  AuthOptions,
   CurrentUserResponseDto,
   EditUserRequestDto,
-  LockoutUserRequestDto,
+  EditUserResponseDto,
   LoginRequestDto,
   LoginResponseDto,
-  RegisterUserRequestDto,
-  RegisterUserResponseDto,
-  SetUserRolesRequestDto,
-  SetUserRolesResponseDto,
   UserListItemResponseDto,
 } from '../models/index';
 import {
+    AuthOptionsFromJSON,
+    AuthOptionsToJSON,
     CurrentUserResponseDtoFromJSON,
     CurrentUserResponseDtoToJSON,
     EditUserRequestDtoFromJSON,
     EditUserRequestDtoToJSON,
-    LockoutUserRequestDtoFromJSON,
-    LockoutUserRequestDtoToJSON,
+    EditUserResponseDtoFromJSON,
+    EditUserResponseDtoToJSON,
     LoginRequestDtoFromJSON,
     LoginRequestDtoToJSON,
     LoginResponseDtoFromJSON,
     LoginResponseDtoToJSON,
-    RegisterUserRequestDtoFromJSON,
-    RegisterUserRequestDtoToJSON,
-    RegisterUserResponseDtoFromJSON,
-    RegisterUserResponseDtoToJSON,
-    SetUserRolesRequestDtoFromJSON,
-    SetUserRolesRequestDtoToJSON,
-    SetUserRolesResponseDtoFromJSON,
-    SetUserRolesResponseDtoToJSON,
     UserListItemResponseDtoFromJSON,
     UserListItemResponseDtoToJSON,
 } from '../models/index';
@@ -57,26 +48,40 @@ export interface ApiAuthListUsersGetRequest {
     username?: string;
 }
 
-export interface ApiAuthLockoutUserPostRequest {
-    lockoutUserRequestDto?: LockoutUserRequestDto;
-}
-
 export interface ApiAuthLoginPostRequest {
     loginRequestDto?: LoginRequestDto;
-}
-
-export interface ApiAuthRegisterUserPostRequest {
-    registerUserRequestDto?: RegisterUserRequestDto;
-}
-
-export interface ApiAuthSetUserRolesPostRequest {
-    setUserRolesRequestDto?: SetUserRolesRequestDto;
 }
 
 /**
  * 
  */
 export class AuthApi extends runtime.BaseAPI {
+
+    /**
+     * Retrieve auth options.
+     */
+    async apiAuthAuthOptionsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AuthOptions>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/Auth/AuthOptions`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => AuthOptionsFromJSON(jsonValue));
+    }
+
+    /**
+     * Retrieve auth options.
+     */
+    async apiAuthAuthOptionsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AuthOptions> {
+        const response = await this.apiAuthAuthOptionsGetRaw(initOverrides);
+        return await response.value();
+    }
 
     /**
      * Retrieve current logged in user name, email, roles.
@@ -107,7 +112,7 @@ export class AuthApi extends runtime.BaseAPI {
     /**
      * Edit user data
      */
-    async apiAuthEditUserPostRaw(requestParameters: ApiAuthEditUserPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async apiAuthEditUserPostRaw(requestParameters: ApiAuthEditUserPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<EditUserResponseDto>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -122,14 +127,15 @@ export class AuthApi extends runtime.BaseAPI {
             body: EditUserRequestDtoToJSON(requestParameters['editUserRequestDto']),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => EditUserResponseDtoFromJSON(jsonValue));
     }
 
     /**
      * Edit user data
      */
-    async apiAuthEditUserPost(requestParameters: ApiAuthEditUserPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiAuthEditUserPostRaw(requestParameters, initOverrides);
+    async apiAuthEditUserPost(requestParameters: ApiAuthEditUserPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<EditUserResponseDto> {
+        const response = await this.apiAuthEditUserPostRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
     /**
@@ -189,34 +195,6 @@ export class AuthApi extends runtime.BaseAPI {
     }
 
     /**
-     * Immediate user lockout until given time or unlock if time is in the past ( UTC ).  Note that this happens when access token expires.
-     */
-    async apiAuthLockoutUserPostRaw(requestParameters: ApiAuthLockoutUserPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        const response = await this.request({
-            path: `/api/Auth/LockoutUser`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: LockoutUserRequestDtoToJSON(requestParameters['lockoutUserRequestDto']),
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * Immediate user lockout until given time or unlock if time is in the past ( UTC ).  Note that this happens when access token expires.
-     */
-    async apiAuthLockoutUserPost(requestParameters: ApiAuthLockoutUserPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.apiAuthLockoutUserPostRaw(requestParameters, initOverrides);
-    }
-
-    /**
      * Login user by given username or email and auth password.
      */
     async apiAuthLoginPostRaw(requestParameters: ApiAuthLoginPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<LoginResponseDto>> {
@@ -268,64 +246,6 @@ export class AuthApi extends runtime.BaseAPI {
      */
     async apiAuthLogoutGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.apiAuthLogoutGetRaw(initOverrides);
-    }
-
-    /**
-     * Create user by given username, email, password.
-     */
-    async apiAuthRegisterUserPostRaw(requestParameters: ApiAuthRegisterUserPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RegisterUserResponseDto>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        const response = await this.request({
-            path: `/api/Auth/RegisterUser`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: RegisterUserRequestDtoToJSON(requestParameters['registerUserRequestDto']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => RegisterUserResponseDtoFromJSON(jsonValue));
-    }
-
-    /**
-     * Create user by given username, email, password.
-     */
-    async apiAuthRegisterUserPost(requestParameters: ApiAuthRegisterUserPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RegisterUserResponseDto> {
-        const response = await this.apiAuthRegisterUserPostRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Change user roles
-     */
-    async apiAuthSetUserRolesPostRaw(requestParameters: ApiAuthSetUserRolesPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SetUserRolesResponseDto>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        const response = await this.request({
-            path: `/api/Auth/SetUserRoles`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: SetUserRolesRequestDtoToJSON(requestParameters['setUserRolesRequestDto']),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SetUserRolesResponseDtoFromJSON(jsonValue));
-    }
-
-    /**
-     * Change user roles
-     */
-    async apiAuthSetUserRolesPost(requestParameters: ApiAuthSetUserRolesPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SetUserRolesResponseDto> {
-        const response = await this.apiAuthSetUserRolesPostRaw(requestParameters, initOverrides);
-        return await response.value();
     }
 
 }

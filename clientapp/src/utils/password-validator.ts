@@ -1,8 +1,9 @@
+import { AuthOptions } from "../../api";
 import { ValidatorResult } from "../types/ValidatorResult";
 
 const PASSWORD_MIN_LENGTH = 8
 
-export const passwordIsValid = (password: string) => {
+export const passwordIsValid = (authOptions: AuthOptions, password: string) => {
     let isValid = true
     const errors: string[] = []
 

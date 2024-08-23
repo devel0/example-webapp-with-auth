@@ -50,11 +50,17 @@ export interface UserListItemResponseDto {
      */
     emailConfirmed: boolean;
     /**
-     * Lockout end (UTC).
+     * Lockout end (UTC). ExampleWebApp.Backend.WebApi.UserListItemResponseDto.LockoutEnabled.
      * @type {Date}
      * @memberof UserListItemResponseDto
      */
     lockoutEnd: Date | null;
+    /**
+     * If true the user is lockout until ExampleWebApp.Backend.WebApi.UserListItemResponseDto.LockoutEnd.
+     * @type {boolean}
+     * @memberof UserListItemResponseDto
+     */
+    lockoutEnabled: boolean;
     /**
      * User phone number.
      * @type {string}
@@ -85,6 +91,7 @@ export function instanceOfUserListItemResponseDto(value: object): value is UserL
     if (!('accessFailedCount' in value) || value['accessFailedCount'] === undefined) return false;
     if (!('emailConfirmed' in value) || value['emailConfirmed'] === undefined) return false;
     if (!('lockoutEnd' in value) || value['lockoutEnd'] === undefined) return false;
+    if (!('lockoutEnabled' in value) || value['lockoutEnabled'] === undefined) return false;
     if (!('phoneNumber' in value) || value['phoneNumber'] === undefined) return false;
     if (!('phoneNumberConfirmed' in value) || value['phoneNumberConfirmed'] === undefined) return false;
     if (!('twoFactorEnabled' in value) || value['twoFactorEnabled'] === undefined) return false;
@@ -107,6 +114,7 @@ export function UserListItemResponseDtoFromJSONTyped(json: any, ignoreDiscrimina
         'accessFailedCount': json['accessFailedCount'],
         'emailConfirmed': json['emailConfirmed'],
         'lockoutEnd': (json['lockoutEnd'] == null ? null : new Date(json['lockoutEnd'])),
+        'lockoutEnabled': json['lockoutEnabled'],
         'phoneNumber': json['phoneNumber'],
         'phoneNumberConfirmed': json['phoneNumberConfirmed'],
         'twoFactorEnabled': json['twoFactorEnabled'],
@@ -125,6 +133,7 @@ export function UserListItemResponseDtoToJSON(value?: UserListItemResponseDto | 
         'accessFailedCount': value['accessFailedCount'],
         'emailConfirmed': value['emailConfirmed'],
         'lockoutEnd': (value['lockoutEnd'] == null ? null : (value['lockoutEnd'] as any).toISOString()),
+        'lockoutEnabled': value['lockoutEnabled'],
         'phoneNumber': value['phoneNumber'],
         'phoneNumberConfirmed': value['phoneNumberConfirmed'],
         'twoFactorEnabled': value['twoFactorEnabled'],
