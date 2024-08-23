@@ -38,6 +38,12 @@ export interface UserListItemResponseDto {
      */
     roles: Array<string> | null;
     /**
+     * 
+     * @type {boolean}
+     * @memberof UserListItemResponseDto
+     */
+    disabled: boolean;
+    /**
      * Access failed count.
      * @type {number}
      * @memberof UserListItemResponseDto
@@ -88,6 +94,7 @@ export function instanceOfUserListItemResponseDto(value: object): value is UserL
     if (!('userName' in value) || value['userName'] === undefined) return false;
     if (!('email' in value) || value['email'] === undefined) return false;
     if (!('roles' in value) || value['roles'] === undefined) return false;
+    if (!('disabled' in value) || value['disabled'] === undefined) return false;
     if (!('accessFailedCount' in value) || value['accessFailedCount'] === undefined) return false;
     if (!('emailConfirmed' in value) || value['emailConfirmed'] === undefined) return false;
     if (!('lockoutEnd' in value) || value['lockoutEnd'] === undefined) return false;
@@ -111,6 +118,7 @@ export function UserListItemResponseDtoFromJSONTyped(json: any, ignoreDiscrimina
         'userName': json['userName'],
         'email': json['email'],
         'roles': json['roles'],
+        'disabled': json['disabled'],
         'accessFailedCount': json['accessFailedCount'],
         'emailConfirmed': json['emailConfirmed'],
         'lockoutEnd': (json['lockoutEnd'] == null ? null : new Date(json['lockoutEnd'])),
@@ -130,6 +138,7 @@ export function UserListItemResponseDtoToJSON(value?: UserListItemResponseDto | 
         'userName': value['userName'],
         'email': value['email'],
         'roles': value['roles'],
+        'disabled': value['disabled'],
         'accessFailedCount': value['accessFailedCount'],
         'emailConfirmed': value['emailConfirmed'],
         'lockoutEnd': (value['lockoutEnd'] == null ? null : (value['lockoutEnd'] as any).toISOString()),

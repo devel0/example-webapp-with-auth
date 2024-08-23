@@ -45,6 +45,18 @@
  * LockoutAdvancedUser (Edit lockout of another user which max role is "advanced".)
  * 
  * LockoutNormalUser (Edit lockout of another user which max role is "normal".)
+ * 
+ * DeleteAdminUser (Delete user which max role is "admin".)
+ * 
+ * DeleteAdvancedUser (Delete user which max role is "advanced".)
+ * 
+ * DeleteNormalUser (Delete user which max role is "normal".)
+ * 
+ * DisableAdminUser (Disable user which max role is "admin".)
+ * 
+ * DisableAdvancedUser (Disable user which max role is "advanced".)
+ * 
+ * DisableNormalUser (Disable user which max role is "normal".)
  * @export
  */
 export const UserPermission = {
@@ -62,7 +74,13 @@ export const UserPermission = {
     ResetAdminUserPassword: 'ResetAdminUserPassword',
     LockoutAdminUser: 'LockoutAdminUser',
     LockoutAdvancedUser: 'LockoutAdvancedUser',
-    LockoutNormalUser: 'LockoutNormalUser'
+    LockoutNormalUser: 'LockoutNormalUser',
+    DeleteAdminUser: 'DeleteAdminUser',
+    DeleteAdvancedUser: 'DeleteAdvancedUser',
+    DeleteNormalUser: 'DeleteNormalUser',
+    DisableAdminUser: 'DisableAdminUser',
+    DisableAdvancedUser: 'DisableAdvancedUser',
+    DisableNormalUser: 'DisableNormalUser'
 } as const;
 export type UserPermission = typeof UserPermission[keyof typeof UserPermission];
 

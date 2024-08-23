@@ -34,4 +34,9 @@ export default defineConfig({
     }),
   ],
   assetsInclude: ['src/images/*'],
+  
+  /** workaround error 'Popper styled_default is not a function'  */
+  optimizeDeps: {
+    include: ['@mui/material/Tooltip', '@emotion/styled'],
+  },
 })

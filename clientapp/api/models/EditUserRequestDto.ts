@@ -50,6 +50,12 @@ export interface EditUserRequestDto {
      */
     editRoles?: Array<string> | null;
     /**
+     * If true the user can't login after previous release access token expires.
+     * @type {boolean}
+     * @memberof EditUserRequestDto
+     */
+    editDisabled?: boolean | null;
+    /**
      * Set the end date of lockout.
      * The user will be unable to login until ExampleWebApp.Backend.WebApi.EditUserRequestDto.EditLockoutEnd.
      * If ExampleWebApp.Backend.WebApi.EditUserRequestDto.EditLockoutEnd is set in the past the user will be re-enabled immediately.
@@ -81,6 +87,7 @@ export function EditUserRequestDtoFromJSONTyped(json: any, ignoreDiscriminator: 
         'editUsername': json['editUsername'] == null ? undefined : json['editUsername'],
         'editPassword': json['editPassword'] == null ? undefined : json['editPassword'],
         'editRoles': json['editRoles'] == null ? undefined : json['editRoles'],
+        'editDisabled': json['editDisabled'] == null ? undefined : json['editDisabled'],
         'editLockoutEnd': json['editLockoutEnd'] == null ? undefined : (new Date(json['editLockoutEnd'])),
     };
 }
@@ -96,6 +103,7 @@ export function EditUserRequestDtoToJSON(value?: EditUserRequestDto | null): any
         'editUsername': value['editUsername'],
         'editPassword': value['editPassword'],
         'editRoles': value['editRoles'],
+        'editDisabled': value['editDisabled'],
         'editLockoutEnd': value['editLockoutEnd'] == null ? undefined : ((value['editLockoutEnd'] as any).toISOString()),
     };
 }

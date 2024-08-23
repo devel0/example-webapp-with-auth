@@ -32,7 +32,9 @@ export const SnackComponent = () => {
                 {global.snackSuccess.title && <Typography fontWeight={DEFAULT_FONTWEIGHT_BOLD}>
                     {global.snackSuccess.title}
                 </Typography>}
-                <Typography>{global.snackSuccess.msg}</Typography>
+                {global.snackSuccess.msg.map((msg, msgIdx) =>
+                    <Typography key={`snack-err-${msgIdx}`}>{msg}</Typography>
+                )}                
             </Alert>
         </Snackbar>
 
@@ -50,7 +52,9 @@ export const SnackComponent = () => {
                 {global.snackError.title && <Typography fontWeight={DEFAULT_FONTWEIGHT_BOLD}>
                     {global.snackError.title}
                 </Typography>}
-                <Typography>{global.snackError.msg}</Typography>
+                {global.snackError.msg.map((msg, msgIdx) =>
+                    <Typography key={`snack-err-${msgIdx}`}>{msg}</Typography>
+                )}
             </Alert>
         </Snackbar>
 
@@ -68,7 +72,9 @@ export const SnackComponent = () => {
                 {global.snackWarning.title && <Typography fontWeight={DEFAULT_FONTWEIGHT_BOLD}>
                     {global.snackWarning.title}
                 </Typography>}
-                <Typography>{global.snackWarning.msg}</Typography>
+                {global.snackWarning.msg.map((msg, msgIdx) =>
+                    <Typography key={`snack-err-${msgIdx}`}>{msg}</Typography>
+                )}
             </Alert>
         </Snackbar>
 
@@ -86,7 +92,9 @@ export const SnackComponent = () => {
                 {global.snackInfo.title && <Typography fontWeight={DEFAULT_FONTWEIGHT_BOLD}>
                     {global.snackInfo.title}
                 </Typography>}
-                <Typography>{global.snackInfo.msg}</Typography>
+                {global.snackInfo.msg.map((msg, msgIdx) =>
+                    <Typography key={`snack-err-${msgIdx}`}>{msg}</Typography>
+                )}                
             </Alert>
         </Snackbar>
     </Box>

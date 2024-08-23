@@ -6,6 +6,9 @@ index.ts
 models/AuthOptions.ts
 models/CurrentUserResponseDto.ts
 models/CurrentUserStatus.ts
+models/DeleteUserRequestDto.ts
+models/DeleteUserResponseDto.ts
+models/DeleteUserStatus.ts
 models/EditUserRequestDto.ts
 models/EditUserResponseDto.ts
 models/EditUserStatus.ts

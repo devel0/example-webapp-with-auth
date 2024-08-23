@@ -16,6 +16,8 @@ import { SnackComponent } from '../components/SnackComponent'
 import AppLogo from '../images/app-icon.svg?react'
 import { authApi } from '../fetch.manager'
 import { useParams } from 'react-router-dom'
+import { handleApiException } from '../utils/utils'
+import { ResponseError } from '../../api'
 
 export const LoginPage = () => {
     const global = useAppSelector<GlobalState>((state) => state.global)
@@ -47,32 +49,39 @@ export const LoginPage = () => {
         event.preventDefault()
         const data = new FormData(event.currentTarget)
 
-        const response = await authApi.apiAuthLoginPost({
-            loginRequestDto: {
-                email: String(data.get("email")),
-                password: String(data.get("password")),
+        const usernameOrEmail = String(data.get("username"));
+
+        try {
+            const response = await authApi.apiAuthLoginPost({
+                loginRequestDto: {
+                    userName: usernameOrEmail.indexOf("@") === -1 ? usernameOrEmail : undefined,
+                    email: usernameOrEmail.indexOf("@") === -1 ? undefined : usernameOrEmail,
+                    password: String(data.get("password")),
+                }
+            });
+
+            if (response?.status === 'OK') {
+                const currentUser: CurrentUserNfo = {
+                    userName: response.userName!,
+                    email: response.email!,
+                    roles: response.roles!
+                }
+
+                dispatch(setSuccessfulLogin(currentUser));
+
+                localStorage.setItem(
+                    LOCAL_STORAGE_CURRENT_USER_NFO,
+                    JSON.stringify(currentUser)
+                );
             }
-        });
-
-        if (response?.status === 'OK') {
-            const currentUser: CurrentUserNfo = {
-                userName: response.userName!,
-                email: response.email!,
-                roles: response.roles!
-            }
-
-            dispatch(setSuccessfulLogin(currentUser));
-
-            localStorage.setItem(
-                LOCAL_STORAGE_CURRENT_USER_NFO,
-                JSON.stringify(currentUser)
-            );
+            else
+                dispatch(setSnack({
+                    msg: ['login error'],
+                    type: SnackNfoType.warning
+                }))
+        } catch (_ex) {
+            handleApiException(_ex as ResponseError)
         }
-        else
-            dispatch(setSnack({
-                msg: 'login error',
-                type: SnackNfoType.warning
-            }))
     }
 
     return (
@@ -98,10 +107,10 @@ export const LoginPage = () => {
                             margin="normal"
                             required
                             fullWidth
-                            id="email"
-                            label="Email Address"
-                            name="email"
-                            autoComplete="email"
+                            id="username"
+                            label="Username or email address"
+                            name="username"
+                            autoComplete="username"
                             autoFocus
                         />
                         <TextField

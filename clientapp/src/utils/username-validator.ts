@@ -2,7 +2,7 @@ import { AuthOptions } from "../../api";
 import { ValidatorResult } from "../types/ValidatorResult";
 import { nullOrUndefined } from "./utils";
 
-const USERNAME_MIN_LENGTH = 4
+const USERNAME_MIN_LENGTH = 3
 
 export const usernameIsValid = (authOptions: AuthOptions, username: string | null | undefined) => {
     if (username === null || username === undefined) return {
@@ -18,18 +18,13 @@ export const usernameIsValid = (authOptions: AuthOptions, username: string | nul
         errors.push(`Min length ${USERNAME_MIN_LENGTH}`)
     }
 
-    if (username.indexOf(' ') !== -1) {
-        isValid = false;
-        errors.push("Contains no whitespace");
+    for (let i = 0; i < username.length; ++i) {
+        if (authOptions.username.allowedUserNameCharacters!.indexOf(username[i]) === -1) {
+            isValid = false;
+            errors.push(`Character ${username[i]} not allowed`)
+        }
     }
-
-    const testAllowedCharacters = /^[a-zA-Z0-9\.\-_]*$/;
-
-    if (testAllowedCharacters.test(username) === false) {
-        isValid = false;
-        errors.push("Allowed chars a-z A-Z 0-9 . _ -");
-    }
-
+    
     return {
         isValid: isValid,
         errors: errors

@@ -15,7 +15,7 @@ export const MainPage = () => {
     useEffect(() => {
         document.title = `${APP_TITLE} - Dashboard`
         // dispatch(setSnack({
-        //     msg: 'main page snack test',
+        //     msg: [ 'main page snack test' ],
         //     type: SnackNfoType.info
         // }))
     }, [])

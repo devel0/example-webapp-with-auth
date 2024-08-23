@@ -506,7 +506,7 @@ public class AuthService : IAuthService
             //---------------------------------------
             // edit disabled
             //---------------------------------------
-            if (editUserRequestDto.EditDisabled is not null)
+            if (editUserRequestDto.EditDisabled is not null && editExistingUser.Disabled != editUserRequestDto.EditDisabled)
             {
                 var editExistingUserRoles = await userManager.GetRolesAsync(editExistingUser);
                 var editExistingUserMaxRole = MaxRole(editExistingUserRoles ?? []);

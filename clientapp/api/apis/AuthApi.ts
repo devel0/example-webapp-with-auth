@@ -17,6 +17,8 @@ import * as runtime from '../runtime';
 import type {
   AuthOptions,
   CurrentUserResponseDto,
+  DeleteUserRequestDto,
+  DeleteUserResponseDto,
   EditUserRequestDto,
   EditUserResponseDto,
   LoginRequestDto,
@@ -28,6 +30,10 @@ import {
     AuthOptionsToJSON,
     CurrentUserResponseDtoFromJSON,
     CurrentUserResponseDtoToJSON,
+    DeleteUserRequestDtoFromJSON,
+    DeleteUserRequestDtoToJSON,
+    DeleteUserResponseDtoFromJSON,
+    DeleteUserResponseDtoToJSON,
     EditUserRequestDtoFromJSON,
     EditUserRequestDtoToJSON,
     EditUserResponseDtoFromJSON,
@@ -39,6 +45,10 @@ import {
     UserListItemResponseDtoFromJSON,
     UserListItemResponseDtoToJSON,
 } from '../models/index';
+
+export interface ApiAuthDeleteUserPostRequest {
+    deleteUserRequestDto?: DeleteUserRequestDto;
+}
 
 export interface ApiAuthEditUserPostRequest {
     editUserRequestDto?: EditUserRequestDto;
@@ -106,6 +116,35 @@ export class AuthApi extends runtime.BaseAPI {
      */
     async apiAuthCurrentUserGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CurrentUserResponseDto> {
         const response = await this.apiAuthCurrentUserGetRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Delete user.
+     */
+    async apiAuthDeleteUserPostRaw(requestParameters: ApiAuthDeleteUserPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DeleteUserResponseDto>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/api/Auth/DeleteUser`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: DeleteUserRequestDtoToJSON(requestParameters['deleteUserRequestDto']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => DeleteUserResponseDtoFromJSON(jsonValue));
+    }
+
+    /**
+     * Delete user.
+     */
+    async apiAuthDeleteUserPost(requestParameters: ApiAuthDeleteUserPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<DeleteUserResponseDto> {
+        const response = await this.apiAuthDeleteUserPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

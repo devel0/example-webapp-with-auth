@@ -32,7 +32,7 @@ export class APIMiddleware implements Middleware {
                 }
                 store.dispatch(setSnack({
                     title: title,
-                    msg: msg,
+                    msg: [ msg ],
                     type: SnackNfoType.error
                 }))
             })
