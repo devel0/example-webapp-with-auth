@@ -99,7 +99,7 @@ public class AuthService : IAuthService
 
         if (loginRequestDto.PasswordResetToken is not null)
         {
-            var resetRes = await userManager.ResetPasswordAsync(user, loginRequestDto.PasswordResetToken, loginRequestDto.Password);            
+            var resetRes = await userManager.ResetPasswordAsync(user, loginRequestDto.PasswordResetToken, loginRequestDto.Password);
 
             if (!resetRes.Succeeded)
                 return new LoginResponseDto
@@ -387,6 +387,13 @@ public class AuthService : IAuthService
                 {
                     Status = EditUserStatus.PermissionsError,
                     Errors = ["Can't create user with no roles."]
+                };
+
+            if (editUserRequestDto.EditRoles.Any(w => !ROLES_ALL.Contains(w)))
+                return new EditUserResponseDto
+                {
+                    Status = EditUserStatus.PermissionsError,
+                    Errors = [$"Can't create user with unknown roles {string.Join(';', editUserRequestDto.EditRoles)}."]
                 };
 
             if (!curUserNfo.Permissions.Contains(UserPermission.CreateAdminUser) &&
