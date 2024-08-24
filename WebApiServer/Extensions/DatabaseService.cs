@@ -12,9 +12,9 @@ public static partial class Extensions
 
         var connString = isUnitTest ?
             webApplicationBuilder.Configuration.GetConfigVar(CONFIG_KEY_UnitTestConnectionString) :
-            webApplicationBuilder.Configuration.GetConfigVar(CONFIG_KEY_ConnectionString);
+            webApplicationBuilder.Configuration.GetConfigVar(CONFIG_KEY_ConnectionString);        
             
-        var provider = webApplicationBuilder.Configuration.GetConfigVar(CONFIG_KEY_DbProvider);
+        var provider = webApplicationBuilder.Configuration.GetConfigVar<ConfigValuesDbProvider>(CONFIG_KEY_DbProvider);
 
         //
         // normal config for db providers
@@ -24,7 +24,7 @@ public static partial class Extensions
             switch (provider)
             {
 
-                case CONFIG_VALUE_DbProvider_Postgres:
+                case ConfigValuesDbProvider.Postgres:
                     {
                         options.UseNpgsql(connString, x => x.MigrationsAssembly("AppDbMigrationsPsql"));
                     }

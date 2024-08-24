@@ -44,8 +44,15 @@ public static partial class Extensions
             }
         }
 
+        var type = typeof(T);
+
+        if (!type.IsReferenceOrNullableType())
+        {
+            if (configuration.GetSection(path).Value is null)
+                throw new Exception($"Unable to find value for config var [{path}]. Check your user secrets.");
+        }
+
         var value = configuration.GetValue<T>(path);
-        if (value is null) throw new Exception($"Unable to find value for config var [{path}]. Check your user secrets.");
 
         return value;
     }

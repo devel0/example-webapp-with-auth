@@ -5,7 +5,7 @@ import { Box, Button } from '@mui/material'
 import { useEffect } from 'react'
 import { setSnack } from '../redux/slices/globalSlice'
 import { SnackNfoType } from '../types/SnackNfo'
-import { APP_TITLE } from '../constants/general'
+import { APP_TITLE, DEFAULT_SIZE_SMALL } from '../constants/general'
 import { mainApi } from '../fetch.manager'
 
 export const MainPage = () => {
@@ -21,11 +21,11 @@ export const MainPage = () => {
     }, [])
 
     return (
-        <Box>                        
+        <Box m={DEFAULT_SIZE_SMALL}>
             master page<br />
             current user: {global.currentUser?.userName}<br />
             roles: {global.currentUser?.roles}<br />
-            
+
             <Button onClick={async () => {
                 await mainApi.apiMainLongRunningGet()
             }}>long running op</Button>

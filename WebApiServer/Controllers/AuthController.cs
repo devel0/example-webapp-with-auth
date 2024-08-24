@@ -176,13 +176,46 @@ public class AuthController : ControllerBase
             case EditUserStatus.CannotChangeUsername:
                 return Problem(
                     title: $"{res.Status}",
-                    detail: string.Join(';', res.Errors),                    
+                    detail: string.Join(';', res.Errors),
                     statusCode: (int)HttpStatusCode.Forbidden);
 
             default:
                 throw new NotImplementedException($"{nameof(EditUserResponseDto)}.{nameof(EditUserResponseDto.Status)} == {res.Status}");
         }
 
+    }
+
+    /// <summary>
+    /// Reset lost password.
+    /// </summary>    
+    [HttpGet]
+    [AllowAnonymous]
+    public async Task<ActionResult> ResetLostPassword(string email, string? token, string? resetPassword)
+    {
+        var res = await authService.ResetLostPasswordRequestAsync(
+            email,
+            token,
+            resetPassword,
+            cancellationToken);
+
+        switch (res.Status)
+        {
+            case ResetLostPasswordStatus.OK:
+                return Ok();
+
+            case ResetLostPasswordStatus.EmailServerError:
+                return Problem(
+                    title: $"{res.Status}",
+                    detail: "Email server error.",
+                    statusCode: (int)HttpStatusCode.InternalServerError
+                    );
+
+            case ResetLostPasswordStatus.NotFound:
+                return NotFound();
+
+            default:
+                throw new NotImplementedException($"{nameof(ResetLostPasswordResponseDto)}.{nameof(ResetLostPasswordResponseDto.Status)} == {res.Status}");
+        }
     }
 
 }

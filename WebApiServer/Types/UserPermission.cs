@@ -108,6 +108,11 @@ public enum UserPermission
     /// </summary>
     DisableNormalUser,
 
+    /// <summary>
+    /// Generate an email with a reset password token.
+    /// </summary>
+    ResetLostPassword
+
 }
 
 public static class Toolkit
@@ -139,12 +144,16 @@ public static class Toolkit
             permHs.Add(UserPermission.LockoutNormalUser);
             permHs.Add(UserPermission.DeleteNormalUser);
             permHs.Add(UserPermission.DisableNormalUser);
+
+            permHs.Add(UserPermission.ResetLostPassword);
         }
 
         if (roles.Contains(ROLE_normal))
         {
             permHs.Add(UserPermission.ChangeOwnEmail);
             permHs.Add(UserPermission.ChangeOwnPassword);
+
+            permHs.Add(UserPermission.ResetLostPassword);
         }
 
         return permHs;

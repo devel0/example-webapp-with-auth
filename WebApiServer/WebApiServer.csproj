@@ -9,11 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer"
-      Version="$(MSCoreVersion)" />
+    <PackageReference Include="MailKit" Version="4.7.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(MSCoreVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="$(MSCoreVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions"
-      Version="$(MSCoreVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="$(MSCoreVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="$(MSCoreVersion)">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -58,8 +57,7 @@
     <!-- Include the newly-built files in the publish output -->
     <ItemGroup>
       <DistFiles Include="$(SpaRoot)dist\**" />
-      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')"
-        Exclude="@(ResolvedFileToPublish)">
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
         <RelativePath>clientapp\%(DistFiles.RecursiveDir)%(DistFiles.Filename)%(DistFiles.Extension)</RelativePath>
         <!-- <RelativePath>%(DistFiles.Identity)</RelativePath> -->
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

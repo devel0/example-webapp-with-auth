@@ -21,7 +21,7 @@ export const SnackComponent = () => {
         <Snackbar
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             // TransitionComponent={SlideTransition}
-            open={global.snackSuccess.open} autoHideDuration={global.snackSuccess.duration}
+            open={global.snackSuccess.open} autoHideDuration={global.snackSuccess.durationMs}
             key={`snack-succ`}
             // message={global.snackSuccess.msg}
             onClose={() => dispatch(unsetSnack(SnackNfoType.success))}>
@@ -41,7 +41,7 @@ export const SnackComponent = () => {
         <Snackbar
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             // TransitionComponent={SlideTransition}
-            open={global.snackError.open} autoHideDuration={global.snackError.duration}
+            open={global.snackError.open} autoHideDuration={global.snackError.durationMs}
             key={`snack-err`}
             // message={global.snackError.msg}
             onClose={() => dispatch(unsetSnack(SnackNfoType.error))}>
@@ -61,7 +61,7 @@ export const SnackComponent = () => {
         <Snackbar
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             // TransitionComponent={SlideTransition}
-            open={global.snackWarning.open} autoHideDuration={global.snackWarning.duration}
+            open={global.snackWarning.open} autoHideDuration={global.snackWarning.durationMs}
             key={`snack-wrn`}
             // message={global.snackWarning.msg}
             onClose={() => dispatch(unsetSnack(SnackNfoType.warning))}>
@@ -81,7 +81,7 @@ export const SnackComponent = () => {
         <Snackbar
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             // TransitionComponent={SlideTransition}
-            open={global.snackInfo.open} autoHideDuration={global.snackInfo.duration}
+            open={global.snackInfo.open} autoHideDuration={global.snackInfo.durationMs}
             key={`snack-nfo`}
             // message={global.snackInfo.msg}
             onClose={() => dispatch(unsetSnack(SnackNfoType.info))}>

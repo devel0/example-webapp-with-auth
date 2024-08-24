@@ -5,5 +5,5 @@ export interface SnackNfo {
   title?: string,
   msg: string[],
   type: SnackNfoType,
-  duration?: number | null | undefined
+  durationMs?: number | null | undefined
 }

@@ -32,6 +32,7 @@
 - auth controller [edit user][3] to create, edit username, password, email, roles, lockout
 - react redux
 - login public page and protected routes
+- send email for lost password feature
 - user manager gui with user role permissions related capabilities
 - theme light/dark, snacks
 
@@ -68,6 +69,18 @@ dotnet user-secrets set "DbProvider" "$DB_PROVIDER"
 dotnet user-secrets set "ConnectionStrings:Main" "$DB_CONN_STRING"
 dotnet user-secrets set "JwtSettings:Key" "$JWTKEY"
 ```
+
+for reset password feature to work configure also a smtp server
+
+```sh
+dotnet user-secrets set "EmailServer:SmtpServerName" REPL_MAILSERVER_HOSTNAME
+dotnet user-secrets set "EmailServer:SmtpServerPort" REPL_MAILSERVER_PORT
+dotnet user-secrets set "EmailServer:Security" REPL_MAILSERVER_SECURITY
+dotnet user-secrets set "EmailServer:Username" REPL_MAILSERVER_USER_EMAIL
+dotnet user-secrets set "EmailServer:Password" REPL_MAILSERVER_USER_PASSWORD
+```
+
+accepted values for `EmailServer:Security` are `Tls`, `Ssl`, `Auto`, `None`.
 
 - install postgres as docker and psql client in the host
 
@@ -116,6 +129,20 @@ code .
 ## dev notes
 
 ### run tests
+
+- configure unit test db settings
+
+```sh
+cd WebApiServer
+
+TEST_DB_CONN_STRING="Host=localhost; Database=REPL_TEST_DBNAME; Username=REPL_TEST_DBUSER; Password=REPL_TEST_DBPASS"
+
+dotnet user-secrets set "ConnectionStrings:UnitTest" "$DB_CONN_STRING"
+
+cd ..
+```
+
+- to run tests
 
 ```sh
 dotnet test

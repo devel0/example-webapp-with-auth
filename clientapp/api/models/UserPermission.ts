@@ -57,6 +57,8 @@
  * DisableAdvancedUser (Disable user which max role is "advanced".)
  * 
  * DisableNormalUser (Disable user which max role is "normal".)
+ * 
+ * ResetLostPassword (Generate an email with a reset password token.)
  * @export
  */
 export const UserPermission = {
@@ -80,7 +82,8 @@ export const UserPermission = {
     DeleteNormalUser: 'DeleteNormalUser',
     DisableAdminUser: 'DisableAdminUser',
     DisableAdvancedUser: 'DisableAdvancedUser',
-    DisableNormalUser: 'DisableNormalUser'
+    DisableNormalUser: 'DisableNormalUser',
+    ResetLostPassword: 'ResetLostPassword'
 } as const;
 export type UserPermission = typeof UserPermission[keyof typeof UserPermission];
 

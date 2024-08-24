@@ -39,7 +39,7 @@ const defaultSnackNfo = () => {
     open: false,
     title: "",
     msg: [""],
-    duration: 6000
+    durationMs: 6000
   } as SnackNfo
 }
 

@@ -30,3 +30,7 @@ export const handleApiException = async (ex: ResponseError, prefixMsg: string = 
         type: SnackNfoType.error
     }))
 }
+
+export function delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+}

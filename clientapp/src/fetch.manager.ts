@@ -18,7 +18,14 @@ export class APIMiddleware implements Middleware {
     post(context: ResponseContext): Promise<Response | void> {
         store.dispatch(setGeneralNetwork(false))
 
-        if (context.response.status === HttpStatusCode.InternalServerError) {
+        if (context.response.status === HttpStatusCode.BadGateway) {
+            store.dispatch(setSnack({
+                title: "Network error",
+                msg: ["Backend server unreachable"],
+                type: SnackNfoType.error
+            }))
+        }
+        else if (context.response.status === HttpStatusCode.InternalServerError) {
             context.response.text().then(res => {
                 const obj = JSON.parse(res)
                 let title = ""
@@ -32,7 +39,7 @@ export class APIMiddleware implements Middleware {
                 }
                 store.dispatch(setSnack({
                     title: title,
-                    msg: [ msg ],
+                    msg: [msg],
                     type: SnackNfoType.error
                 }))
             })

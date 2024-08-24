@@ -35,11 +35,13 @@ global using Microsoft.Net.Http.Headers;
 global using Microsoft.OpenApi.Models;
 
 // thirdy
+global using MimeKit;
 global using Npgsql;
 global using SearchAThing.Ext;
 global using Serilog;
 global using Serilog.Templates;
 global using Serilog.Templates.Themes;
+global using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 global using Swashbuckle.AspNetCore.Annotations;
 global using Swashbuckle.AspNetCore.SwaggerGen;
 global using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;

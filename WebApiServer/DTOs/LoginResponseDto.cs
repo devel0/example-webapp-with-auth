@@ -19,7 +19,7 @@ public enum LoginStatus
     /// <summary>
     /// Invalid authentication.
     /// </summary>    
-    InvalidAuthentication,
+    InvalidAuthentication,    
 
     /// <summary>
     /// Authentication http context.

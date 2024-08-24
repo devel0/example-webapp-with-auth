@@ -20,11 +20,12 @@ export const APP_TITLE = "WebAppTest";
 export const APP_LOGO_TEXT: string | undefined = "WEBAPP";
 
 import { PaletteMode } from "@mui/material";
+import { green } from "@mui/material/colors"
 
 export const APP_URL_BASE = "/app";
 
 export const APP_URL_Home = `${APP_URL_BASE}`
-export const APP_URL_Login = `${APP_URL_BASE}/login/:from?`
+export const APP_URL_Login = `${APP_URL_BASE}/login/:from?/:token?`
 export const APP_URL_Users = `${APP_URL_BASE}/users`
 
 export const LOCAL_STORAGE_CURRENT_USER_NFO = "currentUserNfo";
@@ -52,3 +53,8 @@ export const DEFAULT_SIZE_XLARGE = '4rem'
 
 export const DEFAULT_FONTWEIGHT_SEMIBOLD = 500
 export const DEFAULT_FONTWEIGHT_BOLD = 600
+
+export const DEFAULT_FONTSIZE_NORMAL = "1rem"
+export const DEFAULT_FONTSIZE_MEDIUM = "1.5rem"
+
+export const DEFAULT_COLOR_TIPS = green[400]

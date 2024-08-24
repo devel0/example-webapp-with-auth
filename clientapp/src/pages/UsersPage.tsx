@@ -113,7 +113,7 @@ export const UsersPage = () => {
                                         })
 
                                         dispatch(setSnack({
-                                            msg: [ `Delete successfully` ],
+                                            msg: [`Delete successfully`],
                                             type: SnackNfoType.success
                                         }))
 
@@ -137,6 +137,16 @@ export const UsersPage = () => {
                 getRowId={r => r.userName ?? ''}
                 rows={users}
                 columns={cols}
+                initialState={{
+                    sorting: {
+                        sortModel: [
+                            {
+                                field: fn('userName'),
+                                sort: 'asc'
+                            }
+                        ]
+                    }
+                }}
                 onRowSelectionModelChange={(ids, detail) => {
                     if (ids.length > 0) {
                         setSelectedUsername(ids[0].toString())

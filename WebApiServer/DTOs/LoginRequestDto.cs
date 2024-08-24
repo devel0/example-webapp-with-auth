@@ -6,17 +6,14 @@ namespace ExampleWebApp.Backend.WebApi;
 public class LoginRequestDto
 {
     /// <summary>
-    /// Username. If null but <see cref="Email"/> was given login will be tried within email as user identifier, instead of the username.
+    /// Username or email.
     /// </summary>    
-    public string? UserName { get; set; }
-
-    /// <summary>
-    /// Email. Can be null if non null <see cref="UserName"/> given.
-    /// </summary>    
-    public string? Email { get; set; }
+    public string? UsernameOrEmail { get; set; }
 
     /// <summary>
     /// Password.
     /// </summary>    
     public required string Password { get; set; }
+
+    public string? PasswordResetToken { get; set; }
 }

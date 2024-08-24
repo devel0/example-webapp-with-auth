@@ -20,23 +20,23 @@ import { mapValues } from '../runtime';
  */
 export interface LoginRequestDto {
     /**
-     * Username. If null but ExampleWebApp.Backend.WebApi.LoginRequestDto.Email was given login will be tried within email as user identifier, instead of the username.
+     * Username or email.
      * @type {string}
      * @memberof LoginRequestDto
      */
-    userName?: string | null;
-    /**
-     * Email. Can be null if non null ExampleWebApp.Backend.WebApi.LoginRequestDto.UserName given.
-     * @type {string}
-     * @memberof LoginRequestDto
-     */
-    email?: string | null;
+    usernameOrEmail?: string | null;
     /**
      * Password.
      * @type {string}
      * @memberof LoginRequestDto
      */
     password: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof LoginRequestDto
+     */
+    passwordResetToken?: string | null;
 }
 
 /**
@@ -57,9 +57,9 @@ export function LoginRequestDtoFromJSONTyped(json: any, ignoreDiscriminator: boo
     }
     return {
         
-        'userName': json['userName'] == null ? undefined : json['userName'],
-        'email': json['email'] == null ? undefined : json['email'],
+        'usernameOrEmail': json['usernameOrEmail'] == null ? undefined : json['usernameOrEmail'],
         'password': json['password'],
+        'passwordResetToken': json['passwordResetToken'] == null ? undefined : json['passwordResetToken'],
     };
 }
 
@@ -69,9 +69,9 @@ export function LoginRequestDtoToJSON(value?: LoginRequestDto | null): any {
     }
     return {
         
-        'userName': value['userName'],
-        'email': value['email'],
+        'usernameOrEmail': value['usernameOrEmail'],
         'password': value['password'],
+        'passwordResetToken': value['passwordResetToken'],
     };
 }
 

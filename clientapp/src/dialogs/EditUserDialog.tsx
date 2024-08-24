@@ -151,7 +151,7 @@ export const EditUserDialog = (props: {
                             <TableCell valign="top">Disabled</TableCell>
                             <TableCell>
                                 <Checkbox
-                                    checked={userData?.editDisabled === true ?? false}
+                                    checked={userData?.editDisabled === true}
                                     onChange={e => setUserData({ ...userData, editDisabled: e.target.checked === true })}
                                 />
                             </TableCell>
@@ -176,7 +176,7 @@ export const EditUserDialog = (props: {
                                 <TextField
                                     error={passwordValid === false}
                                     type="password"
-                                    value={userData.editPassword ?? ''}
+                                    value={userData.editPassword ??''}
                                     onChange={e => setUserData({ ...userData, editPassword: e.target.value })}
                                     placeholder="Type to change password"
                                     helperText={passwordValid === false && passwordIsValid(authOptions, userData.editPassword ?? '').errors.map((errorMsg, errorMsgIdx) =>

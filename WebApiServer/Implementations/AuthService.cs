@@ -70,24 +70,24 @@ public class AuthService : IAuthService
     {
         ApplicationUser? user;
 
-        if (loginRequestDto.UserName is not null)
-            user = await userManager.FindByNameAsync(loginRequestDto.UserName);
-        else
+        if (loginRequestDto.UsernameOrEmail is not null)
         {
-            if (loginRequestDto.Email is null)
-                return new LoginResponseDto
-                {
-                    Status = LoginStatus.UsernameOrEmailRequired
-                };
-
-            user = await userManager.FindByEmailAsync(loginRequestDto.Email);
+            if (loginRequestDto.UsernameOrEmail.Contains("@"))
+                user = await userManager.FindByEmailAsync(loginRequestDto.UsernameOrEmail);
+            else
+                user = await userManager.FindByNameAsync(loginRequestDto.UsernameOrEmail);
         }
+        else
+            return new LoginResponseDto
+            {
+                Status = LoginStatus.UsernameOrEmailRequired
+            };
 
         if (user is null)
             return new LoginResponseDto
             {
                 Status = LoginStatus.InvalidAuthentication,
-                Errors = [$"can't find {loginRequestDto.UserName} user or {loginRequestDto.Email} email"]
+                Errors = [$"can't find {loginRequestDto.UsernameOrEmail} user or email"]
             };
 
         if (user.Disabled == true)
@@ -97,12 +97,28 @@ public class AuthService : IAuthService
                 Errors = [$"user {user.UserName} disabled"]
             };
 
-        if (!await userManager.CheckPasswordAsync(user, loginRequestDto.Password))
-            return new LoginResponseDto
-            {
-                Status = LoginStatus.InvalidAuthentication,
-                Errors = [$"check password failed for {user.UserName} user"]
-            };
+        if (loginRequestDto.PasswordResetToken is not null)
+        {
+            var resetRes = await userManager.ResetPasswordAsync(user, loginRequestDto.PasswordResetToken, loginRequestDto.Password);
+
+            //TODO: check if reset password satisfy password options
+
+            if (!resetRes.Succeeded)
+                return new LoginResponseDto
+                {
+                    Status = LoginStatus.InvalidAuthentication,
+                    Errors = [$"reset password toekn invalid for {user.UserName} user"]
+                };
+        }
+        else
+        {
+            if (!await userManager.CheckPasswordAsync(user, loginRequestDto.Password))
+                return new LoginResponseDto
+                {
+                    Status = LoginStatus.InvalidAuthentication,
+                    Errors = [$"check password failed for {user.UserName} user"]
+                };
+        }
 
         if (await userManager.IsLockedOutAsync(user))
             return new LoginResponseDto
@@ -757,6 +773,120 @@ public class AuthService : IAuthService
         }
 
         return res;
+    }
+
+    public async Task<ResetLostPasswordResponseDto> ResetLostPasswordRequestAsync(
+        string email, string? token, string? resetPassword, CancellationToken cancellationToken)
+    {
+        var user = await userManager.FindByEmailAsync(email);
+        if (user is null)
+            return new ResetLostPasswordResponseDto
+            {
+                Status = ResetLostPasswordStatus.NotFound
+            };
+
+        if (token is not null && resetPassword is not null)
+        {
+            var loginRes = await LoginAsync(new LoginRequestDto
+            {
+                UsernameOrEmail = email,
+                Password = resetPassword,
+                PasswordResetToken = token
+            }, cancellationToken);
+
+            if (loginRes.Status == LoginStatus.OK)
+                return new ResetLostPasswordResponseDto
+                {
+                    Status = ResetLostPasswordStatus.OK
+                };
+
+            return new ResetLostPasswordResponseDto
+            {
+                Status = ResetLostPasswordStatus.InvalidToken
+            };
+        }
+
+        var emailServerUsername = configuration.GetConfigVar<string>(CONFIG_KEY_EmailServer_Username);
+        var emailServerPassword = configuration.GetConfigVar<string>(CONFIG_KEY_EmailServer_Password);
+        var emailServerSmtpServerName = configuration.GetConfigVar<string>(CONFIG_KEY_EmailServer_SmtpServer);
+        var emailServerSmtpServerPort = configuration.GetConfigVar<int>(CONFIG_KEY_EmailServer_SmtpServerPort);
+        var emailServerSecurityOption = configuration.GetConfigVar<ConfigValuesEmailServerSecurity>(CONFIG_KEY_EmailServer_Security);
+
+        var emailServerFromDisplayName = configuration.GetConfigVar<string?>(CONFIG_KEY_EmailServer_FromDisplayName) ?? "Server";
+
+        var appServerName = configuration.GetConfigVar<string>(CONFIG_KEY_AppServerName);
+
+        var pwToken = await userManager.GeneratePasswordResetTokenAsync(user);
+        // var resetUrl = $"https://{appServerName}{API_PREFIX}" +
+        //     $"/{nameof(AuthController).StripEnd("Controller")}" +
+        //     $"/{nameof(AuthController.ResetLostPassword)}" +
+        //     $"?email={email}&token={pwToken}";
+
+        var resetUrl = $"https://{appServerName}/app/Login/:from/{HttpUtility.UrlEncode(pwToken)}";
+
+        var msg = new MimeMessage();
+        msg.From.Add(new MailboxAddress(emailServerFromDisplayName, emailServerUsername));
+        msg.To.Add(new MailboxAddress(email, email));
+
+        msg.Body = new TextPart("html")
+        {
+            Text = $$"""
+            <a href="{{resetUrl}}">Click here</a> to reset your password.
+            """
+        };
+
+        using (var client = new SmtpClient())
+        {
+            switch (emailServerSecurityOption)
+            {
+                case ConfigValuesEmailServerSecurity.None:
+                    await client.ConnectAsync(
+                        emailServerSmtpServerName,
+                        emailServerSmtpServerPort,
+                        MailKit.Security.SecureSocketOptions.None,
+                        cancellationToken);
+                    break;
+
+                case ConfigValuesEmailServerSecurity.Auto:
+                    await client.ConnectAsync(
+                        emailServerSmtpServerName,
+                        emailServerSmtpServerPort,
+                        MailKit.Security.SecureSocketOptions.Auto,
+                        cancellationToken);
+                    break;
+
+                case ConfigValuesEmailServerSecurity.Ssl:
+                    await client.ConnectAsync(
+                        emailServerSmtpServerName,
+                        emailServerSmtpServerPort,
+                        MailKit.Security.SecureSocketOptions.SslOnConnect,
+                        cancellationToken);
+                    break;
+
+                case ConfigValuesEmailServerSecurity.Tls:
+                    await client.ConnectAsync(
+                        emailServerSmtpServerName,
+                        emailServerSmtpServerPort,
+                        MailKit.Security.SecureSocketOptions.StartTls,
+                        cancellationToken);
+                    break;
+
+                default: throw new NotImplementedException($"unknown email server security option {emailServerSecurityOption}");
+            }
+
+            await client.AuthenticateAsync(
+                new NetworkCredential(emailServerUsername, emailServerPassword),
+                cancellationToken);
+
+            await client.SendAsync(msg, cancellationToken);
+
+            await client.DisconnectAsync(quit: true, cancellationToken);
+        }
+
+        return new ResetLostPasswordResponseDto
+        {
+            Status = ResetLostPasswordStatus.OK
+        };
     }
 
 }

@@ -55,28 +55,28 @@ export const globalSlice = createSlice({
           state.snackSuccess.title = nfo.title;
           state.snackSuccess.msg = nfo.msg;
           state.snackSuccess.open = true;
-          state.snackSuccess.duration = nfo.duration === null ? null : (nfo.duration ?? 6000);
+          state.snackSuccess.durationMs = nfo.durationMs === null ? null : (nfo.durationMs ?? 6000);
           break;
 
         case SnackNfoType.info:
           state.snackInfo.title = nfo.title;
           state.snackInfo.msg = nfo.msg;
           state.snackInfo.open = true;
-          state.snackInfo.duration = nfo.duration === null ? null : (nfo.duration ?? 6000);
+          state.snackInfo.durationMs = nfo.durationMs === null ? null : (nfo.durationMs ?? 6000);
           break;
 
         case SnackNfoType.warning:
           state.snackWarning.title = nfo.title;
           state.snackWarning.msg = nfo.msg;
           state.snackWarning.open = true;
-          state.snackWarning.duration = nfo.duration === null ? null : (nfo.duration ?? 6000);
+          state.snackWarning.durationMs = nfo.durationMs === null ? null : (nfo.durationMs ?? 6000);
           break;
 
         case SnackNfoType.error:
           state.snackError.title = nfo.title;
           state.snackError.msg = nfo.msg;
           state.snackError.open = true;
-          state.snackError.duration = nfo.duration === null ? null : (nfo.duration ?? 6000);
+          state.snackError.durationMs = nfo.durationMs === null ? null : (nfo.durationMs ?? 6000);
           break;
       }
     },

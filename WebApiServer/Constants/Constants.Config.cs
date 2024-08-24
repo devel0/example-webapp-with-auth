@@ -1,12 +1,27 @@
 namespace ExampleWebApp.Backend.WebApi;
 
 public static partial class Constants
-{
+{    
 
+
+    public enum ConfigValuesDbProvider
+    {
+        Postgres
+    };
+
+    public enum ConfigValuesEmailServerSecurity
+    {
+        None,
+        Auto,
+        Ssl,
+        Tls
+    }
+
+    //---
+
+    public const string CONFIG_KEY_AppServerName = "AppServerName";    
     public const string CONFIG_KEY_ConnectionString = "ConnectionStrings:Main";
-    public const string CONFIG_KEY_DbProvider = "DbProvider";
-
-    public const string CONFIG_VALUE_DbProvider_Postgres = "Postgres";
+    public const string CONFIG_KEY_DbProvider = "DbProvider";    
 
     public const string CONFIG_KEY_IsUnitTest = "IsUnitTest";
     public const string CONFIG_KEY_UnitTestConnectionString = "ConnectionStrings:UnitTest";
@@ -22,5 +37,14 @@ public static partial class Constants
     public const string CONFIG_KEY_SeedUsers_Admin_UserName = "SeedUsers:Admin:UserName";
     public const string CONFIG_KEY_SeedUsers_Admin_Password = "SeedUsers:Admin:Password";
     public const string CONFIG_KEY_SeedUsers_Admin_Email = "SeedUsers:Admin:Email";
+
+    public const string CONFIG_KEY_EmailServer_Username = "EmailServer:Username";
+    public const string CONFIG_KEY_EmailServer_Password = "EmailServer:Password";
+    public const string CONFIG_KEY_EmailServer_SmtpServer = "EmailServer:SmtpServerName";
+    public const string CONFIG_KEY_EmailServer_SmtpServerPort = "EmailServer:SmtpServerPort";
+    public const string CONFIG_KEY_EmailServer_Security = "EmailServer:Security";  
+    public const string CONFIG_KEY_EmailServer_FromDisplayName = "EmailServer:FromDisplayName";  
+
+    
 
 }

@@ -68,4 +68,7 @@ public interface IAuthService
     Task<EditUserResponseDto> EditUserAsync(
         EditUserRequestDto editUserRequestDto, CancellationToken cancellationToken);
 
+    Task<ResetLostPasswordResponseDto> ResetLostPasswordRequestAsync(
+        string email, string? token, string? resetPassword, CancellationToken cancellationToken);    
+
 }

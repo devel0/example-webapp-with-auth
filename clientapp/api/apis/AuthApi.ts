@@ -62,6 +62,12 @@ export interface ApiAuthLoginPostRequest {
     loginRequestDto?: LoginRequestDto;
 }
 
+export interface ApiAuthResetLostPasswordGetRequest {
+    email?: string;
+    token?: string;
+    resetPassword?: string;
+}
+
 /**
  * 
  */
@@ -285,6 +291,43 @@ export class AuthApi extends runtime.BaseAPI {
      */
     async apiAuthLogoutGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.apiAuthLogoutGetRaw(initOverrides);
+    }
+
+    /**
+     * Reset lost password.
+     */
+    async apiAuthResetLostPasswordGetRaw(requestParameters: ApiAuthResetLostPasswordGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const queryParameters: any = {};
+
+        if (requestParameters['email'] != null) {
+            queryParameters['email'] = requestParameters['email'];
+        }
+
+        if (requestParameters['token'] != null) {
+            queryParameters['token'] = requestParameters['token'];
+        }
+
+        if (requestParameters['resetPassword'] != null) {
+            queryParameters['resetPassword'] = requestParameters['resetPassword'];
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/Auth/ResetLostPassword`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Reset lost password.
+     */
+    async apiAuthResetLostPasswordGet(requestParameters: ApiAuthResetLostPasswordGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiAuthResetLostPasswordGetRaw(requestParameters, initOverrides);
     }
 
 }

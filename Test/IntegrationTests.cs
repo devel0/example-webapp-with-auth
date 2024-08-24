@@ -32,7 +32,7 @@ public class IntegrationTests
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
-            UserName = adminUsername,
+            UsernameOrEmail = adminUsername,
             Password = adminPassword
         })).ApplySetCookies(client);
 
@@ -57,7 +57,7 @@ public class IntegrationTests
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
-            Email = adminEmail,
+            UsernameOrEmail = adminEmail,
             Password = adminPassword
         })).ApplySetCookies(client);
 
@@ -85,7 +85,7 @@ public class IntegrationTests
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
-            UserName = adminUsername,
+            UsernameOrEmail = adminUsername,
             Password = adminPassword
         })).ApplySetCookies(client);
 
@@ -121,7 +121,7 @@ public class IntegrationTests
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
-            UserName = adminUsername,
+            UsernameOrEmail = adminUsername,
             Password = adminPassword
         })).ApplySetCookies(client);
 
@@ -144,7 +144,7 @@ public class IntegrationTests
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
-            Email = adminEmail,
+            UsernameOrEmail = adminEmail,
             Password = adminPassword
         })).ApplySetCookies(client);
 
@@ -174,7 +174,7 @@ public class IntegrationTests
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
-            UserName = adminUsername,
+            UsernameOrEmail = adminUsername,
             Password = adminPassword
         })).ApplySetCookies(client);
 
@@ -210,7 +210,7 @@ public class IntegrationTests
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
-            UserName = adminUsername,
+            UsernameOrEmail = adminUsername,
             Password = adminPassword
         })).ApplySetCookies(client);
 
@@ -247,7 +247,7 @@ public class IntegrationTests
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
-            UserName = adminUsername,
+            UsernameOrEmail = adminUsername,
             Password = adminPassword
         })).ApplySetCookies(client);
 
@@ -303,7 +303,7 @@ public class IntegrationTests
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
-            UserName = adminUsername,
+            UsernameOrEmail = adminUsername,
             Password = adminPassword
         })).ApplySetCookies(client);
 
@@ -342,7 +342,7 @@ public class IntegrationTests
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
-            UserName = adminUsername,
+            UsernameOrEmail = adminUsername,
             Password = adminPassword
         })).ApplySetCookies(client);
 
@@ -376,7 +376,7 @@ public class IntegrationTests
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
-            UserName = adminUsername,
+            UsernameOrEmail = adminUsername,
             Password = adminPassword
         })).ApplySetCookies(client);
 
@@ -408,7 +408,7 @@ public class IntegrationTests
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
-            UserName = adminUsername,
+            UsernameOrEmail = adminUsername,
             Password = adminPassword
         })).ApplySetCookies(client);
 
@@ -444,7 +444,7 @@ public class IntegrationTests
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
-            UserName = adminUsername,
+            UsernameOrEmail = adminUsername,
             Password = adminPassword
         })).ApplySetCookies(client);
 
@@ -505,7 +505,7 @@ public class IntegrationTests
             // login
             loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
             {
-                UserName = permnfo.username,
+                UsernameOrEmail = permnfo.username,
                 Password = permnfo.password
             })).ApplySetCookies(client);
 
@@ -542,7 +542,7 @@ public class IntegrationTests
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
-            UserName = adminUsername,
+            UsernameOrEmail = adminUsername,
             Password = adminPassword
         })).ApplySetCookies(client);
 
@@ -608,7 +608,7 @@ public class IntegrationTests
             // login
             loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
             {
-                UserName = userCredential.username,
+                UsernameOrEmail = userCredential.username,
                 Password = userCredential.password
             })).ApplySetCookies(client);
 
@@ -690,7 +690,7 @@ public class IntegrationTests
 
                     var testLoginRes = await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
                     {
-                        UserName = otherAdminUsername,
+                        UsernameOrEmail = otherAdminUsername,
                         Password = adminPassword
                     });/*.ApplySetCookies(client);*/
 
@@ -707,7 +707,7 @@ public class IntegrationTests
 
                     testLoginRes = await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
                     {
-                        UserName = otherAdminUsername,
+                        UsernameOrEmail = otherAdminUsername,
                         Password = adminPassword
                     });/*.ApplySetCookies(client);*/
 
@@ -734,7 +734,7 @@ public class IntegrationTests
 
                     var testLoginRes = await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
                     {
-                        UserName = otherAdminUsername,
+                        UsernameOrEmail = otherAdminUsername,
                         Password = adminPassword
                     });/*.ApplySetCookies(client);*/
 
@@ -751,7 +751,7 @@ public class IntegrationTests
 
                     testLoginRes = await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
                     {
-                        UserName = otherAdminUsername,
+                        UsernameOrEmail = otherAdminUsername,
                         Password = adminPassword
                     });/*.ApplySetCookies(client);*/
 
@@ -778,7 +778,7 @@ public class IntegrationTests
 
                     var testLoginRes = await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
                     {
-                        UserName = otherAdvancedUsername,
+                        UsernameOrEmail = otherAdvancedUsername,
                         Password = advancedPassword
                     });/*.ApplySetCookies(client);*/
 
@@ -795,7 +795,7 @@ public class IntegrationTests
 
                     testLoginRes = await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
                     {
-                        UserName = otherAdvancedUsername,
+                        UsernameOrEmail = otherAdvancedUsername,
                         Password = advancedPassword
                     });/*.ApplySetCookies(client);*/
 
@@ -822,7 +822,7 @@ public class IntegrationTests
 
                     var testLoginRes = await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
                     {
-                        UserName = otherNormalUsername,
+                        UsernameOrEmail = otherNormalUsername,
                         Password = normalPassword
                     });/*.ApplySetCookies(client);*/
 
@@ -839,7 +839,7 @@ public class IntegrationTests
 
                     testLoginRes = await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
                     {
-                        UserName = otherNormalUsername,
+                        UsernameOrEmail = otherNormalUsername,
                         Password = normalPassword
                     });/*.ApplySetCookies(client);*/
 
@@ -992,7 +992,7 @@ public class IntegrationTests
             // login
             loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
             {
-                UserName = userCredential.username,
+                UsernameOrEmail = userCredential.username,
                 Password = $"{userCredential.testPrefix}_changedPassword123!"
             })).ApplySetCookies(client);
 
@@ -1076,7 +1076,7 @@ public class IntegrationTests
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
-            UserName = adminUsername,
+            UsernameOrEmail = adminUsername,
             Password = adminPassword
         })).ApplySetCookies(client);
 
@@ -1144,7 +1144,7 @@ public class IntegrationTests
                 // login
                 loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
                 {
-                    UserName = adminUsername,
+                    UsernameOrEmail = adminUsername,
                     Password = adminPassword
                 })).ApplySetCookies(client);
 
@@ -1203,7 +1203,7 @@ public class IntegrationTests
             // login
             loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
             {
-                UserName = userCredential.username,
+                UsernameOrEmail = userCredential.username,
                 Password = userCredential.password
             })).ApplySetCookies(client);
 
@@ -1233,11 +1233,11 @@ public class IntegrationTests
 
                     var testLoginRes = await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
                     {
-                        UserName = otherAdminUsername,
+                        UsernameOrEmail = otherAdminUsername,
                         Password = adminPassword
                     });/*.ApplySetCookies(client);*/
 
-                    Assert.Equal(HttpStatusCode.Unauthorized, testLoginRes.StatusCode);                     
+                    Assert.Equal(HttpStatusCode.Unauthorized, testLoginRes.StatusCode);
                 }
                 else
                     Assert.Equal(HttpStatusCode.Forbidden, deleteUserRes.StatusCode);
@@ -1259,11 +1259,11 @@ public class IntegrationTests
 
                     var testLoginRes = await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
                     {
-                        UserName = otherAdvancedUsername,
+                        UsernameOrEmail = otherAdvancedUsername,
                         Password = advancedPassword
                     });/*.ApplySetCookies(client);*/
 
-                    Assert.Equal(HttpStatusCode.Unauthorized, testLoginRes.StatusCode);                     
+                    Assert.Equal(HttpStatusCode.Unauthorized, testLoginRes.StatusCode);
                 }
                 else
                     Assert.Equal(HttpStatusCode.Forbidden, deleteUserRes.StatusCode);
@@ -1285,11 +1285,11 @@ public class IntegrationTests
 
                     var testLoginRes = await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
                     {
-                        UserName = otherNormalUsername,
+                        UsernameOrEmail = otherNormalUsername,
                         Password = normalPassword
                     });/*.ApplySetCookies(client);*/
 
-                    Assert.Equal(HttpStatusCode.Unauthorized, testLoginRes.StatusCode);                     
+                    Assert.Equal(HttpStatusCode.Unauthorized, testLoginRes.StatusCode);
                 }
                 else
                     Assert.Equal(HttpStatusCode.Forbidden, deleteUserRes.StatusCode);
