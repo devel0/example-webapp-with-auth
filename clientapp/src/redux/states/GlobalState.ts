@@ -10,6 +10,7 @@ export interface GlobalState {
 
   // this will serialized in the local storage for a quick page refresh
   currentUserInitialized: boolean;
+  currentUserCanManageUsers: boolean;
   currentUser: CurrentUserNfo | undefined;
 
   // snacks
@@ -49,6 +50,7 @@ export const GlobalInitialState: GlobalState = {
   generalNetwork: false,
 
   currentUserInitialized: false,
+  currentUserCanManageUsers: false,
   currentUser: initialCurrentUser,
 
   // snacks

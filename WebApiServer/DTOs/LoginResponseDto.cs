@@ -55,4 +55,9 @@ public class LoginResponseDto
 
     public List<string> Errors { get; set; } = new();
 
+    /// <summary>
+    /// Permissions related to this user roles.
+    /// </summary>
+    public HashSet<UserPermission> Permissions { get; set; } = new();
+
 }

@@ -19,6 +19,12 @@ import {
     LoginStatusFromJSONTyped,
     LoginStatusToJSON,
 } from './LoginStatus';
+import type { UserPermission } from './UserPermission';
+import {
+    UserPermissionFromJSON,
+    UserPermissionFromJSONTyped,
+    UserPermissionToJSON,
+} from './UserPermission';
 
 /**
  * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.LoginRequestDto) api response data.
@@ -56,6 +62,12 @@ export interface LoginResponseDto {
      * @memberof LoginResponseDto
      */
     errors?: Array<string> | null;
+    /**
+     * Permissions related to this user roles.
+     * @type {Set<UserPermission>}
+     * @memberof LoginResponseDto
+     */
+    permissions?: Set<UserPermission> | null;
 }
 
 /**
@@ -81,6 +93,7 @@ export function LoginResponseDtoFromJSONTyped(json: any, ignoreDiscriminator: bo
         'email': json['email'] == null ? undefined : json['email'],
         'roles': json['roles'] == null ? undefined : json['roles'],
         'errors': json['errors'] == null ? undefined : json['errors'],
+        'permissions': json['permissions'] == null ? undefined : (new Set((json['permissions'] as Array<any>).map(UserPermissionFromJSON))),
     };
 }
 
@@ -95,6 +108,7 @@ export function LoginResponseDtoToJSON(value?: LoginResponseDto | null): any {
         'email': value['email'],
         'roles': value['roles'],
         'errors': value['errors'],
+        'permissions': value['permissions'] == null ? undefined : (Array.from(value['permissions'] as Set<any>).map(UserPermissionToJSON)),
     };
 }
 

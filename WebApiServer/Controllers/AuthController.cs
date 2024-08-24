@@ -100,7 +100,7 @@ public class AuthController : ControllerBase
     /// List all users or specific if param given.
     /// </summary>    
     [HttpGet]
-    [Authorize(Roles = ROLE_admin)]
+    [Authorize(Roles = $"{ROLE_admin},{ROLE_advanced}")]
     public async Task<ActionResult<List<UserListItemResponseDto>>> ListUsers(
         string? username = null
     )
@@ -114,7 +114,7 @@ public class AuthController : ControllerBase
     /// List all roles.
     /// </summary>    
     [HttpGet]
-    [Authorize(Roles = ROLE_admin)]
+    [Authorize(Roles = $"{ROLE_admin},{ROLE_advanced}")]
     public async Task<ActionResult<List<string>>> ListRoles()
     {
         var res = await authService.ListRolesAsync(cancellationToken);

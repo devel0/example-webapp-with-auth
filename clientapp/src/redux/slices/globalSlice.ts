@@ -1,10 +1,11 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice, current } from "@reduxjs/toolkit";
 
 import { GlobalInitialState } from "../states/GlobalState";
 import { SnackNfo, SnackNfoType } from "../../types/SnackNfo";
 import { CurrentUserNfo } from "../../types/CurrentUserNfo";
 import { PaletteMode } from "@mui/material";
 import { LOCAL_STORAGE_THEME } from "../../constants/general";
+import { UserPermission } from "../../../api";
 
 export const globalSlice = createSlice({
   name: "global",
@@ -27,7 +28,10 @@ export const globalSlice = createSlice({
 
     setSuccessfulLogin: (state, action: PayloadAction<CurrentUserNfo>) => {
       state.currentUserInitialized = true;
-      state.currentUser = action.payload
+
+      const currentUser = action.payload
+      state.currentUser = currentUser
+      state.currentUserCanManageUsers = currentUser.permissions.indexOf(UserPermission.CreateNormalUser) !== -1
     },
 
     setLoggedOut: (state) => {

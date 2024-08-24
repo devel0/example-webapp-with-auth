@@ -22,6 +22,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material';
 
 export interface AppBarItem {
+    hidden?: boolean,
     label: string,
     icon?: JSX.Element,
     onClick?: () => void,
@@ -103,7 +104,7 @@ function ResponsiveAppBar(props: {
                         flexGrow: 1,
                         display: { xs: 'none', md: 'flex' }
                     }}>
-                        {pages.map((page, pageIdx) => (
+                        {pages.filter(w=>w.hidden !== true).map((page, pageIdx) => (
                             <Button
                                 key={`dsk-page-${pageIdx}`}
                                 onClick={() => {
@@ -151,7 +152,7 @@ function ResponsiveAppBar(props: {
                                 display: { xs: 'block', md: 'none' },
                             }}
                         >
-                            {pages.map((page, pageIdx) => (
+                            {pages.filter(w=>w.hidden !== true).map((page, pageIdx) => (
                                 <MenuItem
                                     key={`mob-page-${pageIdx}`}
                                     onClick={() => {

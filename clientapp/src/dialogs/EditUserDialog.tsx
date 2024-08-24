@@ -13,6 +13,7 @@ import { SnackNfoType } from "../types/SnackNfo";
 import { handleApiException, nullOrUndefined } from "../utils/utils";
 import { authApi } from "../fetch.manager";
 import { AuthOptions, EditUserRequestDto, ResponseError } from "../../api";
+import { from } from "linq-to-typescript";
 
 export const NewUserDataSample = () => {
     let res: EditUserRequestDto = {
@@ -52,7 +53,7 @@ export const EditUserDialog = (props: {
             })
 
             authApi.apiAuthListRolesGet().then(res => {
-                setAllRoles(res)
+                setAllRoles(from(res).orderBy(w => w).toArray())
             })
         }
     }, [global.currentUser])

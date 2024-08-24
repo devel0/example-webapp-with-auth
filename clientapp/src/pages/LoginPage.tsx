@@ -91,7 +91,8 @@ export const LoginPage = () => {
                     const currentUser: CurrentUserNfo = {
                         userName: response.userName!,
                         email: response.email!,
-                        roles: response.roles!
+                        roles: response.roles ?? [],
+                        permissions: Array.from(response.permissions ?? [])
                     }
 
                     dispatch(setSuccessfulLogin(currentUser));

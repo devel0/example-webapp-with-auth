@@ -152,12 +152,15 @@ public class AuthService : IAuthService
         httpContext.Response.Cookies.Append(WEB_CookieName_XAccessToken, accessToken, opts);
         httpContext.Response.Cookies.Append(WEB_CookieName_XRefreshToken, refreshToken, opts);
 
+        var roles = claims.GetRoles();
+
         return new LoginResponseDto
         {
             Status = LoginStatus.OK,
             UserName = userName,
             Email = user.Email!,
-            Roles = claims.GetRoles()
+            Roles = roles,
+            Permissions = PermissionsFromRoles(roles.ToHashSet())
         };
     }
 

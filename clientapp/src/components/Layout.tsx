@@ -24,7 +24,7 @@ const MainLayout = (props: Props) => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
     const location = useLocation()
-    const [aboutDialogOpen, setAboutDialogOpen] = useState(false)
+    const [aboutDialogOpen, setAboutDialogOpen] = useState(false)    
 
     useEffect(() => {
         if (location.pathname !== APP_URL_Login && (!global.currentUserInitialized || !global.currentUser)) {
@@ -35,7 +35,8 @@ const MainLayout = (props: Props) => {
                         const currentUser: CurrentUserNfo = {
                             userName: res.userName!,
                             email: res.email!,
-                            roles: Array.from(res.roles ?? [])
+                            roles: Array.from(res.roles ?? []),
+                            permissions: Array.from(res.permissions ?? [])
                         }
 
                         dispatch(setSuccessfulLogin(currentUser))
@@ -60,6 +61,7 @@ const MainLayout = (props: Props) => {
 
     const menuPages: AppBarItem[] = [
         {
+            hidden: !global.currentUserCanManageUsers,
             label: 'Users',
             onClick: () => navigate(APP_URL_Users)
         },
