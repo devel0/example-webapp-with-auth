@@ -99,9 +99,7 @@ public class AuthService : IAuthService
 
         if (loginRequestDto.PasswordResetToken is not null)
         {
-            var resetRes = await userManager.ResetPasswordAsync(user, loginRequestDto.PasswordResetToken, loginRequestDto.Password);
-
-            //TODO: check if reset password satisfy password options
+            var resetRes = await userManager.ResetPasswordAsync(user, loginRequestDto.PasswordResetToken, loginRequestDto.Password);            
 
             if (!resetRes.Succeeded)
                 return new LoginResponseDto
