@@ -4,14 +4,6 @@
 
 export const API_URL = () => `https://${import.meta.env.VITE_SERVERNAME}`
 
-export const ROLE_admin = "admin"
-export const ROLE_advanced = "advanced"
-export const ROLE_user = "user"
-
-export type ROLE = "admin" | "advanced" | "user"
-
-export const ALL_ROLES = [ ROLE_admin, ROLE_advanced, ROLE_user ]
-
 //------------------------------------------------------------------
 // APP
 //------------------------------------------------------------------

@@ -3,7 +3,7 @@ import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAppDispatch, useAppSelector } from "../redux/hooks/hooks"
 import { GlobalState } from "../redux/states/GlobalState"
-import { ALL_ROLES, DEFAULT_FONTWEIGHT_BOLD, DEFAULT_SIZE_SMALL, DEFAULT_SIZE_XSMALL, ROLE } from "../constants/general"
+import { DEFAULT_FONTWEIGHT_BOLD, DEFAULT_SIZE_SMALL, DEFAULT_SIZE_XSMALL } from "../constants/general"
 import { useEffect, useState } from "react";
 import { passwordIsValid } from "../utils/password-validator";
 import { emailIsValid } from "../utils/email-validator";
@@ -43,12 +43,18 @@ export const EditUserDialog = (props: {
     const [emailValid, setEmailValid] = useState<boolean | undefined>(undefined)
     const [passwordValid, setPasswordValid] = useState<boolean | undefined>(undefined)
     const [authOptions, setAuthOptions] = useState<AuthOptions | undefined>(undefined)
+    const [allRoles, setAllRoles] = useState<string[] | undefined>(undefined)
 
     useEffect(() => {
-        if (global.currentUser)
+        if (global.currentUser) {
             authApi.apiAuthAuthOptionsGet().then(res => {
                 setAuthOptions(res)
             })
+
+            authApi.apiAuthListRolesGet().then(res => {
+                setAllRoles(res)
+            })
+        }
     }, [global.currentUser])
 
     useEffect(() => {
@@ -107,7 +113,7 @@ export const EditUserDialog = (props: {
         setUserData(NewUserDataSample())
     }
 
-    return authOptions && (
+    return authOptions && allRoles && (
         <Dialog
             open={open}
             onClose={(e, reason) => {
@@ -176,7 +182,7 @@ export const EditUserDialog = (props: {
                                 <TextField
                                     error={passwordValid === false}
                                     type="password"
-                                    value={userData.editPassword ??''}
+                                    value={userData.editPassword ?? ''}
                                     onChange={e => setUserData({ ...userData, editPassword: e.target.value })}
                                     placeholder="Type to change password"
                                     helperText={passwordValid === false && passwordIsValid(authOptions, userData.editPassword ?? '').errors.map((errorMsg, errorMsgIdx) =>
@@ -191,20 +197,20 @@ export const EditUserDialog = (props: {
                             </TableCell>
                         </TableRow>
 
-                        {ALL_ROLES.map((role, roleIdx) => <TableRow key={`role-${role}`}>
+                        {allRoles.map((role, roleIdx) => <TableRow key={`role-${role}`}>
                             <TableCell valign="top">{role}</TableCell>
                             <TableCell>
                                 <Checkbox
-                                    checked={(userData?.editRoles ?? []).indexOf(role as ROLE) !== -1}
+                                    checked={(userData?.editRoles ?? []).indexOf(role) !== -1}
                                     onChange={e => {
-                                        const roleIdx = (userData.editRoles ?? []).indexOf(role as ROLE)
+                                        const roleIdx = (userData.editRoles ?? []).indexOf(role)
                                         console.log(`roleIdx = ${roleIdx}`)
 
                                         if (e.target.checked === true) {
                                             if (roleIdx === -1) {
                                                 if (nullOrUndefined(userData.editRoles))
                                                     userData.editRoles = []
-                                                userData.editRoles!.push(role as ROLE)
+                                                userData.editRoles!.push(role)
                                                 setUserData({ ...userData })
                                             }
                                         }
