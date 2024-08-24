@@ -30,20 +30,7 @@ public static partial class Extensions
     /// </summary>
     /// <param name="path">Variable path (ie. <see cref="CONFIG_KEY_JwtSettings_Key"/></param>    
     public static T GetConfigVar<T>(this IConfiguration configuration, string path)
-    {
-        object? envVar = Environment.GetEnvironmentVariable(path.Replace(":", "_"));
-        if (envVar is not null)
-        {
-            var cvt = TypeDescriptor.GetConverter(envVar);
-            var q = cvt.CanConvertTo(typeof(T));
-            if (q)
-            {
-                var res = cvt.ConvertTo(envVar, typeof(T));
-                if (res is T t)
-                    return t;
-            }
-        }
-
+    {        
         var type = typeof(T);
 
         if (!type.IsReferenceOrNullableType())

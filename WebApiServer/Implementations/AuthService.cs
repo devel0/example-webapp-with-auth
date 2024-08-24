@@ -817,10 +817,6 @@ public class AuthService : IAuthService
         var appServerName = configuration.GetConfigVar<string>(CONFIG_KEY_AppServerName);
 
         var pwToken = await userManager.GeneratePasswordResetTokenAsync(user);
-        // var resetUrl = $"https://{appServerName}{API_PREFIX}" +
-        //     $"/{nameof(AuthController).StripEnd("Controller")}" +
-        //     $"/{nameof(AuthController.ResetLostPassword)}" +
-        //     $"?email={email}&token={pwToken}";
 
         var resetUrl = $"https://{appServerName}/app/Login/:from/{HttpUtility.UrlEncode(pwToken)}";
 

@@ -42,7 +42,7 @@ public class TestFactory : IDisposable
         }
 
         // setting this config var cause the connection string database to another given name
-        Environment.SetEnvironmentVariable(CONFIG_KEY_IsUnitTest.Replace(":", "_"), "true");        
+        Environment.SetEnvironmentVariable(CONFIG_KEY_IsUnitTest.Replace(":", "__"), "true");        
 
         Factory = new WebApplicationFactory<Program>();
 
