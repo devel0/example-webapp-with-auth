@@ -358,6 +358,8 @@ cd example-webapp-with-auth
 ./gen-api.sh
 ```
 
+- browse through swagger interface ( avail in development environment ) ie. https://dev-webapp-test.searchathing.com/swagger
+
 #### invoke api
 
 - foreach ControlleBase api will generated through `gen-api.sh`
