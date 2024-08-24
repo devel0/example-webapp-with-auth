@@ -3,6 +3,7 @@
 - [features](#features)
 - [quickstart (dev)](#quickstart-dev)
   - [local db](#local-db)
+  - [configuration parameters for mail server](#configuration-parameters-for-mail-server)
   - [vscode debug](#vscode-debug)
 - [prerequisites](#prerequisites)
   - [create selfsigned cert](#create-selfsigned-cert)
@@ -11,12 +12,19 @@
   - [install root ca for local development](#install-root-ca-for-local-development)
 - [dev notes](#dev-notes)
   - [backend](#backend)
+    - [configuration parameters](#configuration-parameters)
     - [run tests](#run-tests)
     - [add more migrations](#add-more-migrations)
     - [db dia gen](#db-dia-gen)
   - [frontend](#frontend)
+    - [configuration parameters](#configuration-parameters-1)
     - [openapi usage](#openapi-usage)
     - [invoke api](#invoke-api)
+  - [white papers](#white-papers)
+    - [reset password](#reset-password)
+    - [user manager](#user-manager)
+    - [username and password criteria](#username-and-password-criteria)
+    - [predefined roles and permissions](#predefined-roles-and-permissions)
 - [production deployment](#production-deployment)
   - [db machine prerequisite](#db-machine-prerequisite)
   - [ssh config on development machine](#ssh-config-on-development-machine)
@@ -88,18 +96,6 @@ dotnet user-secrets set "ConnectionStrings:Main" "$DB_CONN_STRING"
 dotnet user-secrets set "JwtSettings:Key" "$JWTKEY"
 ```
 
-- to be able to use the reset password feature configure also the smtp server
-
-```sh
-dotnet user-secrets set "EmailServer:SmtpServerName" REPL_MAILSERVER_HOSTNAME
-dotnet user-secrets set "EmailServer:SmtpServerPort" REPL_MAILSERVER_PORT
-dotnet user-secrets set "EmailServer:Security" REPL_MAILSERVER_SECURITY
-dotnet user-secrets set "EmailServer:Username" REPL_MAILSERVER_USER_EMAIL
-dotnet user-secrets set "EmailServer:Password" REPL_MAILSERVER_USER_PASSWORD
-```
-
-accepted values for `EmailServer:Security` are `Tls`, `Ssl`, `Auto`, `None`.
-
 - install postgres as docker and psql client in the host
 
 ```sh
@@ -115,6 +111,20 @@ apt install postgresql-client-16
 ```sh
 echo "CREATE USER example_webapp_user WITH PASSWORD '$(cat ~/security/devel/ExampleWebApp/postgres-user)' CREATEDB" | psql -h localhost -U postgres
 ```
+
+### configuration parameters for mail server
+
+- to be able to use the reset password feature configure also the smtp server
+
+```sh
+dotnet user-secrets set "EmailServer:SmtpServerName" REPL_MAILSERVER_HOSTNAME
+dotnet user-secrets set "EmailServer:SmtpServerPort" REPL_MAILSERVER_PORT
+dotnet user-secrets set "EmailServer:Security" REPL_MAILSERVER_SECURITY
+dotnet user-secrets set "EmailServer:Username" REPL_MAILSERVER_USER_EMAIL
+dotnet user-secrets set "EmailServer:Password" REPL_MAILSERVER_USER_PASSWORD
+```
+
+accepted values for `EmailServer:Security` are `Tls`, `Ssl`, `Auto`, `None`.
 
 ### vscode debug
 
@@ -247,6 +257,39 @@ Installing root-ca certificate imply that certificates generated within that wil
 
 ### backend
 
+#### configuration parameters
+
+| param name                              | description                                                                                                                | example                                                                            |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| AppServerName                           | Used to build [app url][10] for the reset password link.                                                                   | "dev-webapp-test.searchathing.com"                                                 |
+| DbProvider                              | Used to [inject db provider service][12].                                                                                  | "Postgres"                                                                         |
+| ConnectionStrings:Main                  | Used to build application [db context datasource][11].                                                                     | "Host=localhost; Database=ExampleWebApp; Username=postgres; Password=somepass"     |
+| IsUnitTest                              | Used to build [unit test application datasource][11] in unit test mode. Will be set to `true` from the [test factory][13]. | false                                                                              |
+| ConnectionStrings:UnitTest              | Need to be set in order to run unit tests. Warning: database referred by this conn string will be dropped during tests.    | "Host=localhost; Database=ExampleWebAppTest; Username=postgres; Password=somepass" |
+| JwtSettings:Key                         | Symmetric key for JWT signature generation.                                                                                | (results from `openssl rand -hex 32` command)                                      |
+| JwtSettings:Issuer                      | Issuer of the JWT access token.                                                                                            | "https://www.example.com"                                                          |
+| JwtSettings:Audience                    | Audience of the JWT access token.                                                                                          | "https://www.example.com/app"                                                      |
+| JwtSettings:AccessTokenDurationSeconds  | JWT access token duration (seconds)                                                                                        | 300                                                                                |
+| JwtSettings:RefreshTokenDurationSeconds | JWT refresh token duration (seconds)                                                                                       | 1200                                                                               |
+| JwtSettings:ClockSkewSeconds            | JWT access token clock skew (seconds)                                                                                      | 0                                                                                  |
+| SeedUsers:Admin:UserName                | Default seeded admin username                                                                                              | admin                                                                              |
+| SeedUsers:Admin:Password                | Default seeded admin password                                                                                              | SomePass1!                                                                         |
+| SeedUsers:Admin:Email                   | Default seeded admin email                                                                                                 | admin@some.com                                                                     |
+| EmailServer:Username                    | Email server config used in reset password ( account username )                                                            | server@some.com                                                                    |
+| EmailServer:Password                    | Email server config used in reset password ( account password )                                                            |                                                                                    |
+| EmailServer:SmtpServerName              | Email server config used in reset password ( account smtp server )                                                         | smtp@some.com                                                                      |
+| EmailServer:SmtpServerPort              | Email server config used in reset password ( account smtp port )                                                           | 587                                                                                |
+| EmailServer:Security                    | Email server config used in reset password ( account protocol security )                                                   | "Tls"                                                                              |
+| EmailServer:FromDisplayName             | Email server config used in reset password ( account displayname of the sender )                                           | "Server"                                                                           |
+
+The configuration is setup through [SetupAppSettings][14] method to consider:
+- `appsettings.json`
+- `appsettings.ENV.json` ( where ENV is the executing environment, ie. `Development`, `Production`, ... )
+- environment variables replacing `:` with `__` ( used for [example][15] in the production environment )
+- user secrets used in development environment
+
+The configuration of appsettings json files will reapplied on change automatically even at runtime.
+
 #### run tests
 
 - configure unit test db settings
@@ -287,6 +330,18 @@ database diagram can be generated through [gen-db-dia.sh](doc/gen-db-dia.sh) scr
 
 ### frontend
 
+#### configuration parameters
+
+Configuration parameters for the frontend can be set at compile-time through [.env.development](./clientapp/.env.development) and [.env.production](./clientapp/.env.production) files depending on the build mode.
+
+| param name         | description                |
+| ------------------ | -------------------------- |
+| VITE_SERVERNAME    | used to build [api url][9] |
+| VITE_GITCOMMIT     | git commit short sha       |
+| VITE_GITCOMMITDATE | git commit date            |
+
+note that `VITE_GITCOMMIT` and `VITE_GITCOMMITDATE` gets automatically updated by the [publish.sh](./publish.sh) script for the `.env.production` configuration file.
+
 #### openapi usage
 
 - start the backend
@@ -324,6 +379,81 @@ try {
     handleApiException(_ex as ResponseError)
 }
 ```
+
+### white papers
+
+#### reset password
+
+- on the login page there is a "Lost password ?" button
+
+![](./doc/password-reset-step1.png)
+
+- clicking on that button, having the email field filled with a previously registered user, cause the [frontend][6] to invoke the [ResetLostPassword][7] auth controller anonymous access api.
+
+- this controller api method in turn uses the authentication service [ResetLostPasswordRequestAsync][8] method; this works as follow
+  - retrieve existing user by given email
+  - retrieve configuration parameters for mail server
+  - retrieve configuration parameter for app servername in order to build a reset url like the follow
+  `https://webapp-test.searchathing.com/app/Login/:from/RESET_TOKEN` ( `:from` parameter will considered null )
+  - email with reset password link sent
+  
+- gui snack notification
+
+![](./doc/password-reset-step1-feedback.png)
+
+- email received
+
+![](./doc/password-reset-step2.png)
+
+- the mail link will open the browser at the login page with the [token param][16] and this cause the form to appears as follow
+
+![](./doc/password-reset-step3.png)
+
+- inserting the corresponding email address now and a new password this will be reset through the call of the [ResetLostPassword][7] auth controller anonymous access api again but within non null token and resetPassword.
+- then the authentication service `ResetLostPasswordRequestAsync` will [finish the rule][17] this way
+  - execute the auth service `LoginAsync` with username, resetPassword and optional argument token with a non null value in order to [reset the user passowrd][18]
+
+#### user manager
+
+- if the user current user has permission to create user with some specific role use the `Create` button from the user manager
+
+![](./doc/create-user-form.png)
+
+- to edit an existing user click on the `Edit` button
+
+![](./doc/edit-user-form.png)
+
+#### username and password criteria
+
+- these can be overriden at compile time [here][19].
+- the gui will inherit username and password rules through the [AuthOptions][20] service invoke by the sama name auth controller method. These will be evaluated during user editing [here][21].
+
+#### predefined roles and permissions
+
+| permission/role           | admin | advanced | normal |
+| ------------------------- | ----- | -------- | ------ |
+| ChangeUserRoles           | ■     |          |        |
+| CreateAdminUser           | ■     |          |        |
+| CreateAdvancedUser        | ■     |          |        |
+| CreateNormalUser          | ■     | ■        |        |
+| ChangeOwnEmail            | ■     | ■        | ■      |
+| ChangeOwnPassword         | ■     | ■        | ■      |
+| ChangeNormalUserEmail     | ■     | ■        |        |
+| ChangeAdvancedUserEmail   | ■     |          |        |
+| ChangeAdminUserEmail      | ■     |          |        |
+| ResetNormalUserPassword   | ■     | ■        |        |
+| ResetAdvancedUserPassword | ■     |          |        |
+| ResetAdminUserPassword    | ■     |          |        |
+| LockoutAdminUser          | ■     |          |        |
+| LockoutAdvancedUser       | ■     |          |        |
+| LockoutNormalUser         | ■     | ■        |        |
+| DeleteAdminUser           | ■     |          |        |
+| DeleteAdvancedUser        | ■     |          |        |
+| DeleteNormalUser          | ■     | ■        |        |
+| DisableAdminUser          | ■     |          |        |
+| DisableAdvancedUser       | ■     |          |        |
+| DisableNormalUser         | ■     | ■        |        |
+| ResetLostPassword         | ■     | ■        | ■      |
 
 ## production deployment
 
@@ -511,3 +641,20 @@ dotnet add package Microsoft.AspNetCore.Mvc.Testing --version 8.0.8
 [3]: https://github.com/devel0/example-webapp-with-auth/blob/5d10bf357e6e256df16b9a517c113043dd15750f/WebApiServer/DTOs/EditUserRequestDto.cs#L6
 [4]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/clientapp/src/fetch.manager.ts#L62-L65
 [5]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/clientapp/src/utils/utils.tsx#L17
+[6]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/clientapp/src/pages/LoginPage.tsx#L182
+[7]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/WebApiServer/Controllers/AuthController.cs#L193
+[8]: https://github.com/devel0/example-webapp-with-auth/blob/31544b0b02a8be1211941416e70f3d6fb4cef44e/WebApiServer/Implementations/AuthService.cs#L778
+[9]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/clientapp/src/constants/general.ts#L5
+[10]: https://github.com/devel0/example-webapp-with-auth/blob/31544b0b02a8be1211941416e70f3d6fb4cef44e/WebApiServer/Implementations/AuthService.cs#L817
+[11]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/WebApiServer/Extensions/DatabaseService.cs#L13
+[12]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/WebApiServer/Extensions/DatabaseService.cs#L29
+[13]: https://github.com/devel0/example-webapp-with-auth/blob/31544b0b02a8be1211941416e70f3d6fb4cef44e/Test/TestFactory.cs#L45
+[14]: https://github.com/devel0/example-webapp-with-auth/blob/a04204f9014596509dcacd1af04a8579000d2fd6/WebApiServer/Extensions/AppSettingsService.cs#L13
+[15]: https://github.com/devel0/example-webapp-with-auth/blob/23ecdb344e60008aab30c38c7a8c56357d6101ef/deploy/webapp-test.env#L4
+[16]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/clientapp/src/pages/LoginPage.tsx#L38
+[17]: https://github.com/devel0/example-webapp-with-auth/blob/31544b0b02a8be1211941416e70f3d6fb4cef44e/WebApiServer/Implementations/AuthService.cs#L788-L807
+[18]: https://github.com/devel0/example-webapp-with-auth/blob/9a94258665f2314ea77b5c662344803cc4b8dc86/WebApiServer/Implementations/AuthService.cs#L100
+[19]: https://github.com/devel0/example-webapp-with-auth/blob/5d10bf357e6e256df16b9a517c113043dd15750f/WebApiServer/Extensions/Auth.cs#L89
+[20]: https://github.com/devel0/example-webapp-with-auth/blob/9a94258665f2314ea77b5c662344803cc4b8dc86/WebApiServer/Implementations/AuthService.cs#L41
+[21]: https://github.com/devel0/example-webapp-with-auth/blob/9ba6d6599ad9f73548ced7335f945b59cb339e4f/clientapp/src/utils/password-validator.ts#L4
+[22]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/WebApiServer/Types/UserPermission.cs#L128
