@@ -14,6 +14,7 @@
   - [adjust local dns](#adjust-local-dns)
   - [install root ca for local development](#install-root-ca-for-local-development)
 - [dev notes](#dev-notes)
+  - [JWT auth access and refresh token](#jwt-auth-access-and-refresh-token)
   - [backend](#backend)
     - [run tests](#run-tests)
     - [configuration parameters](#configuration-parameters)
@@ -300,8 +301,20 @@ Installing root-ca certificate imply that certificates generated within that wil
 
 ## dev notes
 
-### backend
+### JWT auth access and refresh token
 
+- authentication and authorization are managed entirely by the backend, in fact the frontend doesn't store any access token or restore token in local storage ; from the frontend side point of view the authentication is transparently managed through the browser `X-Access-Token` and `X-Refresh-Token` that the [server][23] sets after successful login through `Set-Cookie` header ( the frontend only call the login and logout webapi without storing anything on javascript side ):
+  - XSS ( Cross-site scripting ) attack are prevented because the absence of access token from the local storage makes javascript unable to read these token
+  - CSRF ( Cross-site request forgery ) attack are prevented because the cookie is stored within follow attributes
+    - `secure` : prevent the cookie to be stored against a phising site because https will identify the server autenticity
+    - `httponly` : prevent the javascript to read the cookie ( only the browser can handle by sending through the request header )
+    - `samesite strict` : prevent to send the access token to other servers
+- web api controller methods are executable only from user with valid access token because of the [`[Authorize]`][24] attribute ; further refinement can require user to have one or more roles through the attribute specialization with [`Roles`][25]. To allow anonymous api use `[AllowAnonymous]`[26] attribute.
+- use of the access token allow the server to authenticate the user by reading user, role and other info contained in the token itself; note that these info are not encrypted and can be viewed, but the token contains a signature that can't be generated from other than the server that contains the JWT key to create the signature itself. In other words the server validate the access token and signature match considering as valid the provided identity informations ( because it was the server itself that signed the data no other could generate corresponding signature ). This requires less hardware resources than using a db to validate the user.
+- for paranoid setting the expiration of an access token should short and this maintain ability to execute high rate operations retaining the ability to block a user within a short response time. In fact a valid access token can't revoked by default rule but having a short time of validity allow the server to ban any other authorized api for that user simply disabling it. In fact after user is disabled the process of renew of another access token, even with a valid refresh token ( that has longer expire time ) gets [disabled immediately][27].
+- more, when a refresh token is used to renew an access token it gets rotated invalidating the previous one
+
+### backend
 
 #### run tests
 
@@ -706,3 +719,8 @@ dotnet add package Microsoft.AspNetCore.Mvc.Testing --version 8.0.8
 [20]: https://github.com/devel0/example-webapp-with-auth/blob/9a94258665f2314ea77b5c662344803cc4b8dc86/WebApiServer/Implementations/AuthService.cs#L41
 [21]: https://github.com/devel0/example-webapp-with-auth/blob/9ba6d6599ad9f73548ced7335f945b59cb339e4f/clientapp/src/utils/password-validator.ts#L4
 [22]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/WebApiServer/Types/UserPermission.cs#L128
+[23]: https://github.com/devel0/example-webapp-with-auth/blob/adcabbb20a10091c56210183179f7bd7dd64359c/WebApiServer/Implementations/AuthService.cs#L151
+[24]: https://github.com/devel0/example-webapp-with-auth/blob/a04204f9014596509dcacd1af04a8579000d2fd6/WebApiServer/Controllers/MainController.cs#L7
+[25]: https://github.com/devel0/example-webapp-with-auth/blob/a04204f9014596509dcacd1af04a8579000d2fd6/WebApiServer/Controllers/MainController.cs#L27
+[26]: https://github.com/devel0/example-webapp-with-auth/blob/adcabbb20a10091c56210183179f7bd7dd64359c/WebApiServer/Controllers/AuthController.cs#L62
+[27]: https://github.com/devel0/example-webapp-with-auth/blob/4111643a52aa7f19c531ddcf88132d7d59c0b683/WebApiServer/Extensions/Auth.cs#L179
