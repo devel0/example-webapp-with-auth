@@ -39,20 +39,33 @@
 
 ## features
 
-- asp net core backend
-- react frontend + vite tooling
-- https self signed cert development
-- backend and frontend debugging in a solution
-- configuration user-secrets, environment variables, and appsettings.json, appsettings.[Environment].json with autoreload on change
-- jwt auth secure, httponly, strict samesite
-- user roles admin, advanced, normal with static [UserPermission][2] matrix
-- auth controller [edit user][3] to create, edit username, password, email, roles, lockout
-- react redux
-- login public page and protected routes
-- send email for lost password feature
-- user manager gui with user role permissions related capabilities
-- theme light/dark, snacks
-- publish release with frontend webpacked available through server static files available directly from within backend
+- Security
+  - Development with https self signed wildcard certs
+  - JWT auth flags `secure`, `httponly`, `samesite` strict
+  - Roles `admin`, `advanced`, `normal` with static [UserPermission][2] matrix
+
+- Backend
+  - C# asp net core
+  - Configuration
+    - development user-secrets
+    - appsettings.json, appsettings.[Environment].json ( autoreload on change )
+    - environment variables
+
+- Frontend
+  - Typescript react frontend + vite tooling
+  - React redux `GlobalState` for current user
+  - Layout with responsive appbar, public and protected pages with react router dom
+  - Openapi typescript/fetch generate from backend swagger endpoint
+  - Login / Logout / Reset lost password through email link
+  - User manager with auth controller [edit user][3] to create, edit username, password, email, roles, disable
+  - Light/Dark themes, Snacks
+
+- Debugging
+  - backend and frontend debugging in a solution from the same IDE
+
+- Production
+  - publish release with frontend webpacked available through server static files available directly from within backend
+  - publish deployment script with systemd service and environment secrets
 
 ## quickstart (dev)
 
