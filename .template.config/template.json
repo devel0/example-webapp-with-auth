@@ -23,6 +23,14 @@
             "type": "parameter",
             "defaultValue": "ExampleWebApp",
             "replaces": "ExampleWebApp"
+        },
+        "emptysecretsid": {
+            "type": "generated",
+            "generator": "constant",
+            "parameters": {
+                "value": ""
+            },
+            "replaces": "<UserSecretsId>7f2db397-8b60-4b4f-9f83-2b6936d632e9</UserSecretsId>"
         }
     },
     "sources": [
