@@ -54,10 +54,11 @@ public class TestFactory : IDisposable
     async Task DropDbAsync(CancellationToken cancellationToken = default)
     {
         var ss = UnitTestConnectionString.Split(';');
-        var NoDbConnectionString = string.Join(';', ss
-            .Where(r => r.Trim().Length > 0 && !r.Trim().StartsWith("Database", StringComparison.InvariantCultureIgnoreCase)));
+        var PostgresDbConnectionString = string.Join(';', ss
+            .Where(r => r.Trim().Length > 0 && !r.Trim().StartsWith("Database", StringComparison.InvariantCultureIgnoreCase)))
+            + "; Database=postgres";
 
-        await using var dataSource = NpgsqlDataSource.Create(NoDbConnectionString);
+        await using var dataSource = NpgsqlDataSource.Create(PostgresDbConnectionString);
 
         await using var cmd = dataSource.CreateCommand($"DROP DATABASE IF EXISTS \"{UnitTestDbName}\" WITH (FORCE)");
 
