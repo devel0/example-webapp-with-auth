@@ -21,7 +21,7 @@ public class TestFactory : IDisposable
     /// <summary>
     /// Initialize a test factory with IsUnitTest environment, test database dropped and service scope, http client allocted.
     /// </summary>
-    public async Task InitAsync(CancellationToken cancellationToken = default)
+    public async Task InitAsync(bool dropDb = true, CancellationToken cancellationToken = default)
     {
         // retrieve configuration before start web app factory in order to drop test db
         {
@@ -38,11 +38,12 @@ public class TestFactory : IDisposable
                 .First(w => w.StartsWith("Database="))
                 .StripBegin("Database=");
 
-            await DropDbAsync(cancellationToken);
+            if (dropDb)
+                await DropDbAsync(cancellationToken);
         }
 
         // setting this config var cause the connection string database to another given name
-        Environment.SetEnvironmentVariable(CONFIG_KEY_IsUnitTest.Replace(":", "__"), "true");        
+        Environment.SetEnvironmentVariable(CONFIG_KEY_IsUnitTest.Replace(":", "__"), "true");
 
         Factory = new WebApplicationFactory<Program>();
 
