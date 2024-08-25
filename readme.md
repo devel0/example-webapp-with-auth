@@ -15,8 +15,8 @@
   - [install root ca for local development](#install-root-ca-for-local-development)
 - [dev notes](#dev-notes)
   - [backend](#backend)
-    - [configuration parameters](#configuration-parameters)
     - [run tests](#run-tests)
+    - [configuration parameters](#configuration-parameters)
     - [add more migrations](#add-more-migrations)
     - [db dia gen](#db-dia-gen)
   - [frontend](#frontend)
@@ -86,7 +86,7 @@ dotnet build
 SEED_ADMIN_EMAIL=REPL_ADMIN_EMAIL
 SEED_ADMIN_PASS="REPL_ADMIN_PASS"
 DB_PROVIDER="Postgres"
-DB_CONN_STRING="Host=localhost; Database=localhost; Username=example_webapp_user; Password=$(cat ~/security/devel/ExampleWebApp/postgres-user)"
+DB_CONN_STRING="Host=localhost; Database=ExampleWebApp; Username=example_webapp_user; Password=$(cat ~/security/devel/ExampleWebApp/postgres-user)"
 JWTKEY="$(openssl rand -hex 32)"
 ```
 
@@ -289,6 +289,33 @@ Installing root-ca certificate imply that certificates generated within that wil
 
 ### backend
 
+
+#### run tests
+
+- configure unit test db settings
+
+```sh
+cd WebApiServer
+
+TEST_DB_CONN_STRING="Host=localhost; Database=ExampleWebAppTest; Username=example_webapp_user; Password=$(cat ~/security/devel/ExampleWebApp/postgres-user)"
+
+dotnet user-secrets set "ConnectionStrings:UnitTest" "$TEST_DB_CONN_STRING"
+
+cd ..
+```
+
+- to run tests
+
+```sh
+dotnet test
+```
+
+or run specific test with ( replace `TEST` with one from `dotnet test -t` )
+
+```sh
+dotnet test --filter=TEST
+```
+
 #### configuration parameters
 
 | param name                              | description                                                                                                                | example                                                                            |
@@ -314,39 +341,13 @@ Installing root-ca certificate imply that certificates generated within that wil
 | EmailServer:Security                    | Email server config used in reset password ( account protocol security )                                                   | "Tls"                                                                              |
 | EmailServer:FromDisplayName             | Email server config used in reset password ( account displayname of the sender )                                           | "Server"                                                                           |
 
-The configuration is setup through [SetupAppSettings][14] method to consider:
+The configuration is setup through [SetupAppSettings][14] method in order to evaluate:
 - `appsettings.json`
 - `appsettings.ENV.json` ( where ENV is the executing environment, ie. `Development`, `Production`, ... )
 - environment variables replacing `:` with `__` ( used for [example][15] in the production environment )
 - user secrets used in development environment
 
-The configuration of appsettings json files will reapplied on change automatically even at runtime.
-
-#### run tests
-
-- configure unit test db settings
-
-```sh
-cd WebApiServer
-
-TEST_DB_CONN_STRING="Host=localhost; Database=REPL_TEST_DBNAME; Username=REPL_TEST_DBUSER; Password=REPL_TEST_DBPASS"
-
-dotnet user-secrets set "ConnectionStrings:UnitTest" "$DB_CONN_STRING"
-
-cd ..
-```
-
-- to run tests
-
-```sh
-dotnet test
-```
-
-or run specific test with ( replace `TEST` with one from `dotnet test -t` )
-
-```sh
-dotnet test --filter=TEST
-```
+The configuration of appsettings json files will reapplied on change automatically even at runtime ( note that in debug environment you need to change appsettings json files that are inside `WebApiServer/bin/Debug/net8.0` folder )
 
 #### add more migrations
 
