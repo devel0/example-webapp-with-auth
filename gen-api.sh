@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-exdir=$(dirname $(readlink -f "$0"))
+exdir=$(dirname $(readlink -f "$BASH_SOURCE"))
 
 API_SPEC_URL="https://dev-webapp-test.searchathing.com/swagger/v1/swagger.json"
 

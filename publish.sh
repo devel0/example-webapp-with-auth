@@ -2,7 +2,7 @@
 
 # set -x
 
-exdir="$(dirname "$(readlink -f "$0")")"
+exdir=$(dirname $(readlink -f "$BASH_SOURCE"))
 
 FORCE=false
 BACKEND_SRCDIR="$exdir"/WebApiServer

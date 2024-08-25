@@ -2,10 +2,13 @@
 
 - [features](#features)
 - [quickstart (dev)](#quickstart-dev)
-  - [local db](#local-db)
+  - [clone sources and install template](#clone-sources-and-install-template)
+  - [create project source tree](#create-project-source-tree)
+  - [configure project](#configure-project)
   - [configuration parameters for mail server](#configuration-parameters-for-mail-server)
-  - [vscode debug](#vscode-debug)
+  - [start debug](#start-debug)
 - [prerequisites](#prerequisites)
+  - [development database setup](#development-database-setup)
   - [create selfsigned cert](#create-selfsigned-cert)
   - [setup development nginx](#setup-development-nginx)
   - [adjust local dns](#adjust-local-dns)
@@ -53,63 +56,51 @@
 
 ## quickstart (dev)
 
-### local db
+- see [**prerequisites**](#prerequisites) to setup self signed dev cert and nginx proxy
 
-- see [prerequisites](#prerequisites) to setup self signed dev cert and nginx proxy
+### clone sources and install template
 
 - clone repo
 
 ```sh
 git clone https://github.com/devel0/example-webapp-with-auth.git
 cd example-webapp-with-auth
+dotnet new install .
+cd ..
 ```
 
-- local db setup
+### create project source tree
 
 ```sh
-apt install pwgen
-mkdir -p ~/security/devel/ExampleWebApp
-chmod 700 ~/security
-pwgen -s 12 -n 1 > ~/security/devel/postgres
-echo "$(pwgen -s 12 -n 1)#" > ~/security/devel/ExampleWebApp/admin
-pwgen -s 12 -n 1 > ~/security/devel/ExampleWebApp/postgres-user
-echo "localhost:*:*:postgres:$(cat ~/security/devel/postgres)" >> ~/.pgpass
-chmod 600 ~/.pgpass
-```  
+dotnet new webapp-with-auth -n project-folder --namespace My.Some
+cd project-folder
+source misc/restore-permissions.sh
+dotnet build
+```
 
-- config user secrets replacing *REPL_* vars
+### configure project
+
+- set shell variables replacing *REPL_* vars
 
 ```sh
-cd example-webapp-with-auth/WebApiServer
-
 SEED_ADMIN_EMAIL=REPL_ADMIN_EMAIL
-SEED_ADMIN_PASS=REPL_ADMIN_PASS
+SEED_ADMIN_PASS="REPL_ADMIN_PASS"
 DB_PROVIDER="Postgres"
-DB_CONN_STRING="Host=localhost; Database=REPL_DBNAME; Username=REPL_DBUSER; Password=REPL_DBPASS"
+DB_CONN_STRING="Host=localhost; Database=localhost; Username=example_webapp_user; Password=$(cat ~/security/devel/ExampleWebApp/postgres-user)"
 JWTKEY="$(openssl rand -hex 32)"
+```
 
+- set development user secrets
+
+```sh
+cd WebApiServer
 dotnet user-secrets init
 dotnet user-secrets set "SeedUsers:Admin:Email" "$SEED_ADMIN_EMAIL"
 dotnet user-secrets set "SeedUsers:Admin:Password" "$SEED_ADMIN_PASS"
 dotnet user-secrets set "DbProvider" "$DB_PROVIDER"
 dotnet user-secrets set "ConnectionStrings:Main" "$DB_CONN_STRING"
 dotnet user-secrets set "JwtSettings:Key" "$JWTKEY"
-```
-
-- install postgres as docker and psql client in the host
-
-```sh
-docker volume create pgdata
-docker run -e POSTGRES_PASSWORD=`cat ~/security/devel/postgres` --restart=unless-stopped --name postgres -v pgdata:/var/lib/postgresql/data -d -p 5432:5432/tcp postgres:latest
-apt install postgresql-client-16
-```  
-
-- this will allow you to connect to localhost postgres db as postgres user ( test with `psql -h localhost -U postgres` if connects )
-
-- create postgres `example_webapp_user` user with capability to createdb
-
-```sh
-echo "CREATE USER example_webapp_user WITH PASSWORD '$(cat ~/security/devel/ExampleWebApp/postgres-user)' CREATEDB" | psql -h localhost -U postgres
+cd ..
 ```
 
 ### configuration parameters for mail server
@@ -117,24 +108,32 @@ echo "CREATE USER example_webapp_user WITH PASSWORD '$(cat ~/security/devel/Exam
 - to be able to use the reset password feature configure also the smtp server
 
 ```sh
+cd WebApiServer
 dotnet user-secrets set "EmailServer:SmtpServerName" REPL_MAILSERVER_HOSTNAME
 dotnet user-secrets set "EmailServer:SmtpServerPort" REPL_MAILSERVER_PORT
 dotnet user-secrets set "EmailServer:Security" REPL_MAILSERVER_SECURITY
 dotnet user-secrets set "EmailServer:Username" REPL_MAILSERVER_USER_EMAIL
 dotnet user-secrets set "EmailServer:Password" REPL_MAILSERVER_USER_PASSWORD
+cd ..
 ```
 
 accepted values for `EmailServer:Security` are `Tls`, `Ssl`, `Auto`, `None`.
 
-### vscode debug
+### start debug
 
 ```sh
-git clone https://github.com/devel0/example-webapp-with-auth.git
-cd example-webapp-with-auth
 code .
 ```
 
 - choose `.NET Core Launch (web)` from run and debug then hit F5 ( this will start asp net web server on `https://webapp-test.searchathing.com/swagger/index.html` )
+
+- restore client node modules
+
+```sh
+cd clientapp
+npm i
+cd ..
+```
 
 - start frontend
 
@@ -159,6 +158,39 @@ code .
 ![](./doc/user-manager.png)
 
 ## prerequisites
+
+### development database setup
+
+- create db secrets
+
+```sh
+apt install pwgen
+mkdir -p ~/security/devel/ExampleWebApp
+chmod 700 ~/security
+pwgen -s 12 -n 1 > ~/security/devel/postgres
+echo "$(pwgen -s 12 -n 1)#" > ~/security/devel/ExampleWebApp/admin
+pwgen -s 12 -n 1 > ~/security/devel/ExampleWebApp/postgres-user
+echo "localhost:*:*:postgres:$(cat ~/security/devel/postgres)" >> ~/.pgpass
+chmod 600 ~/.pgpass
+```  
+
+- install postgres as docker and psql client in the host
+
+```sh
+docker volume create pgdata
+docker run -e POSTGRES_PASSWORD=`cat ~/security/devel/postgres` --restart=unless-stopped --name postgres -v pgdata:/var/lib/postgresql/data -d -p 5432:5432/tcp postgres:latest
+apt install postgresql-client-16
+```  
+
+- this will allow you to connect to localhost postgres db as postgres user ( test with `psql -h localhost -U postgres` if connects )
+
+- create postgres `example_webapp_user` user with capability to createdb
+
+- local db setup
+
+```sh
+echo "CREATE USER example_webapp_user WITH PASSWORD '$(cat ~/security/devel/ExampleWebApp/postgres-user)' CREATEDB" | psql -h localhost -U postgres
+```
 
 ### create selfsigned cert
 

@@ -2,7 +2,7 @@
 
 # ref: https://github.com/devel0/knowledge/blob/master/doc/psql-schema-crawler.md
 
-exdir="$(dirname "$(readlink -f "$0")")"
+exdir=$(dirname $(readlink -f "$BASH_SOURCE"))
 
 DST="$exdir"/db
 DBHOST=localhost
