@@ -23,7 +23,7 @@ global using SearchAThing.Ext;
 global using Xunit;
 global using Xunit.Abstractions;
 
-// examplewebapp
+// project
 global using static ExampleWebApp.Backend.WebApi.Constants;
 global using static ExampleWebApp.Backend.WebApi.Types.Toolkit;
 global using static Test.Toolkit;

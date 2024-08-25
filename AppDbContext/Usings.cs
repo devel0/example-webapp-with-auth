@@ -9,5 +9,5 @@ global using Microsoft.EntityFrameworkCore;
 
 // thirdy
 
-// examplewebapp
+// project
 global using ExampleWebApp.Backend.Data.Types;

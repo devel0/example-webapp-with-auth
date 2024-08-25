@@ -1,0 +1,46 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Lorenzo Delana",
+    "classifications": [
+        "Web",
+        "WebAPI",
+        "Web API",
+        "API/Service",
+        "Identity",
+        "React"
+    ],
+    "identity": "SearchAThingTemplates.WebAppWithAuth",
+    "name": "React WebApp with ASP.NET Core Identity",
+    "shortName": "webapp-with-auth",
+    "sourceName": "example-webapp-with-auth",
+    "tags": {
+        "language": "C#",
+        "type": "project"
+    },
+    "preferNameDirectory": true,
+    "symbols": {
+        "namespace": {
+            "type": "parameter",
+            "defaultValue": "ExampleWebApp",
+            "replaces": "ExampleWebApp"
+        }
+    },
+    "sources": [
+        {
+            "modifiers": [
+                {
+                    "exclude": [
+                        "**/[Bb]in/**",
+                        "**/[Oo]bj/**",
+                        ".template.config/**/*",
+                        "**/*.filelist",
+                        "**/*.user",
+                        "**/*.lock.json",
+                        "**/node_modules/**",
+                        "**/.git/**"
+                    ]
+                }
+            ]
+        }
+    ]
+}

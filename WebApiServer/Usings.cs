@@ -46,7 +46,7 @@ global using Swashbuckle.AspNetCore.Annotations;
 global using Swashbuckle.AspNetCore.SwaggerGen;
 global using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
 
-// examplewebapp
+// project
 global using static ExampleWebApp.Backend.WebApi.Constants;
 global using static ExampleWebApp.Backend.WebApi.Types.Toolkit;
 global using ExampleWebApp.Backend.Data;
