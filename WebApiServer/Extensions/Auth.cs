@@ -174,8 +174,9 @@ public static partial class Extensions
                             var user = await userManager.FindByNameAsync(username);
                             var dtNow = DateTime.UtcNow;
                             var userIsLockedOut = user is not null && await userManager.IsLockedOutAsync(user);
+                            var userDisabled = user is not null && user.Disabled == true;
 
-                            if (user is not null && !userIsLockedOut)
+                            if (user is not null && !userIsLockedOut && !userDisabled)
                             {
                                 lock (lckRefreshToken)
                                 {
