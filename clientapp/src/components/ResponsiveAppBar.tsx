@@ -56,7 +56,7 @@ function ResponsiveAppBar(props: {
     };
 
     return (
-        <AppBar position="static" sx={{}}>
+        <AppBar position="sticky" sx={{}}>
             <Container maxWidth='xl'>
                 <Toolbar disableGutters>
                     {/* 
