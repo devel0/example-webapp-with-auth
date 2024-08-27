@@ -32,7 +32,8 @@ public class DeleteUserResponseDto
     /// <summary>
     /// API specific status response.
     /// </summary>    
-    public required DeleteUserStatus Status { get; set; }
+    [Required]
+    public required DeleteUserStatus Status { get; set; }    
 
     /// <summary>
     /// List of edit user errors if any.

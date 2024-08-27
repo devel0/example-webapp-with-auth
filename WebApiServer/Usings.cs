@@ -4,6 +4,7 @@ global using HttpResponseHeaders = System.Net.Http.Headers.HttpResponseHeaders;
 global using JsonSerializer = System.Text.Json.JsonSerializer;
 global using JsonSerializerOptions = System.Text.Json.JsonSerializerOptions;
 global using System.ComponentModel;
+global using System.ComponentModel.DataAnnotations;
 global using System.Data.Common;
 global using System.Diagnostics;
 global using System.IdentityModel.Tokens.Jwt;

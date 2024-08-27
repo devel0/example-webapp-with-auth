@@ -3,14 +3,14 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks/hooks"
 import { GlobalState } from "../redux/states/GlobalState"
 import { useEffect, useState } from "react"
 import { APP_TITLE, DEFAULT_SIZE_SMALL } from "../constants/general"
-import { EditUserRequestDto, ResponseError, UserListItemResponseDto } from "../../api"
 import { DataGrid, GridColDef } from "@mui/x-data-grid"
 import { EditUserDialog, NewUserDataSample } from "../dialogs/EditUserDialog"
-import { HttpStatusCode } from "axios"
-import { authApi } from "../fetch.manager"
+import { AxiosError, HttpStatusCode } from "axios"
+import { authApi } from "../axios.manager"
 import { ConfirmDialog, ConfirmDialogCloseResult, ConfirmDialogProps } from "../dialogs/ConfirmDialog"
 import { SnackNfoType } from "../types/SnackNfo"
 import { handleApiException, setSnack } from "../utils/utils"
+import { EditUserRequestDto, UserListItemResponseDto } from "../../api"
 
 export const UsersPage = () => {
     const global = useAppSelector<GlobalState>((state) => state.global)
@@ -30,8 +30,13 @@ export const UsersPage = () => {
     }, [])
 
     const refreshList = async () => {
-        const res = await authApi.apiAuthListUsersGet();
-        setUsers(res)
+        try {
+            const res = await authApi.apiAuthListUsersGet();
+            setUsers(res.data)
+        } catch (_ex) {
+            const ex = _ex as AxiosError
+            handleApiException(ex)
+        }
     }
 
     const fn = (x: keyof UserListItemResponseDto) => x
@@ -75,11 +80,10 @@ export const UsersPage = () => {
                 <Button
                     disabled={selectedUsername === undefined}
                     onClick={async () => {
-                        const res = await authApi.apiAuthListUsersGet({
-                            username: selectedUsername
-                        })
-                        if (res.length > 0) {
-                            const user = res[0]
+                        const res = await authApi.apiAuthListUsersGet(selectedUsername)
+
+                        if (res.data.length > 0) {
+                            const user = res.data[0]
                             setUserData({
                                 existingUsername: user.userName!,
                                 editUsername: null,
@@ -106,9 +110,7 @@ export const UsersPage = () => {
                                 if (reason === ConfirmDialogCloseResult.yes) {
                                     try {
                                         const res = await authApi.apiAuthDeleteUserPost({
-                                            deleteUserRequestDto: {
-                                                usernameToDelete: selectedUsername!
-                                            }
+                                            usernameToDelete: selectedUsername!
                                         })
 
                                         setSnack({
@@ -119,7 +121,8 @@ export const UsersPage = () => {
                                         refreshList()
                                     }
                                     catch (_ex) {
-                                        handleApiException(_ex as ResponseError, "Delete failed")
+                                        const ex = _ex as AxiosError
+                                        handleApiException(ex, "Delete failed")
                                     }
                                 }
                             },

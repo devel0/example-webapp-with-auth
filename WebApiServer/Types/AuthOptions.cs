@@ -3,22 +3,29 @@ namespace ExampleWebApp.Backend.WebApi.Types;
 public class UsernameAuthOptions
 {
 
-     public required string AllowedUserNameCharacters { get; set; }
+    [Required]
+    public required string AllowedUserNameCharacters { get; set; }
 
 }
 
 public class PasswordAuthOptions
 {
+    [Required]
     public required bool RequireDigit { get; set; }
 
+    [Required]
     public required int RequiredLength { get; set; }
 
+    [Required]
     public required int RequiredUniqueChars { get; set; }
 
+    [Required]
     public required bool RequireLowercase { get; set; }
 
+    [Required]
     public required bool RequireNonAlphanumeric { get; set; }
 
+    [Required]
     public required bool RequireUppercase { get; set; }
 }
 

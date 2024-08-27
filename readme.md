@@ -56,7 +56,7 @@
   - Typescript react frontend + vite tooling
   - React redux `GlobalState` for current user
   - Layout with responsive appbar, public and protected pages with react router dom
-  - Openapi typescript/fetch generate from backend swagger endpoint
+  - Openapi typescript/axios generate from backend swagger endpoint
   - Login / Logout / Reset lost password through email link
   - User manager with auth controller [edit user][3] to create, edit username, password, email, roles, disable
   - Light/Dark themes, Snacks
@@ -410,7 +410,7 @@ cd example-webapp-with-auth/WebApiServer
 dotnet run
 ```
 
-- generate Typescript/fetch frontend api
+- generate Typescript/axios frontend api
 
 ```sh
 cd example-webapp-with-auth
@@ -700,7 +700,7 @@ dotnet add package Microsoft.AspNetCore.Mvc.Testing --version 8.0.8
 [1]: https://github.com/devel0/knowledge/blob/168e6cec6fdc0298b21d758c198d6f9210032ba8/doc/psql-schema-crawler.md
 [2]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/WebApiServer/Types/UserPermission.cs#L124
 [3]: https://github.com/devel0/example-webapp-with-auth/blob/5d10bf357e6e256df16b9a517c113043dd15750f/WebApiServer/DTOs/EditUserRequestDto.cs#L6
-[4]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/clientapp/src/fetch.manager.ts#L62-L65
+[4]: 
 [5]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/clientapp/src/utils/utils.tsx#L17
 [6]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/clientapp/src/pages/LoginPage.tsx#L182
 [7]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/WebApiServer/Controllers/AuthController.cs#L193

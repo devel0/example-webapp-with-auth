@@ -35,6 +35,7 @@ public class CurrentUserResponseDto
     /// <summary>
     /// API specific status response.
     /// </summary>    
+    [Required]
     public required CurrentUserStatus Status { get; set; }
 
     /// <summary>

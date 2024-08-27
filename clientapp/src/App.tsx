@@ -8,11 +8,16 @@ import { evalThemeChanged } from './styles/Theme'
 import React from 'react'
 import { CssBaseline } from '@mui/material'
 import { router } from './router'
+import { ConfigAxios } from './axios.manager'
 
 function App() {
   const global = useAppSelector<GlobalState>((state) => state.global)
   const dispatch = useAppDispatch()
   const theme = React.useMemo(() => evalThemeChanged(global), [global.theme])
+
+  useEffect(() => {
+    ConfigAxios()
+  }, [])
 
   return (
     <ThemeProvider theme={theme}>

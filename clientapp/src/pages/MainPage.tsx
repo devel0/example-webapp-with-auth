@@ -4,9 +4,9 @@ import { GlobalState } from '../redux/states/GlobalState'
 import { Box, Button } from '@mui/material'
 import { useEffect } from 'react'
 import { APP_TITLE, DEFAULT_SIZE_SMALL } from '../constants/general'
-import { mainApi } from '../fetch.manager'
+import { mainApi } from '../axios.manager'
 import { handleApiException, setSnack } from '../utils/utils'
-import { ResponseError } from '../../api'
+import { AxiosError } from 'axios'
 
 export const MainPage = () => {
     const global = useAppSelector<GlobalState>((state) => state.global)
@@ -14,7 +14,7 @@ export const MainPage = () => {
 
     useEffect(() => {
         document.title = `${APP_TITLE} - Dashboard`
-        
+
         // setSnack({
         //     msg: [ 'main page snack test' ],
         //     type: "info"
@@ -31,9 +31,19 @@ export const MainPage = () => {
                 try {
                     await mainApi.apiMainLongRunningGet()
                 } catch (_ex) {
-                    handleApiException(_ex as ResponseError)
+                    const ex = _ex as AxiosError
+                    handleApiException(ex)
                 }
             }}>long running op</Button>
+
+            <Button onClick={async () => {
+                try {
+                    await mainApi.apiMainTestExceptionGet()
+                } catch (_ex) {
+                    const ex = _ex as AxiosError
+                    handleApiException(ex)
+                }
+            }}>test exception</Button>
         </Box>
     )
 

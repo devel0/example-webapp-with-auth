@@ -10,9 +10,8 @@ import { Box, Button, CssBaseline, LinearProgress } from '@mui/material'
 import ResponsiveAppBar, { AppBarItem } from './ResponsiveAppBar'
 import { AboutDialog } from '../dialogs/AboutDialog';
 import { CurrentUserNfo } from '../types/CurrentUserNfo';
-import { authApi } from '../fetch.manager';
-import { ResponseError } from '../../api';
-import { HttpStatusCode } from 'axios';
+import { authApi } from '../axios.manager';
+import { AxiosError, HttpStatusCode } from 'axios';
 
 type Props = {
     child: JSX.Element
@@ -30,12 +29,12 @@ const MainLayout = (props: Props) => {
 
             authApi.apiAuthCurrentUserGet()
                 .then(res => {
-                    if (res.status === 'OK') {
+                    if (res.status === HttpStatusCode.Ok) {
                         const currentUser: CurrentUserNfo = {
-                            userName: res.userName!,
-                            email: res.email!,
-                            roles: Array.from(res.roles ?? []),
-                            permissions: Array.from(res.permissions ?? [])
+                            userName: res.data.userName!,
+                            email: res.data.email!,
+                            roles: Array.from(res.data.roles ?? []),
+                            permissions: Array.from(res.data.permissions ?? [])
                         }
 
                         dispatch(setSuccessfulLogin(currentUser))
@@ -45,9 +44,10 @@ const MainLayout = (props: Props) => {
                         navigate(APP_URL_Login)
                     }
                 })
-                .catch(_err => {
-                    const err = _err as ResponseError
-                    if (err.response.status === HttpStatusCode.Unauthorized) {
+                .catch(_err => {                    
+                    const err = _err as AxiosError
+
+                    if (err.response?.status === HttpStatusCode.Unauthorized) {
                         if (document.location.pathname !== APP_URL_Login) {
                             dispatch(setUrlWanted(location.pathname))
                             localStorage.removeItem(LOCAL_STORAGE_CURRENT_USER_NFO)

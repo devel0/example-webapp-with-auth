@@ -10,9 +10,10 @@ import { emailIsValid } from "../utils/email-validator";
 import { usernameIsValid } from "../utils/username-validator";
 import { SnackNfoType } from "../types/SnackNfo";
 import { handleApiException, nullOrUndefined, setSnack } from "../utils/utils";
-import { authApi } from "../fetch.manager";
-import { AuthOptions, EditUserRequestDto, ResponseError } from "../../api";
+import { authApi } from "../axios.manager";
+import { AuthOptions, EditUserRequestDto } from "../../api";
 import { from } from "linq-to-typescript";
+import { AxiosError } from "axios";
 
 export const NewUserDataSample = () => {
     let res: EditUserRequestDto = {
@@ -48,11 +49,11 @@ export const EditUserDialog = (props: {
     useEffect(() => {
         if (global.currentUser) {
             authApi.apiAuthAuthOptionsGet().then(res => {
-                setAuthOptions(res)
+                setAuthOptions(res.data)
             })
 
             authApi.apiAuthListRolesGet().then(res => {
-                setAllRoles(from(res).orderBy(w => w).toArray())
+                setAllRoles(from(res.data).orderBy(w => w).toArray())
             })
         }
     }, [global.currentUser])
@@ -253,9 +254,7 @@ export const EditUserDialog = (props: {
                             if (validate()) {
 
                                 try {
-                                    await authApi.apiAuthEditUserPost({
-                                        editUserRequestDto: userData
-                                    })
+                                    await authApi.apiAuthEditUserPost(userData)
 
                                     setSnack({
                                         msg: [`User ${userData.existingUsername ?? userData.editUsername} ${nullOrUndefined(userData.existingUsername) ? 'created' : 'changes applied'}`],
@@ -265,8 +264,9 @@ export const EditUserDialog = (props: {
                                     await refreshList()
                                     setOpen(false)
                                 }
-                                catch (_ex) {
-                                    handleApiException(_ex as ResponseError, 'Edit user error')
+                                catch (_ex) {                                    
+                                    const ex = _ex as AxiosError
+                                    handleApiException(ex, 'Edit user error')
                                 }
                             }
                         }}

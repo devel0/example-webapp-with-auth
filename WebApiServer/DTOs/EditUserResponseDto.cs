@@ -32,6 +32,7 @@ public class EditUserResponseDto
     /// <summary>
     /// API specific status response.
     /// </summary>    
+    [Required]
     public required EditUserStatus Status { get; set; }
 
     /// <summary>

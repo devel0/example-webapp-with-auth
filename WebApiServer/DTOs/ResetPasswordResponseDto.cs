@@ -24,6 +24,7 @@ public class ResetLostPasswordResponseDto
     /// <summary>
     /// API specific status response.
     /// </summary>    
+    [Required]
     public required ResetLostPasswordStatus Status { get; set; }     
 
     /// <summary>

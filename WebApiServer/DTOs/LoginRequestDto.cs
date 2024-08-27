@@ -12,7 +12,8 @@ public class LoginRequestDto
 
     /// <summary>
     /// Password.
-    /// </summary>    
+    /// </summary>
+    [Required]
     public required string Password { get; set; }
 
     public string? PasswordResetToken { get; set; }

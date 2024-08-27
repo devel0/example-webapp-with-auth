@@ -16,6 +16,5 @@ cd $exdir
 
 npx @openapitools/openapi-generator-cli generate \
     -i "$API_SPEC_URL" \
-    --skip-validate-spec \
-    -g typescript-fetch \
+    -g typescript-axios \
     -o $APIFLD

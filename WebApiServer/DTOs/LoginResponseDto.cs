@@ -36,6 +36,7 @@ public class LoginResponseDto
     /// <summary>
     /// API specific status response.
     /// </summary>    
+    [Required]
     public required LoginStatus Status { get; set; }
 
     /// <summary>

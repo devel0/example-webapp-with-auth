@@ -36,4 +36,14 @@ public class MainController : ControllerBase
         return Ok();
     }
 
+    /// <summary>
+    /// Generate test exception.
+    /// </summary>    
+    [HttpGet]
+    [Authorize(Roles = ROLE_admin)]
+    public async Task<ActionResult> TestException()
+    {
+        throw new Exception("Test exception message.");
+    }
+
 }

@@ -1,11 +1,11 @@
 import { enqueueSnackbar } from "notistack"
-import { ResponseError } from "../../api"
 import { SnackNfo } from "../types/SnackNfo"
 import {
     DEFAULT_FONTSIZE_NORMAL, DEFAULT_FONTSIZE_NORMAL2, DEFAULT_FONTWEIGHT_SEMIBOLD,
     DEFAULT_FONTWEIGHT_XBOLD
 } from "../constants/general"
 import { Box, Typography } from "@mui/material"
+import { AxiosError } from "axios"
 
 export const firstLetter = (str: string | undefined, capitalize: boolean = false) => {
     if (str && str.length > 0) {
@@ -18,19 +18,17 @@ export const firstLetter = (str: string | undefined, capitalize: boolean = false
 
 export const nullOrUndefined = (x: any) => x === null || x === undefined
 
-export const handleApiException = async (ex: ResponseError, prefixMsg: string = 'Error') => {
-    let msg = [`${prefixMsg}: ${ex.response.statusText}`]
+export const handleApiException = async (ex: AxiosError, prefixMsg: string = 'Error') => {
+    let msgs = [`${prefixMsg}: ${ex.response?.statusText}`]
 
-    try {
-        const json = await ex.response.json()
+    const detail = (ex.response?.data as any)?.detail
 
-        if (json.detail)
-            msg.push(`Detail: ${json.detail}`)
-    }
-    catch { }
+    if (detail)
+        msgs.push(`Detail: ${detail}`)
 
     setSnack({
-        msg: msg,
+        title: prefixMsg,
+        msg: msgs,
         type: "error"
     })
 }
@@ -46,7 +44,7 @@ export const setSnack = (nfo: SnackNfo) => {
             {nfo.title && <Typography
                 fontSize={DEFAULT_FONTSIZE_NORMAL2}
                 fontWeight={DEFAULT_FONTWEIGHT_XBOLD}>
-                {nfo.title}xxx
+                {nfo.title}
             </Typography>}
 
             {nfo.msg.map((msg, msgIdx) =>

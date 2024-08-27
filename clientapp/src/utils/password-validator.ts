@@ -1,4 +1,4 @@
-import { AuthOptions, AuthOptionsFromJSONTyped } from "../../api";
+import { AuthOptions } from "../../api";
 import { ValidatorResult } from "../types/ValidatorResult";
 
 export const passwordIsValid = (authOptions: AuthOptions, password: string) => {
