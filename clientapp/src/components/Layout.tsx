@@ -7,7 +7,6 @@ import { APP_URL_Login, APP_URL_Users, DEFAULT_SIZE_SMALL, DEFAULT_SIZE_XSMALL, 
 import { useEffect, useState } from 'react'
 import { setLoggedOut, setSuccessfulLogin, setUrlWanted } from '../redux/slices/globalSlice'
 import { Box, Button, CssBaseline, LinearProgress } from '@mui/material'
-import { SnackComponent } from './SnackComponent'
 import ResponsiveAppBar, { AppBarItem } from './ResponsiveAppBar'
 import { AboutDialog } from '../dialogs/AboutDialog';
 import { CurrentUserNfo } from '../types/CurrentUserNfo';
@@ -96,8 +95,6 @@ const MainLayout = (props: Props) => {
             <Box sx={{ minHeight: DEFAULT_SIZE_XSMALL }}>
                 {global.generalNetwork && <LinearProgress />}
             </Box>
-
-            <SnackComponent />
 
             {props.child}
 

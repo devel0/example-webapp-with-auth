@@ -1,7 +1,11 @@
+import { enqueueSnackbar } from "notistack"
 import { ResponseError } from "../../api"
-import { setSnack } from "../redux/slices/globalSlice"
-import { store } from "../redux/stores/store"
-import { SnackNfoType } from "../types/SnackNfo"
+import { SnackNfo } from "../types/SnackNfo"
+import {
+    DEFAULT_FONTSIZE_NORMAL, DEFAULT_FONTSIZE_NORMAL2, DEFAULT_FONTWEIGHT_SEMIBOLD,
+    DEFAULT_FONTWEIGHT_XBOLD
+} from "../constants/general"
+import { Box, Typography } from "@mui/material"
 
 export const firstLetter = (str: string | undefined, capitalize: boolean = false) => {
     if (str && str.length > 0) {
@@ -25,12 +29,41 @@ export const handleApiException = async (ex: ResponseError, prefixMsg: string = 
     }
     catch { }
 
-    store.dispatch(setSnack({
+    setSnack({
         msg: msg,
-        type: SnackNfoType.error
-    }))
+        type: "error"
+    })
 }
 
 export function delay(ms: number) {
-    return new Promise( resolve => setTimeout(resolve, ms) );
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export const setSnack = (nfo: SnackNfo) => {
+
+    enqueueSnackbar({
+        message: <Box>
+            {nfo.title && <Typography
+                fontSize={DEFAULT_FONTSIZE_NORMAL2}
+                fontWeight={DEFAULT_FONTWEIGHT_XBOLD}>
+                {nfo.title}xxx
+            </Typography>}
+
+            {nfo.msg.map((msg, msgIdx) =>
+                <Typography
+                    fontSize={DEFAULT_FONTSIZE_NORMAL}
+                    fontWeight={DEFAULT_FONTWEIGHT_SEMIBOLD}
+                    key={`snack-mex-${msgIdx}`}>
+                    {msg}
+                </Typography>
+            )}
+        </Box>,
+
+        variant: nfo.type,
+
+        preventDuplicate: true,
+
+        autoHideDuration: nfo.durationMs === null ? null : (nfo.durationMs ?? 6000)
+    })
+
 }

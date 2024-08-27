@@ -9,15 +9,14 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
 import { useNavigate } from 'react-router'
 import { GlobalState } from '../redux/states/GlobalState'
 import React, { useEffect, useState } from 'react'
-import { setSnack, setSuccessfulLogin, setUrlWanted } from '../redux/slices/globalSlice'
+import {  setSuccessfulLogin, setUrlWanted } from '../redux/slices/globalSlice'
 import { APP_TITLE, APP_URL_Home, APP_URL_Login, DEFAULT_COLOR_TIPS, DEFAULT_FONTSIZE_MEDIUM, DEFAULT_FONTSIZE_NORMAL, DEFAULT_FONTWEIGHT_BOLD, DEFAULT_SIZE_SMALL, DEFAULT_SIZE_XSMALL, LOCAL_STORAGE_CURRENT_USER_NFO } from '../constants/general'
 import { CurrentUserNfo } from '../types/CurrentUserNfo'
 import { SnackNfoType } from '../types/SnackNfo'
-import { SnackComponent } from '../components/SnackComponent'
 import AppLogo from '../images/app-icon.svg?react'
 import { authApi } from '../fetch.manager'
 import { useParams } from 'react-router-dom'
-import { delay, handleApiException, nullOrUndefined } from '../utils/utils'
+import { delay, handleApiException, nullOrUndefined, setSnack } from '../utils/utils'
 import { ResponseError } from '../../api'
 import { AutoFixOff } from '@mui/icons-material'
 
@@ -103,10 +102,10 @@ export const LoginPage = () => {
                     );
                 }
                 else
-                    dispatch(setSnack({
+                    setSnack({
                         msg: ['login error'],
-                        type: SnackNfoType.warning
-                    }))
+                        type: "warning"
+                    })
             } catch (_ex) {
                 handleApiException(_ex as ResponseError)
             }
@@ -184,12 +183,12 @@ export const LoginPage = () => {
                                         email: usernameOrEmailField
                                     })
 
-                                    dispatch(setSnack({
+                                    setSnack({
                                         title: "Email confirmation sent",
                                         msg: ["An email with a password reset link was sent to your email."],
-                                        type: SnackNfoType.success,
+                                        type: "success",
                                         durationMs: 15000
-                                    }))
+                                    })
                                 } catch (_ex) {
                                     handleApiException(_ex as ResponseError)
                                 }
@@ -203,9 +202,7 @@ export const LoginPage = () => {
                     </Box>}
 
                 </Container>
-            </Box>
-
-            <SnackComponent />
+            </Box>            
         </Box>
     )
 

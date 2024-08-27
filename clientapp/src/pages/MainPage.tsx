@@ -3,11 +3,9 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
 import { GlobalState } from '../redux/states/GlobalState'
 import { Box, Button } from '@mui/material'
 import { useEffect } from 'react'
-import { setSnack } from '../redux/slices/globalSlice'
-import { SnackNfoType } from '../types/SnackNfo'
 import { APP_TITLE, DEFAULT_SIZE_SMALL } from '../constants/general'
 import { mainApi } from '../fetch.manager'
-import { handleApiException } from '../utils/utils'
+import { handleApiException, setSnack } from '../utils/utils'
 import { ResponseError } from '../../api'
 
 export const MainPage = () => {
@@ -16,10 +14,11 @@ export const MainPage = () => {
 
     useEffect(() => {
         document.title = `${APP_TITLE} - Dashboard`
-        // dispatch(setSnack({
+        
+        // setSnack({
         //     msg: [ 'main page snack test' ],
-        //     type: SnackNfoType.info
-        // }))
+        //     type: "info"
+        // })
     }, [])
 
     return (

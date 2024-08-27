@@ -9,9 +9,8 @@ import { EditUserDialog, NewUserDataSample } from "../dialogs/EditUserDialog"
 import { HttpStatusCode } from "axios"
 import { authApi } from "../fetch.manager"
 import { ConfirmDialog, ConfirmDialogCloseResult, ConfirmDialogProps } from "../dialogs/ConfirmDialog"
-import { setSnack } from "../redux/slices/globalSlice"
 import { SnackNfoType } from "../types/SnackNfo"
-import { handleApiException } from "../utils/utils"
+import { handleApiException, setSnack } from "../utils/utils"
 
 export const UsersPage = () => {
     const global = useAppSelector<GlobalState>((state) => state.global)
@@ -112,10 +111,10 @@ export const UsersPage = () => {
                                             }
                                         })
 
-                                        dispatch(setSnack({
+                                        setSnack({
                                             msg: [`Delete successfully`],
-                                            type: SnackNfoType.success
-                                        }))
+                                            type: "success"
+                                        })
 
                                         refreshList()
                                     }

@@ -1,9 +1,10 @@
+import { BaseVariant } from "notistack";
+
 export enum SnackNfoType { 'success', 'info', 'warning', "error" }
 
-export interface SnackNfo {
-  open?: boolean,
+export interface SnackNfo {  
   title?: string,
   msg: string[],
-  type: SnackNfoType,
+  type: BaseVariant,
   durationMs?: number | null | undefined
 }

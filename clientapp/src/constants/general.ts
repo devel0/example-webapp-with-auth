@@ -45,8 +45,10 @@ export const DEFAULT_SIZE_XLARGE = '4rem'
 
 export const DEFAULT_FONTWEIGHT_SEMIBOLD = 500
 export const DEFAULT_FONTWEIGHT_BOLD = 600
+export const DEFAULT_FONTWEIGHT_XBOLD = 900
 
 export const DEFAULT_FONTSIZE_NORMAL = "1rem"
+export const DEFAULT_FONTSIZE_NORMAL2 = "1.25rem"
 export const DEFAULT_FONTSIZE_MEDIUM = "1.5rem"
 
 export const DEFAULT_COLOR_TIPS = green[400]

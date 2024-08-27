@@ -1,11 +1,12 @@
 import { Action, Dispatch } from "@reduxjs/toolkit"
 import { AuthApi, Configuration, ErrorContext, FetchParams, MainApi, Middleware, ResponseContext } from "../api"
 import { API_URL, APP_URL_Login, LOCAL_STORAGE_CURRENT_USER_NFO } from "./constants/general"
-import { setGeneralNetwork, setSnack } from "./redux/slices/globalSlice";
+import { setGeneralNetwork } from "./redux/slices/globalSlice";
 import { HttpStatusCode } from "axios";
 import { useAppDispatch } from "./redux/hooks/hooks";
 import { store } from "./redux/stores/store";
 import { SnackNfoType } from "./types/SnackNfo";
+import { setSnack } from "./utils/utils";
 
 export class APIMiddleware implements Middleware {
 
@@ -19,11 +20,11 @@ export class APIMiddleware implements Middleware {
         store.dispatch(setGeneralNetwork(false))
 
         if (context.response.status === HttpStatusCode.BadGateway) {
-            store.dispatch(setSnack({
+            setSnack({
                 title: "Network error",
                 msg: ["Backend server unreachable"],
-                type: SnackNfoType.error
-            }))
+                type: "error"
+            })
         }
         else if (context.response.status === HttpStatusCode.InternalServerError) {
             context.response.text().then(res => {
@@ -37,11 +38,11 @@ export class APIMiddleware implements Middleware {
                 else {
                     msg = res
                 }
-                store.dispatch(setSnack({
+                setSnack({
                     title: title,
                     msg: [msg],
-                    type: SnackNfoType.error
-                }))
+                    type: "error"
+                })
             })
         }
 

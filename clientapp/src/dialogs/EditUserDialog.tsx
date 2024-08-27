@@ -8,9 +8,8 @@ import { useEffect, useState } from "react";
 import { passwordIsValid } from "../utils/password-validator";
 import { emailIsValid } from "../utils/email-validator";
 import { usernameIsValid } from "../utils/username-validator";
-import { setSnack } from "../redux/slices/globalSlice";
 import { SnackNfoType } from "../types/SnackNfo";
-import { handleApiException, nullOrUndefined } from "../utils/utils";
+import { handleApiException, nullOrUndefined, setSnack } from "../utils/utils";
 import { authApi } from "../fetch.manager";
 import { AuthOptions, EditUserRequestDto, ResponseError } from "../../api";
 import { from } from "linq-to-typescript";
@@ -118,7 +117,7 @@ export const EditUserDialog = (props: {
         <Dialog
             open={open}
             onClose={(e, reason) => {
-                if (reason && (reason === "backdropClick" || reason === 'escapeKeyDown'))
+                if (reason && (reason === "backdropClick"))
                     return; // modal dialog
                 setOpen(false)
             }}>
@@ -258,10 +257,10 @@ export const EditUserDialog = (props: {
                                         editUserRequestDto: userData
                                     })
 
-                                    dispatch(setSnack({
+                                    setSnack({
                                         msg: [`User ${userData.existingUsername ?? userData.editUsername} ${nullOrUndefined(userData.existingUsername) ? 'created' : 'changes applied'}`],
-                                        type: SnackNfoType.success
-                                    }))
+                                        type: "success"
+                                    })
 
                                     await refreshList()
                                     setOpen(false)
