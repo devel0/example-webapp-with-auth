@@ -7,6 +7,8 @@ import { setSnack } from '../redux/slices/globalSlice'
 import { SnackNfoType } from '../types/SnackNfo'
 import { APP_TITLE, DEFAULT_SIZE_SMALL } from '../constants/general'
 import { mainApi } from '../fetch.manager'
+import { handleApiException } from '../utils/utils'
+import { ResponseError } from '../../api'
 
 export const MainPage = () => {
     const global = useAppSelector<GlobalState>((state) => state.global)
@@ -27,7 +29,11 @@ export const MainPage = () => {
             roles: {global.currentUser?.roles}<br />
 
             <Button onClick={async () => {
-                await mainApi.apiMainLongRunningGet()
+                try {
+                    await mainApi.apiMainLongRunningGet()
+                } catch (_ex) {
+                    handleApiException(_ex as ResponseError)
+                }
             }}>long running op</Button>
         </Box>
     )
