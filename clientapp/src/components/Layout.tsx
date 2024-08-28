@@ -22,7 +22,7 @@ const MainLayout = (props: Props) => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
     const location = useLocation()
-    const [aboutDialogOpen, setAboutDialogOpen] = useState(false)    
+    const [aboutDialogOpen, setAboutDialogOpen] = useState(false)
 
     useEffect(() => {
         if (location.pathname !== APP_URL_Login && (!global.currentUserInitialized || !global.currentUser)) {
@@ -44,7 +44,7 @@ const MainLayout = (props: Props) => {
                         navigate(APP_URL_Login)
                     }
                 })
-                .catch(_err => {                    
+                .catch(_err => {
                     const err = _err as AxiosError
 
                     if (err.response?.status === HttpStatusCode.Unauthorized) {
@@ -71,10 +71,16 @@ const MainLayout = (props: Props) => {
     ]
 
     const menuSettings: AppBarItem[] = [
+
         {
-            label: 'Profile',
-            icon: <AccountCircleIcon />
+            label: `${global.currentUser?.userName}`
         },
+
+        // {
+        //     label: 'Profile',
+        //     icon: <AccountCircleIcon />
+        // },
+
         {
             label: 'Logout',
             icon: <LogoutIcon />,
