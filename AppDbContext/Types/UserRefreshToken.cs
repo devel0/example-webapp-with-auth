@@ -1,5 +1,7 @@
 namespace ExampleWebApp.Backend.Data.Types;
 
+[Index(nameof(UserName), [nameof(RefreshToken)])]
+[Index(nameof(RefreshToken))]
 public class UserRefreshToken
 {
 
