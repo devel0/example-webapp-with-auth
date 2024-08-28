@@ -6,6 +6,7 @@ cd "$exdir"/..
 
 chmod -v +x \
     db.sh \
+    migr.sh \
     gen-api.sh \
     publish.sh \
     run-frontend.sh \
