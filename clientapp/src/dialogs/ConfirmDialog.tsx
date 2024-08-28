@@ -22,7 +22,8 @@ export interface ConfirmDialogProps {
     yesButton?: boolean,
     noButton?: boolean,
     yesButtonText?: string,
-    modal?: boolean
+    modal?: boolean,
+    modalDisallowEscapeKey?: boolean    
 }
 
 export const ConfirmDialog = (props: ConfirmDialogProps) => {
@@ -37,14 +38,15 @@ export const ConfirmDialog = (props: ConfirmDialogProps) => {
         yesButton,
         noButton,
         yesButtonText,
-        modal
+        modal,
+        modalDisallowEscapeKey
     } = props
 
     return (
         <Dialog
             open={open}
             onClose={(e, reason) => {
-                if (modal === false || (reason !== 'backdropClick' && reason !== 'escapeKeyDown'))
+                if (modal === false || (reason !== 'backdropClick' && (modalDisallowEscapeKey !== true || reason !== 'escapeKeyDown')))
                     setProps({ ...props, open: false })
             }}>
 
