@@ -131,8 +131,10 @@ public class AuthService : IAuthService
         if (username is null || email is null)
             throw new Exception("username or email null");
 
+        await jwtService.MaintenanceRefreshTokenAsync(username, cancellationToken);
+
         var accessToken = jwtService.GenerateAccessToken(username, email, claims);
-        var refreshToken = jwtService.GenerateRefreshToken(username);
+        var refreshToken = await jwtService.GenerateRefreshTokenAsync(username, cancellationToken);
 
         var persist = false;
         await signInManager.SignInWithClaimsAsync(user, persist, claims);
@@ -218,10 +220,15 @@ public class AuthService : IAuthService
         if (httpContext is null)
             return HttpStatusCode.BadRequest;
 
+        var refreshToken = httpContext.Request.Cookies[WEB_CookieName_XRefreshToken];
+
         httpContext.Response.Cookies.Delete(WEB_CookieName_XAccessToken);
         httpContext.Response.Cookies.Delete(WEB_CookieName_XRefreshToken);
 
         await signInManager.SignOutAsync();
+
+        if (refreshToken is not null)
+            await jwtService.RemoveRefreshTokenAsync(refreshToken, cancellationToken);
 
         return HttpStatusCode.OK;
     }

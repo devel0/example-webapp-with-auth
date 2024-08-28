@@ -7,6 +7,8 @@ public class JWTService : IJWTService
     readonly UserManager<ApplicationUser> userManager;
     readonly AppDbContext dbContext;
 
+    static SemaphoreSlim semRefreshToken = new SemaphoreSlim(1);
+
     public JWTService(
         ILogger<JWTService> logger,
         IConfiguration configuration,
@@ -56,16 +58,29 @@ public class JWTService : IJWTService
         return accessToken;
     }
 
-    public RenewAccessTokenNfo? RenewAccessToken(string accessToken, string refreshToken)
+    public async Task<RenewAccessTokenNfo?> RenewAccessTokenAsync(
+        string accessToken, string refreshToken, CancellationToken cancellationToken)
     {
         var principal = GetPrincipalFromExpiredToken(accessToken);
-        if (principal is null) return null; // invalid access token        
+        if (principal is null)
+        {
+            logger.LogTrace($"invalid token principal");
+            return null; // invalid access token        
+        }
 
         var claimsUsername = principal.GetUserInfoFromClaims().UserName;
 
-        if (claimsUsername is null) return null; // no username in claims        
+        if (claimsUsername is null)
+        {
+            logger.LogTrace($"no username in claims");
+            return null; // no username in claims        
+        }
 
-        if (!IsRefreshTokenStillValid(claimsUsername, refreshToken)) return null; // refresh token not found                
+        if (!IsRefreshTokenStillValid(claimsUsername, refreshToken))
+        {
+            // logger.LogTrace($"refresh token not more valid");
+            return null; // refresh token not found                
+        }
 
         var quser = dbContext.Users.FirstOrDefault(w => w.UserName == claimsUsername);
 
@@ -75,7 +90,9 @@ public class JWTService : IJWTService
         if (email is null) throw new Exception("email not set");
 
         var resToken = GenerateAccessToken(claimsUsername, email, userManager.GetJWTClaims(quser));
-        var resRefreshToken = RotateRefreshToken(claimsUsername, refreshToken);
+        var resRefreshToken = await RotateRefreshTokenAsync(claimsUsername, refreshToken, cancellationToken);
+
+        if (resRefreshToken is null) return null;
 
         return new RenewAccessTokenNfo
         {
@@ -86,7 +103,7 @@ public class JWTService : IJWTService
         };
     }
 
-    public string GenerateRefreshToken(string userName)
+    public async Task<string> GenerateRefreshTokenAsync(string userName, CancellationToken cancellationToken)
     {
         string refreshToken;
 
@@ -107,33 +124,123 @@ public class JWTService : IJWTService
             UserName = userName
         };
 
-        dbContext.UserRefreshTokens.Add(newRt);
+        await semRefreshToken.WaitAsync(cancellationToken);
+        try
+        {
+            dbContext.UserRefreshTokens.Add(newRt);
 
-        dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        finally
+        {
+            semRefreshToken.Release();
+        }
 
         return refreshToken;
     }
 
-    public string? RotateRefreshToken(string userName, string refreshTokenToRotate)
+    public async Task MaintenanceRefreshTokenAsync(string userName, CancellationToken cancellationToken)
     {
-        var qRefreshTokens = dbContext.UserRefreshTokens
-            .Where(r => r.UserName == userName && (r.Expires < DateTimeOffset.UtcNow || r.RefreshToken == refreshTokenToRotate))
+        var rotationSkew = TimeSpan.FromSeconds(
+            configuration.GetConfigVar<double>(CONFIG_KEY_JwtSettings_RefreshTokenRotationSkewSeconds));
+
+        var qRefreshTokensToPurge = dbContext.UserRefreshTokens
+            .Where(r =>
+                r.UserName == userName &&
+                (
+                    r.Expires < DateTimeOffset.UtcNow
+                    ||
+                    // if rotated before expiration is invalid after rotation + rotationSkew
+                    (
+                        r.Rotated != null
+                        &&
+                        r.Rotated.Value + rotationSkew < DateTimeOffset.UtcNow
+                    )
+                ))
             .ToList();
 
-        var refreshTokenToRotateFound = qRefreshTokens.Any(w => w.RefreshToken == refreshTokenToRotate);
+        // logger.LogTrace($"purging {qRefreshTokensToPurge.Count} refresh tokens");
 
-        if (!refreshTokenToRotateFound) return null;
+        if (qRefreshTokensToPurge.Count > 0)
+        {
+            await semRefreshToken.WaitAsync(cancellationToken);
+            try
+            {
+                dbContext.RemoveRange(qRefreshTokensToPurge);
+                await dbContext.SaveChangesAsync(cancellationToken);
+            }
+            finally
+            {
+                semRefreshToken.Release();
+            }
+        }
+    }
 
-        if (qRefreshTokens.Count > 0)
-            dbContext.UserRefreshTokens.RemoveRange(qRefreshTokens);
+    public async Task<string?> RotateRefreshTokenAsync(
+        string userName, string refreshTokenToRotate, CancellationToken cancellationToken)
+    {
+        var rotationSkew = TimeSpan.FromSeconds(
+            configuration.GetConfigVar<double>(CONFIG_KEY_JwtSettings_RefreshTokenRotationSkewSeconds));
+
+        // purge expired and rotated refresh token related to username                
+
+        var validRefreshToken = dbContext.UserRefreshTokens
+            .FirstOrDefault(r =>
+                r.UserName == userName &&
+                r.RefreshToken == refreshTokenToRotate &&
+                (
+                    r.Rotated == null
+                    ||
+                    DateTimeOffset.UtcNow <= r.Rotated + rotationSkew
+                ));
+
+        if (validRefreshToken is null) return null;
+
+        // mark rotation if not already
+        if (validRefreshToken.Rotated is null)
+        {
+            await semRefreshToken.WaitAsync(cancellationToken);
+            try
+            {
+                validRefreshToken.Rotated = DateTimeOffset.UtcNow;
+                await dbContext.SaveChangesAsync(cancellationToken);
+            }
+            finally
+            {
+                semRefreshToken.Release();
+            }
+        }
+
+        if (validRefreshToken is not null) return validRefreshToken.RefreshToken;
 
         // generate new refresh token
 
-        var refreshToken = GenerateRefreshToken(userName);
-
-        logger.LogTrace($"user {userName} refresh token rotated");
+        var refreshToken = await GenerateRefreshTokenAsync(userName, cancellationToken);
 
         return refreshToken;
+    }
+
+    public async Task<bool> RemoveRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
+    {
+        var res = false;
+        var q = dbContext.UserRefreshTokens.FirstOrDefault(w => w.RefreshToken == refreshToken);
+
+        if (q is not null)
+        {
+            res = true;
+
+            await semRefreshToken.WaitAsync(cancellationToken);
+            try
+            {
+                dbContext.Remove(q);
+                await dbContext.SaveChangesAsync(cancellationToken);
+            }
+            finally
+            {
+                semRefreshToken.Release();
+            }
+        }
+        return res;
     }
 
     public ClaimsPrincipal? GetPrincipalFromExpiredToken(string accessToken)
@@ -163,12 +270,30 @@ public class JWTService : IJWTService
         var qrefresh = dbContext.UserRefreshTokens
             .FirstOrDefault(w => w.UserName == userName && w.RefreshToken == refreshToken);
 
-        if (qrefresh is null) return false; // refresh token associated with given username not found        
+        if (qrefresh is null)
+        {        
+            return false; // refresh token associated with given username not found        
+        }
 
         var utcNow = DateTimeOffset.UtcNow;
 
-        if (utcNow >= qrefresh.Expires) return false; // refresh token expired        
+        if (qrefresh.Rotated is not null)
+        {
+            var rotationSkewSeconds = configuration.GetConfigVar<double>(CONFIG_KEY_JwtSettings_RefreshTokenRotationSkewSeconds);            
+
+            if (qrefresh.Rotated.Value + TimeSpan.FromSeconds(rotationSkewSeconds) <= utcNow)
+            {
+                return false;
+            }
+        }
+
+        if (utcNow >= qrefresh.Expires)
+        {
+            return false; // refresh token expired                
+        }
 
         return true;
     }
+
+
 }

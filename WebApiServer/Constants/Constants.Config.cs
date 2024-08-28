@@ -32,6 +32,7 @@ public static partial class Constants
     public const string CONFIG_KEY_JwtSettings_Audience = "JwtSettings:Audience";
     public const string CONFIG_KEY_JwtSettings_AccessTokenDurationSeconds = "JwtSettings:AccessTokenDurationSeconds";
     public const string CONFIG_KEY_JwtSettings_RefreshTokenDurationSeconds = "JwtSettings:RefreshTokenDurationSeconds";
+    public const string CONFIG_KEY_JwtSettings_RefreshTokenRotationSkewSeconds = "JwtSettings:RefreshTokenDurationSkewSeconds";
     public const string CONFIG_KEY_JwtSettings_ClockSkewSeconds = "JwtSettings:ClockSkewSeconds";
 
     public const string CONFIG_KEY_SeedUsers_Admin_UserName = "SeedUsers:Admin:UserName";

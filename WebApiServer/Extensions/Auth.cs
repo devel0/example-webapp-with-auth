@@ -127,19 +127,19 @@ public static partial class Extensions
             ClockSkew = TimeSpan.FromSeconds(configuration.GetConfigVar<int>(CONFIG_KEY_JwtSettings_ClockSkewSeconds)),
         };
 
-    static object lckRefreshToken = new object();
-
     /// <summary>
-    /// Add authentication with JWT scheme.
+    /// /// Add authentication with JWT scheme.
     /// Add JWT bearer authentication with handling of failed authentication to resume within refresh token;
     /// it also extract jwt from X-Access-Token cookie.
     /// </summary>    
     public static void SetupJWTAuthentication(this WebApplicationBuilder builder) => builder.Services
+
         .AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
+
         .AddJwtBearer(options =>
         {
             options.TokenValidationParameters = builder.Configuration.GetTokenVaildationParameters();
@@ -157,6 +157,7 @@ public static partial class Extensions
                     var userManager = context.HttpContext.RequestServices.GetService<UserManager<ApplicationUser>>();
                     var hostEnvironment = context.HttpContext.RequestServices.GetService<IHostEnvironment>();
                     var logger = context.HttpContext.RequestServices.GetService<ILogger<AuthController>>();
+                    var cancellationToken = context.HttpContext.RequestServices.GetService<CancellationToken>();
 
                     var accessToken = context.HttpContext.Request.Cookies[WEB_CookieName_XAccessToken];
                     var refreshToken = context.HttpContext.Request.Cookies[WEB_CookieName_XRefreshToken];
@@ -178,21 +179,18 @@ public static partial class Extensions
 
                             if (user is not null && !userIsLockedOut && !userDisabled)
                             {
-                                lock (lckRefreshToken)
+                                var res = await jwtService.RenewAccessTokenAsync(accessToken, refreshToken, cancellationToken);
+
+                                if (res is not null)
                                 {
-                                    var res = jwtService.RenewAccessToken(accessToken, refreshToken);
+                                    var opts = new CookieOptions();
 
-                                    if (res is not null)
-                                    {
-                                        var opts = new CookieOptions();
+                                    hostEnvironment.SetCookieOptions(builder.Configuration, opts, setExpiresAsRefreshToken: true);
+                                    context.HttpContext.Response.Cookies.Append(WEB_CookieName_XAccessToken, res.AccessToken, opts);
+                                    context.HttpContext.Response.Cookies.Append(WEB_CookieName_XRefreshToken, res.RefreshToken, opts);
 
-                                        hostEnvironment.SetCookieOptions(builder.Configuration, opts, setExpiresAsRefreshToken: true);
-                                        context.HttpContext.Response.Cookies.Append(WEB_CookieName_XAccessToken, res.AccessToken, opts);
-                                        context.HttpContext.Response.Cookies.Append(WEB_CookieName_XRefreshToken, res.RefreshToken, opts);
-
-                                        context.Principal = res.Principal;
-                                        context.Success();
-                                    }
+                                    context.Principal = res.Principal;
+                                    context.Success();
                                 }
                             }
                         }

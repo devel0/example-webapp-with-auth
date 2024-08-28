@@ -230,15 +230,26 @@ public class IntegrationTests
     public async Task RotateRefreshToken()
     {
         var accessTokenDuration = TimeSpan.FromSeconds(1);
+        var refreshTokenDuration = TimeSpan.FromMinutes(10);
+        var refreshTokenRotationSkew = accessTokenDuration + TimeSpan.FromSeconds(1);
 
         using var testFactory = new TestFactory();
         await testFactory.InitAsync();
         var client = testFactory.Client;
         var config = testFactory.Services.GetRequiredService<IConfiguration>();
         var logger = testFactory.Services.GetRequiredService<ILogger<IntegrationTests>>();
+        var dbContext = testFactory.Services.GetRequiredService<AppDbContext>();
 
         config.SetConfigVar(CONFIG_KEY_JwtSettings_ClockSkewSeconds, "0");
-        config.SetConfigVar(CONFIG_KEY_JwtSettings_AccessTokenDurationSeconds, accessTokenDuration.TotalSeconds.ToString());
+
+        config.SetConfigVar(CONFIG_KEY_JwtSettings_AccessTokenDurationSeconds,
+            accessTokenDuration.TotalSeconds.ToString());
+
+        config.SetConfigVar(CONFIG_KEY_JwtSettings_RefreshTokenDurationSeconds,
+            refreshTokenDuration.TotalSeconds.ToString());
+
+        config.SetConfigVar(CONFIG_KEY_JwtSettings_RefreshTokenRotationSkewSeconds,
+            refreshTokenRotationSkew.TotalSeconds.ToString());
 
         var adminUsername = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
         var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
@@ -256,10 +267,10 @@ public class IntegrationTests
         var jwtCookies = loginRes.Headers.GetJwtCookiesFromResponse();
         Assert.NotNull(jwtCookies.AccessToken);
 
-        var initialRefreshToken = jwtCookies.RefreshToken;
-        Assert.NotNull(initialRefreshToken);
+        var refreshToken1 = HttpUtility.UrlDecode(jwtCookies.RefreshToken);
+        Assert.NotNull(refreshToken1);
 
-        logger.LogTrace("Wait access token expires");
+        logger.LogTrace($"1) Wait access token expires ( refreshToken: {refreshToken1} )");
 
         await Task.Delay(accessTokenDuration);
 
@@ -269,18 +280,98 @@ public class IntegrationTests
 
         Assert.Equal(HttpStatusCode.OK, currentUserRes.StatusCode);
 
-        logger.LogTrace("Wait access token expires");
+        jwtCookies = currentUserRes.Headers.GetJwtCookiesFromResponse();
+        Assert.NotNull(jwtCookies.AccessToken);
 
-        // old refreshToken not more valid because rotated in previous api call
-        // cause access token expired and refresh token used to generate new one access token
+        var refreshToken2 = HttpUtility.UrlDecode(jwtCookies.RefreshToken);
+        Assert.NotNull(refreshToken2);
+
+        logger.LogTrace($"2) Wait access token expires ( refreshToken: {refreshToken2} )");
+
+        // old refreshToken still valid because rotated + skew still valid
 
         await Task.Delay(accessTokenDuration);
 
-        client.SetCookie(WEB_CookieName_XRefreshToken, initialRefreshToken);
+        currentUserRes = (await client.GetAsync($"{AuthApiPrefix}/{nameof(AuthController.CurrentUser)}")).ApplySetCookies(client);
+
+        Assert.Equal(HttpStatusCode.OK, currentUserRes.StatusCode);
+
+        jwtCookies = currentUserRes.Headers.GetJwtCookiesFromResponse();
+        Assert.NotNull(jwtCookies.AccessToken);
+
+        var refreshToken3 = HttpUtility.UrlDecode(jwtCookies.RefreshToken);
+        Assert.NotNull(refreshToken3);
+
+        logger.LogTrace($"3) Wait access token expires ( refreshToken: {refreshToken3} )");
+
+        await Task.Delay(accessTokenDuration);
 
         currentUserRes = (await client.GetAsync($"{AuthApiPrefix}/{nameof(AuthController.CurrentUser)}")).ApplySetCookies(client);
 
         Assert.Equal(HttpStatusCode.Unauthorized, currentUserRes.StatusCode);
+
+        logger.LogTrace("Login");
+
+        loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
+        {
+            UsernameOrEmail = adminUsername,
+            Password = adminPassword
+        })).ApplySetCookies(client);
+
+        Assert.Equal(HttpStatusCode.OK, loginRes.StatusCode);
+
+        jwtCookies = loginRes.Headers.GetJwtCookiesFromResponse();
+        Assert.NotNull(jwtCookies.AccessToken);
+
+        var refreshToken4 = HttpUtility.UrlDecode(jwtCookies.RefreshToken);
+        Assert.NotNull(refreshToken4);
+
+        // refreshToken4 differs from refreshToken3 because rotate+skew window now expired
+        logger.LogTrace($"final refresh token {refreshToken4}");
+        Assert.NotEqual(refreshToken4, refreshToken3);
+
+        // the login executed a refresh token maintenance that removed not more valid refreshToken3        
+        var refreshTokensCount = dbContext.UserRefreshTokens.Count(w => w.UserName == "admin");
+        logger.LogTrace($"refresh tokens in db {refreshTokensCount}");
+        Assert.Equal(1, refreshTokensCount);
+    }
+
+    /// <summary>
+    /// Refresh token removed from db after logout.
+    /// </summary>
+    [Fact]
+    public async Task RefreshTokenAfterLogout()
+    {
+        using var testFactory = new TestFactory();
+        await testFactory.InitAsync();
+        var client = testFactory.Client;
+        var config = testFactory.Services.GetRequiredService<IConfiguration>();
+        var logger = testFactory.Services.GetRequiredService<ILogger<IntegrationTests>>();
+        var dbContext = testFactory.Services.GetRequiredService<AppDbContext>();
+
+        var adminUsername = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
+        var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
+
+        logger.LogTrace("Login");
+        var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
+        {
+            UsernameOrEmail = adminUsername,
+            Password = adminPassword
+        })).ApplySetCookies(client);
+
+        Assert.Equal(HttpStatusCode.OK, loginRes.StatusCode);
+
+        var refreshTokensCount = dbContext.UserRefreshTokens.Count(w => w.UserName == "admin");
+        logger.LogTrace($"refresh tokens in db {refreshTokensCount}");
+        Assert.Equal(1, refreshTokensCount);
+
+        logger.LogTrace("Logout");
+        var logoutRes = (await client.GetAsync($"{AuthApiPrefix}/{nameof(AuthController.Logout)}")).ApplySetCookies(client);
+        Assert.Equal(HttpStatusCode.OK, logoutRes.StatusCode);
+
+        refreshTokensCount = dbContext.UserRefreshTokens.Count(w => w.UserName == "admin");
+        logger.LogTrace($"refresh tokens in db {refreshTokensCount}");
+        Assert.Equal(0, refreshTokensCount);
     }
 
     /// <summary>

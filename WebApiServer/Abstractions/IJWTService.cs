@@ -52,19 +52,35 @@ public interface IJWTService
     /// <param name="accessToken">Access token ( even if its expired ).</param>
     /// <param name="refreshToken">Valid Refresh Token.</param>    
     /// <returns>Null if refresh token isn't valid and a new login required.</returns>
-    RenewAccessTokenNfo? RenewAccessToken(string accessToken, string refreshToken);
+    Task<RenewAccessTokenNfo?> RenewAccessTokenAsync(string accessToken, string refreshToken, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Create a new refresh token for given username.
+    /// Create a new refresh token for given username. Then db savechanges will applied.
     /// </summary>
     /// <param name="userName">Username which associate a new refresh token.</param>
     /// <returns>New valid refresh token associated to the given username.</returns>
-    string GenerateRefreshToken(string userName);
+    Task<string> GenerateRefreshTokenAsync(string userName, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Purge expired refresh tokens and rotate given refresh token.
+    /// Purges expired and rotated+skew expired refresh tokens.
+    /// </summary>
+    /// <param name="userName">Username which purge refresh tokens.</param>
+    Task MaintenanceRefreshTokenAsync(string userName, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Rotate given refresh token.
     /// </summary>    
-    string? RotateRefreshToken(string userName, string refreshTokenToRotate);
+    /// <param name="userName">Username associated to the given refresh token to rotate.</param>
+    /// <param name="refreshTokenToRotate">Refresh token to rotate.</param>/// 
+    Task<string?> RotateRefreshTokenAsync(string userName, string refreshTokenToRotate, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Remove given refresh token from db.
+    /// </summary>
+    /// <param name="refreshToken">Refresh token to remove.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>True if was found.</returns>
+    Task<bool> RemoveRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken);
 
     /// <summary>
     /// Retrieve principal from accessToken even its expired.
