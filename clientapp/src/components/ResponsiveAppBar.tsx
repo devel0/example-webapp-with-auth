@@ -57,7 +57,10 @@ function ResponsiveAppBar(props: {
 
     return (
         <AppBar position="sticky" sx={{}}>
-            <Container maxWidth='xl'>
+            <Box sx={{
+                ml: DEFAULT_SIZE_SMALL,
+                mr: DEFAULT_SIZE_SMALL
+            }}>
                 <Toolbar disableGutters>
                     {/* 
                     -----------------------------------------------------------------------
@@ -104,7 +107,7 @@ function ResponsiveAppBar(props: {
                         flexGrow: 1,
                         display: { xs: 'none', md: 'flex' }
                     }}>
-                        {pages.filter(w=>w.hidden !== true).map((page, pageIdx) => (
+                        {pages.filter(w => w.hidden !== true).map((page, pageIdx) => (
                             <Button
                                 key={`dsk-page-${pageIdx}`}
                                 onClick={() => {
@@ -152,7 +155,7 @@ function ResponsiveAppBar(props: {
                                 display: { xs: 'block', md: 'none' },
                             }}
                         >
-                            {pages.filter(w=>w.hidden !== true).map((page, pageIdx) => (
+                            {pages.filter(w => w.hidden !== true).map((page, pageIdx) => (
                                 <MenuItem
                                     key={`mob-page-${pageIdx}`}
                                     onClick={() => {
@@ -258,7 +261,7 @@ function ResponsiveAppBar(props: {
                         </Menu>
                     </Box>
                 </Toolbar>
-            </Container>
+            </Box>
         </AppBar>
     );
 }
