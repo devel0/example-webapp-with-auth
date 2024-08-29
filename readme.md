@@ -35,6 +35,7 @@
   - [ssh config on development machine](#ssh-config-on-development-machine)
   - [target machine](#target-machine)
   - [publish to target machine](#publish-to-target-machine)
+    - [manual tuning](#manual-tuning)
   - [published files and folders](#published-files-and-folders)
 - [how this project was built](#how-this-project-was-built)
 
@@ -604,6 +605,22 @@ then invoke
 ```sh
 ./publish.sh -h main-test -sn mytest.searchathing.com -id mytest
 ```
+
+#### manual tuning
+
+replace APP_ID with the one used in `-id` publish parameter
+
+- edit `/root/security/APP_ID.env` replacing variables as described in comments
+  - `JwtSettings__Key` can be generated through `openssl rand -hex 32`
+
+- edit `/etc/system/systemd/APP_ID-webapp.service` replacing variables
+
+| variable         | description                  |
+| ---------------- | ---------------------------- |
+| Description      | service textual description  |
+| SyslogIdentifier | service syslog identifier    |
+
+then issue `service APP_ID-webapp restart`
 
 ### published files and folders
 
