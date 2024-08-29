@@ -113,7 +113,7 @@ mv -f "$PRODFILE_TMP" "$PRODFILE"
 
 sed -i "s/VITE_SERVERNAME=.*/VITE_SERVERNAME=$APP_SERVERNAME/g" "$FRONTEND_SRCDIR"/.env.production
 sed -i "s/VITE_GITCOMMIT=.*/VITE_GITCOMMIT=$GITCOMMIT/g" "$FRONTEND_SRCDIR"/.env.production
-sed -i "s/VITE_GITCOMMITDATE=.*/VITE_GITCOMMITDATE=$GITCOMMITDATE/g" "$FRONTEND_SRCDIR"/.env.production
+sed -i "s/VITE_GITCOMMITDATE=.*/VITE_GITCOMMITDATE=\"$GITCOMMITDATE\"/g" "$FRONTEND_SRCDIR"/.env.production
 
 # ======================================================================
 header "PREPARE $APP_ID"
