@@ -1,6 +1,7 @@
 # example-webapp-with-auth
 
 - [features](#features)
+- [project folders](#project-folders)
 - [quickstart (dev)](#quickstart-dev)
   - [clone sources and install template](#clone-sources-and-install-template)
   - [create project source tree](#create-project-source-tree)
@@ -29,11 +30,12 @@
     - [user manager](#user-manager)
     - [username and password criteria](#username-and-password-criteria)
     - [predefined roles and permissions](#predefined-roles-and-permissions)
-- [production deployment](#production-deployment)
+- [production deployment (linux platform)](#production-deployment-linux-platform)
   - [db machine prerequisite](#db-machine-prerequisite)
   - [ssh config on development machine](#ssh-config-on-development-machine)
   - [target machine](#target-machine)
   - [publish to target machine](#publish-to-target-machine)
+  - [published files and folders](#published-files-and-folders)
 - [how this project was built](#how-this-project-was-built)
 
 <hr/>
@@ -67,6 +69,20 @@
 - Production
   - publish release with frontend webpacked available through server static files available directly from within backend
   - publish deployment script with systemd service and environment secrets
+
+## project folders
+
+| folder                  | description                                                                               |
+| ----------------------- | ----------------------------------------------------------------------------------------- |
+| deploy                  | deploy files ( nginx dev and prod conf, scripts, systemd services, env secrets template ) |
+| doc                     | project documents, db. diagram                                                            |
+| misc                    | misc scripts ( restore scripts exec permissions, db dia gen script )                      |
+| src                     | sources                                                                                   |
+| src/app/backend         | c# app webapi backend                                                                     |
+| src/app/frontend        | react typescript frontend app                                                             |
+| libs/db-context         | c# db context                                                                             |
+| libs/db-migrations-psql | c# migrations project                                                                     |
+| test                    | c# webapi tests                                                                           |
 
 ## quickstart (dev)
 
@@ -107,7 +123,7 @@ JWTKEY="$(openssl rand -hex 32)"
 - set development user secrets
 
 ```sh
-cd WebApiServer
+cd src/app/backend
 dotnet user-secrets init
 dotnet user-secrets set "SeedUsers:Admin:Email" "$SEED_ADMIN_EMAIL"
 dotnet user-secrets set "SeedUsers:Admin:Password" "$SEED_ADMIN_PASS"
@@ -122,7 +138,7 @@ cd ..
 - to be able to use the reset password feature configure also the smtp server
 
 ```sh
-cd WebApiServer
+cd src/app/backend
 dotnet user-secrets set "EmailServer:SmtpServerName" REPL_MAILSERVER_HOSTNAME
 dotnet user-secrets set "EmailServer:SmtpServerPort" REPL_MAILSERVER_PORT
 dotnet user-secrets set "EmailServer:Security" REPL_MAILSERVER_SECURITY
@@ -144,9 +160,9 @@ code .
 - restore client node modules
 
 ```sh
-cd clientapp
+cd ../frontend
 npm i
-cd ..
+cd ../..
 ```
 
 - start frontend
@@ -161,15 +177,15 @@ cd ..
 
 - login page
 
-![](./doc/login.png)
+![](./doc/website-media/login.png)
 
 - master page
 
-![](./doc/main-page.png)
+![](./doc/website-media/main-page.png)
 
 - user manager
 
-![](./doc/user-manager.png)
+![](./doc/website-media/user-manager.png)
 
 ## prerequisites
 
@@ -383,9 +399,9 @@ The configuration of appsettings json files will reapplied on change automatical
 
 #### db dia gen
 
-database diagram can be generated through [gen-db-dia.sh](doc/gen-db-dia.sh) script that uses schemacrawler ( [more][1] )
+database diagram can be generated through [gen-db-dia.sh](doc/website-media/gen-db-dia.sh) script that uses schemacrawler ( [more][1] )
 
-![](./doc/db/db.png)
+![](./doc/db.png)
 
 ### frontend
 
@@ -447,7 +463,7 @@ try {
 
 - on the login page there is a "Lost password ?" button
 
-![](./doc/password-reset-step1.png)
+![](./doc/website-media/password-reset-step1.png)
 
 - clicking on that button, having the email field filled with a previously registered user, cause the [frontend][6] to invoke the [ResetLostPassword][7] auth controller anonymous access api.
 
@@ -460,15 +476,15 @@ try {
   
 - gui snack notification
 
-![](./doc/password-reset-step1-feedback.png)
+![](./doc/website-media/password-reset-step1-feedback.png)
 
 - email received
 
-![](./doc/password-reset-step2.png)
+![](./doc/website-media/password-reset-step2.png)
 
 - the mail link will open the browser at the login page with the [token param][16] and this cause the form to appears as follow
 
-![](./doc/password-reset-step3.png)
+![](./doc/website-media/password-reset-step3.png)
 
 - inserting the corresponding email address now and a new password this will be reset through the call of the [ResetLostPassword][7] auth controller anonymous access api again but within non null token and resetPassword.
 - then the authentication service `ResetLostPasswordRequestAsync` will [finish the rule][17] this way
@@ -478,11 +494,11 @@ try {
 
 - if the user current user has permission to create user with some specific role use the `Create` button from the user manager
 
-![](./doc/create-user-form.png)
+![](./doc/website-media/create-user-form.png)
 
 - to edit an existing user click on the `Edit` button
 
-![](./doc/edit-user-form.png)
+![](./doc/website-media/edit-user-form.png)
 
 #### username and password criteria
 
@@ -516,9 +532,7 @@ try {
 | DisableNormalUser         | ■     | ■        |        |
 | ResetLostPassword         | ■     | ■        | ■      |
 
-## production deployment
-
-- change `linux-x64` with target platform: `linux-x64`, `win-x64`, `osx-x64`
+## production deployment (linux platform)
 
 ```sh
 dotnet publish -c Release --runtime linux-x64 --sc
@@ -578,19 +592,27 @@ mkdir /root/secrets
 the syntax is
 
 ```sh
-devel0@tuf:~/opensource/example-webapp-with-auth$ ./publish.sh 
-argmuments:
+./publish.sh argmuments:
   -h <sshhost>        ssh host where to publish ( ie. main-test )
-  -sn <servername>    nginx app servername ( ie. webapp-test.searchathing.com )
-  -id <appid>         app identifier ( ie. webapp-test )
+  -sn <servername>    nginx app servername ( ie. mytest.searchathing.com )
+  -id <appid>         app identifier ( ie. mytest )
   -f                  force overwrite existing
 ```
 
 then invoke
 
 ```sh
-./publish.sh -h main-test -sn webapp-test.searchathing.com -id webapp-test
+./publish.sh -h main-test -sn mytest.searchathing.com -id mytest
 ```
+
+### published files and folders
+
+| folder                                    | description                                                                                      |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| /root/deploy/mytest                       | rsync of [deploy](./deploy/) folder                                                              |
+| /srv/mytest/bin                           | rsync of self contained production `src/app/backend/bin/Release/net8.0/linux-x64/publish` folder |
+| /etc/system/systemd/mytest-webapp.service | copy if not already exists of [webapp.service](./deploy/service/webapp.service)                  |
+| /etc/nginx/conf.d/mytest-webapp.conf      | copy if not already exists of [webapp.conf](./deploy/nginx/prod/webapp.conf)                     |
 
 ## how this project was built
 

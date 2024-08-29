@@ -23,7 +23,7 @@
             "type": "parameter",
             "defaultValue": "ExampleWebApp",
             "replaces": "ExampleWebApp"
-        },
+        },    
         "emptysecretsid": {
             "type": "generated",
             "generator": "constant",
@@ -45,7 +45,8 @@
                         "**/*.user",
                         "**/*.lock.json",
                         "**/node_modules/**",
-                        "**/.git/**"
+                        "**/.git/**",
+                        "**/website-media/**"
                     ]
                 }
             ]

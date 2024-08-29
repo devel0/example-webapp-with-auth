@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/example-webapp.sln",
+                "${workspaceFolder}/example-webapp-with-auth.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/example-webapp.sln",
+                "${workspaceFolder}/example-webapp-with-auth.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/example-webapp.sln"
+                "${workspaceFolder}/example-webapp-with-auth.sln"
             ],
             "problemMatcher": "$msCompile"
         }

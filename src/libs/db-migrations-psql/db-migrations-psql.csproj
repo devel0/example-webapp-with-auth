@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AppDbContext\AppDbContext.csproj" />
-  </ItemGroup>
+    <ProjectReference Include="..\db-context\db-context.csproj" />
+  </ItemGroup>  
 
 </Project>

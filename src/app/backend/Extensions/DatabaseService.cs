@@ -12,8 +12,8 @@ public static partial class Extensions
 
         var connString = isUnitTest ?
             webApplicationBuilder.Configuration.GetConfigVar(CONFIG_KEY_UnitTestConnectionString) :
-            webApplicationBuilder.Configuration.GetConfigVar(CONFIG_KEY_ConnectionString);        
-            
+            webApplicationBuilder.Configuration.GetConfigVar(CONFIG_KEY_ConnectionString);
+
         var provider = webApplicationBuilder.Configuration.GetConfigVar<ConfigValuesDbProvider>(CONFIG_KEY_DbProvider);
 
         //
@@ -26,7 +26,7 @@ public static partial class Extensions
 
                 case ConfigValuesDbProvider.Postgres:
                     {
-                        options.UseNpgsql(connString, x => x.MigrationsAssembly("AppDbMigrationsPsql"));
+                        options.UseNpgsql(connString, x => x.MigrationsAssembly("db-migrations-psql"));
                     }
                     break;
 
@@ -50,6 +50,17 @@ public static partial class Extensions
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<WebApplication>>();
 
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            //
+            // dev note: if not found migration assembly, double check the list of assemblies
+            // see below commented sample dump
+            //
+            // var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            // foreach (var assembly in assemblies)
+            // {
+            //     System.Console.WriteLine($"Assembly [{assembly.GetName()}]");
+            // }
+            //
 
             var appliedMigrations = (await db.Database.GetAppliedMigrationsAsync(cancellationToken)).ToList();
             var pendingMigrations = (await db.Database.GetPendingMigrationsAsync(cancellationToken)).ToList();

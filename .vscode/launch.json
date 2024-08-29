@@ -10,25 +10,15 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/WebApiServer/bin/Debug/net8.0/WebApiServer.dll",
+            "program": "${workspaceFolder}/src/app/backend/bin/Debug/net8.0/backend.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/WebApiServer",
+            "cwd": "${workspaceFolder}/src/app/backend",
             "stopAtEntry": false,
             // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
-                "uriFormat": "http://localhost:%s"
-            },
-            // Setup how to pass url to launch browser
-            "launchBrowser": {
-                "enabled": false,
-                "linux": {
-                    "command": "xdg-open",
-                    // "args": "${auto-detect-url}/swagger/index.html"
-                    "args": "https://dev-webapp-test.searchathing.com/swagger"
-                }
-            },
+            // "serverReadyAction": {
+            //     "action": "openExternally",
+            //     "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            // },
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             },
@@ -44,9 +34,9 @@
         {
             "name": "Launch Chrome",
             "request": "launch",
-            "type": "chrome",            
+            "type": "chrome",
             "url": "https://dev-webapp-test.searchathing.com/app",
-            "webRoot": "${workspaceFolder}/clientapp"
-        },
+            "webRoot": "${workspaceFolder}/src/app/frontend"
+        }
     ]
 }

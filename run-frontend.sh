@@ -2,5 +2,5 @@
 
 exdir=$(dirname $(readlink -f "$BASH_SOURCE"))
 
-cd "$exdir"/clientapp
+cd "$exdir"/src/app/frontend
 npm run dev

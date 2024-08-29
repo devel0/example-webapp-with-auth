@@ -2,11 +2,11 @@
 
 exdir=$(dirname $(readlink -f "$BASH_SOURCE"))
 
-cd "$exdir"/WebApiServer
+cd "$exdir"/src/app/backend
 
 dotnet ef database $@ \
-    --context AppDbContext \
-    --project ../AppDbMigrationsPsql \
+    --context AppDbcontext \
+    --project ../../libs/db-migrations-psql \
     -- --provider Postgres
 
 if [ "$1" == "" ]; then

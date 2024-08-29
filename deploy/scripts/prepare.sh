@@ -3,18 +3,20 @@
 source /etc/environment
 
 FORCE=false
+APP_SEVERNAME=""
 APP_ID=""
 
 printHelp() {    
-    echo "argmuments:"    
-    echo "  -id <appid>         app identifier ( ie. webapp-test )"    
+    echo "$0 argmuments:"    
+    echo "  -id <appid>         app identifier ( ie. mytest )"    
+    echo "  -sn <servername>    nginx app servername ( ie. mytest.searchathing.com )"
     echo "  -f                  force overwrite existing"
 }
 
 mandatoryArg() {
     if [ "$1" == "" ]; then
         printHelp
-        exit 1
+        exit 10
     fi
 }
 
@@ -29,6 +31,14 @@ while [ "$1" != "" ]; do
         FORCE=true
         shift
     fi    
+
+     if [ "$1" == "-sn" ]; then
+        shift
+        mandatoryArg "$1"
+        APP_SERVERNAME=$1
+        shift
+        continue
+    fi
 
     if [ "$1" == "-id" ]; then
         shift
@@ -46,19 +56,23 @@ while [ "$1" != "" ]; do
 
 done
 
+if [ "$APP_SERVERNAME" == "" ] || [ "$APP_ID" == "" ]; then
+    mandatoryArg
+fi
+
 #--- services
 
 SERVICES=(
-    $APP_ID.service    
+    webapp.service    
 )
 
 for i in ${SERVICES[@]}; do
 
-    if $force || [ ! -e /etc/systemd/system/$i ]; then
+    if $force || [ ! -e /etc/systemd/system/$APP_ID-$i ]; then
 
-        cp -v /root/deploy/$APP_ID/service/$i /etc/systemd/system
+        cp -v /root/deploy/$APP_ID/service/$i /etc/systemd/system/$APP_ID-$i
 
-        systemctl enable $i
+        systemctl enable $APP_ID-$i
 
     fi
 
@@ -72,16 +86,23 @@ if [ ! -e /etc/nginx/conf.d ]; then
 fi
 
 NGINX_FILES=(
-    $APP_ID.conf
+    webapp.conf
 )
 
 for i in ${NGINX_FILES[@]}; do
 
     RESTART_NGINX=false
 
-    if $force || [ ! -e /etc/nginx/conf.d/$i ]; then
+    if $force || [ ! -e /etc/nginx/conf.d/$APP_ID-$i ]; then
 
-        cp -v /root/deploy/$APP_ID/nginx/prod/$i /etc/nginx/conf.d
+        DSTCONF="/etc/nginx/conf.d/$APP_ID-$i"
+
+        cp -v /root/deploy/$APP_ID/nginx/prod/$i "$DSTCONF"
+
+        sed -i "s/\stest\.searchathing\.com/ $APP_SERVERNAME/g" "$DSTCONF"
+        sed -i "s/webapp-test\.access/$APP_ID.access/g" "$DSTCONF"
+        sed -i "s/webapp-test\.error/$APP_ID.error/g" "$DSTCONF"
+        sed -i "/#>/d" "$DSTCONF"
 
         RESTART_NGINX=true
 

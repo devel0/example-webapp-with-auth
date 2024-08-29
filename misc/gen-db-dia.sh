@@ -4,7 +4,7 @@
 
 exdir=$(dirname $(readlink -f "$BASH_SOURCE"))
 
-DST="$exdir"/db
+DST="$exdir"/../doc
 DBHOST=localhost
 DBNAME=ExampleWebApp
 

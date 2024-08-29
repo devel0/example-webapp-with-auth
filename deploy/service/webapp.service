@@ -1,5 +1,5 @@
 [Unit]
-Description=webapp test
+Description=Service for example webapp
 After=network.target
 StartLimitIntervalSec=0
 
@@ -11,8 +11,8 @@ User=user
 Group=user
 SyslogIdentifier=ExampleWebApp
 KillSignal=SIGINT
-EnvironmentFile=/root/secrets/webapp-test.env
-ExecStart=/srv/webapp-test/bin/WebApiServer
+EnvironmentFile=/root/secrets/mytest.env
+ExecStart=/srv/mytest/bin/backend
 
 [Install]
 WantedBy=multi-user.target

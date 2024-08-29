@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{98FBB10A-190D-4208-BB04-BDD67FCB816C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{EBFC9EC3-5790-49DC-BDDA-5EAA7F7DBB36}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "db-context", "src\libs\db-context\db-context.csproj", "{7A7054B8-61E5-46CD-BC66-E31206DC8025}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "app", "app", "{E3EB0C9E-C97C-4BCA-BAD4-9AA349F9D881}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "backend", "src\app\backend\backend.csproj", "{89485455-125A-4606-B3AE-033C427BD929}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "src\test\test.csproj", "{8AEFE8F2-1787-4030-B805-F8705F2D2121}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "db-migrations-psql", "src\libs\db-migrations-psql\db-migrations-psql.csproj", "{36F2ED3C-2B48-417C-9D4F-AF964691AEAD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7A7054B8-61E5-46CD-BC66-E31206DC8025}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A7054B8-61E5-46CD-BC66-E31206DC8025}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A7054B8-61E5-46CD-BC66-E31206DC8025}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A7054B8-61E5-46CD-BC66-E31206DC8025}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89485455-125A-4606-B3AE-033C427BD929}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89485455-125A-4606-B3AE-033C427BD929}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89485455-125A-4606-B3AE-033C427BD929}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89485455-125A-4606-B3AE-033C427BD929}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AEFE8F2-1787-4030-B805-F8705F2D2121}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AEFE8F2-1787-4030-B805-F8705F2D2121}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AEFE8F2-1787-4030-B805-F8705F2D2121}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AEFE8F2-1787-4030-B805-F8705F2D2121}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36F2ED3C-2B48-417C-9D4F-AF964691AEAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36F2ED3C-2B48-417C-9D4F-AF964691AEAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36F2ED3C-2B48-417C-9D4F-AF964691AEAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36F2ED3C-2B48-417C-9D4F-AF964691AEAD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EBFC9EC3-5790-49DC-BDDA-5EAA7F7DBB36} = {98FBB10A-190D-4208-BB04-BDD67FCB816C}
+		{7A7054B8-61E5-46CD-BC66-E31206DC8025} = {EBFC9EC3-5790-49DC-BDDA-5EAA7F7DBB36}
+		{E3EB0C9E-C97C-4BCA-BAD4-9AA349F9D881} = {98FBB10A-190D-4208-BB04-BDD67FCB816C}
+		{89485455-125A-4606-B3AE-033C427BD929} = {E3EB0C9E-C97C-4BCA-BAD4-9AA349F9D881}
+		{8AEFE8F2-1787-4030-B805-F8705F2D2121} = {98FBB10A-190D-4208-BB04-BDD67FCB816C}
+		{36F2ED3C-2B48-417C-9D4F-AF964691AEAD} = {EBFC9EC3-5790-49DC-BDDA-5EAA7F7DBB36}
+	EndGlobalSection
+EndGlobal

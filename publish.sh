@@ -5,17 +5,17 @@
 exdir=$(dirname $(readlink -f "$BASH_SOURCE"))
 
 FORCE=false
-BACKEND_SRCDIR="$exdir"/WebApiServer
-FRONTEND_SRCDIR="$exdir"/clientapp
+BACKEND_SRCDIR="$exdir"/src/app/backend
+FRONTEND_SRCDIR="$exdir"/src/app/frontend
 APP_SSH_HOST=""
 APP_SEVERNAME=""
 APP_ID=""
 
 printHelp() {
-    echo "argmuments:"
+    echo "$0 argmuments:"
     echo "  -h <sshhost>        ssh host where to publish ( ie. main-test )"
-    echo "  -sn <servername>    nginx app servername ( ie. webapp-test.searchathing.com )"
-    echo "  -id <appid>         app identifier ( ie. webapp-test )"
+    echo "  -sn <servername>    nginx app servername ( ie. mytest.searchathing.com )"
+    echo "  -id <appid>         app identifier ( ie. mytest )"    
     echo "  -f                  force overwrite existing"
 }
 
@@ -110,7 +110,8 @@ cat "$PRODFILE" |
 mv -f "$PRODFILE_TMP" "$PRODFILE"
 
 # frontend vite env
-sed -i "s/APP_SERVERNAME=.*/APP_SERVERNAME=$APP_SERVERNAME/g" "$FRONTEND_SRCDIR"/.env.production
+
+sed -i "s/VITE_SERVERNAME=.*/VITE_SERVERNAME=$APP_SERVERNAME/g" "$FRONTEND_SRCDIR"/.env.production
 sed -i "s/VITE_GITCOMMIT=.*/VITE_GITCOMMIT=$GITCOMMIT/g" "$FRONTEND_SRCDIR"/.env.production
 sed -i "s/VITE_GITCOMMITDATE=.*/VITE_GITCOMMITDATE=$GITCOMMITDATE/g" "$FRONTEND_SRCDIR"/.env.production
 
@@ -126,11 +127,11 @@ forceargs=""
 
 if $force; then forceargs="-f"; fi
 
-ssh $APP_SSH_HOST "$REMOTE_DEPLOY/scripts/prepare.sh" -id "$APP_ID" "$forceargs"
+ssh $APP_SSH_HOST "$REMOTE_DEPLOY/scripts/prepare.sh" -sn "$APP_SERVERNAME" -id "$APP_ID" "$forceargs"
 excode="$?"
 if [ "$excode" == "10" ]; then
     echo "some prerequisites missing"
-    exit 1
+    exit 10
 fi
 
 # ======================================================================
@@ -147,4 +148,4 @@ rsync -arx --delete $PREBUILT/ $APP_SSH_HOST:/srv/$APP_ID/bin/
 header "RESTARTING $APP_ID SERVER"
 # ======================================================================
 
-ssh $APP_SSH_HOST "service $APP_ID restart"
+ssh $APP_SSH_HOST "service $APP_ID-webapp restart"
