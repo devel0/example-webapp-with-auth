@@ -381,12 +381,6 @@ public class IntegrationTests
         var loginResObj = await loginRes.DeserializeAsync<LoginResponseDto>(util);
         Assert.NotNull(loginResObj);
 
-        // var jwtCookies = loginRes.Headers.GetJwtCookiesFromResponse();
-        // Assert.NotNull(jwtCookies.AccessToken);
-
-        // var refreshToken1 = HttpUtility.UrlDecode(jwtCookies.RefreshToken);
-        // Assert.NotNull(refreshToken1);
-
         var toWait = loginResObj.RefreshTokenExpiration - DateTimeOffset.UtcNow - TimeSpan.FromSeconds(1);
         logger.LogTrace($"1) Wait ( {toWait.TotalSeconds} sec ) refresh token about to expire");
 
@@ -421,6 +415,117 @@ public class IntegrationTests
         currentUserRes = (await client.GetAsync($"{AuthApiPrefix}/{nameof(AuthController.CurrentUser)}")).ApplySetCookies(client);
 
         Assert.Equal(HttpStatusCode.Unauthorized, currentUserRes.StatusCode);
+    }
+
+    /// <summary>
+    /// Invalid renew refresh token on disabled user.
+    /// </summary>
+    [Fact]
+    public async Task InvalidRenewRefreshTokenOnDisabledUser()
+    {
+        var accessTokenDuration = TimeSpan.FromSeconds(1);
+        var refreshTokenDuration = TimeSpan.FromSeconds(3);
+        var refreshTokenRotationSkew = accessTokenDuration + TimeSpan.FromSeconds(1);
+
+        using var adminTestFactory = new TestFactory();
+        await adminTestFactory.InitAsync();
+        var adminClient = adminTestFactory.Client;
+        var adminConfig = adminTestFactory.Services.GetRequiredService<IConfiguration>();
+        var logger = adminTestFactory.Services.GetRequiredService<ILogger<IntegrationTests>>();
+        var util = adminTestFactory.Services.GetRequiredService<IUtilService>();
+
+        //
+
+        using var userTestFactory = new TestFactory();
+        await userTestFactory.InitAsync(dropDb: false);
+        var userClient = userTestFactory.Client;
+        var userConfig = userTestFactory.Services.GetRequiredService<IConfiguration>();
+
+        userConfig.SetConfigVar(CONFIG_KEY_JwtSettings_ClockSkewSeconds, "0");
+
+        userConfig.SetConfigVar(CONFIG_KEY_JwtSettings_AccessTokenDurationSeconds,
+            accessTokenDuration.TotalSeconds.ToString());
+
+        userConfig.SetConfigVar(CONFIG_KEY_JwtSettings_RefreshTokenDurationSeconds,
+            refreshTokenDuration.TotalSeconds.ToString());
+
+        userConfig.SetConfigVar(CONFIG_KEY_JwtSettings_RefreshTokenRotationSkewSeconds,
+            refreshTokenRotationSkew.TotalSeconds.ToString());
+
+        //
+
+        var adminUsername = adminConfig.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
+        var adminPassword = adminConfig.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
+
+        var loginRes = (await adminClient.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
+        {
+            UsernameOrEmail = adminUsername,
+            Password = adminPassword
+        })).ApplySetCookies(adminClient);
+
+        Assert.Equal(HttpStatusCode.OK, loginRes.StatusCode);
+
+        // create normal user
+
+        var normalUsername = "normalUsername";
+        var normalEmail = "normal@test.com";
+        var normalPassword = "normalPass1!";
+        var normalRoles = new[] { ROLE_normal };
+
+        var editUserRes = (await adminClient.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.EditUser)}/", new EditUserRequestDto
+        {
+            EditUsername = normalUsername,
+            EditEmail = normalEmail,
+            EditPassword = normalPassword,
+            EditRoles = normalRoles
+        })).ApplySetCookies(adminClient);
+
+        Assert.Equal(HttpStatusCode.OK, editUserRes.StatusCode);
+
+        // login normal user
+
+        loginRes = (await userClient.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
+        {
+            UsernameOrEmail = normalUsername,
+            Password = normalPassword
+        })).ApplySetCookies(userClient);
+
+        Assert.Equal(HttpStatusCode.OK, loginRes.StatusCode);
+
+        var loginResObj = await loginRes.DeserializeAsync<LoginResponseDto>(util);
+        Assert.NotNull(loginResObj);
+
+        var toWait = loginResObj.RefreshTokenExpiration - DateTimeOffset.UtcNow - TimeSpan.FromSeconds(1);
+        logger.LogTrace($"1) Wait ( {toWait.TotalSeconds} sec ) refresh token about to expire");
+
+        await Task.Delay(toWait);
+
+        // refresh token still valid, now slide a new refresh token through renew refresh token
+
+        var renewRes = (await userClient.GetAsync($"{AuthApiPrefix}/{nameof(AuthController.RenewRefreshToken)}")).ApplySetCookies(userClient);
+        var currentUserRes = (await userClient.GetAsync($"{AuthApiPrefix}/{nameof(AuthController.CurrentUser)}")).ApplySetCookies(userClient);
+
+        Assert.Equal(HttpStatusCode.OK, currentUserRes.StatusCode);
+
+        // disable user
+        logger.LogTrace($"2) admin disable the user");
+
+        editUserRes = (await adminClient.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.EditUser)}/", new EditUserRequestDto
+        {
+            ExistingUsername = normalUsername,
+            EditDisabled = true
+        })).ApplySetCookies(adminClient);
+
+        toWait = refreshTokenDuration - TimeSpan.FromSeconds(1);
+        logger.LogTrace($"2) Wait ( {toWait.TotalSeconds} sec ) refresh token about to expire");
+
+        await Task.Delay(toWait);
+
+        // refresh token not valid because user disabled meanwhile
+        
+        currentUserRes = (await userClient.GetAsync($"{AuthApiPrefix}/{nameof(AuthController.CurrentUser)}")).ApplySetCookies(userClient);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, currentUserRes.StatusCode);        
     }
 
     /// <summary>
