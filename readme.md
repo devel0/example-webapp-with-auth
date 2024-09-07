@@ -345,6 +345,7 @@ Layout.tsx:42   renewing refr
 ```
 
 In the frontend, by default a the renewal of refresh token [happens 30 sec before][31] expiration, but in this dev mode test it happens 10 sec before the expiration.
+Instead using provided appsettings.json the refresh token have a duration of 1200 sec ( 20 min ) and if the frontend is still opened at 20min - 30sec it will renew the refresh token ; this way an api call will issued each 19.5min to keep alive the authentication. Note, that if the user is disabled the renew refresh token [gets unauthorized][32].
 
 ### backend
 
@@ -782,3 +783,4 @@ dotnet add package Microsoft.AspNetCore.Mvc.Testing --version 8.0.8
 [29]: https://github.com/devel0/example-webapp-with-auth/blob/813787e23f498ec1dc522649c9ae1354a1257a1a/clientapp/src/axios.manager.ts#L34-L41
 [30]: https://github.com/devel0/example-webapp-with-auth/blob/ac90faf78ff30fe3b06bcf7bd44430fcd4c3ea2b/src/app/frontend/src/components/Layout.tsx#L29-L60
 [31]: https://github.com/devel0/example-webapp-with-auth/blob/ac90faf78ff30fe3b06bcf7bd44430fcd4c3ea2b/src/app/frontend/src/constants/general.ts#L28
+[32]: https://github.com/devel0/example-webapp-with-auth/blob/16296ad8d2d4f84bba95c181dd9f52dd4044a550/src/test/IntegrationTests.cs#L424
