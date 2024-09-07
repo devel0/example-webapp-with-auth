@@ -337,6 +337,93 @@ public class IntegrationTests
     }
 
     /// <summary>
+    /// Renewal of refresh token allow to slide the expiration.
+    /// </summary>
+    [Fact]
+    public async Task RewnewRefreshToken()
+    {
+        var accessTokenDuration = TimeSpan.FromSeconds(1);
+        var refreshTokenDuration = TimeSpan.FromSeconds(3);
+        var refreshTokenRotationSkew = accessTokenDuration + TimeSpan.FromSeconds(1);
+
+        using var testFactory = new TestFactory();
+        await testFactory.InitAsync();
+        var client = testFactory.Client;
+        var config = testFactory.Services.GetRequiredService<IConfiguration>();
+        var logger = testFactory.Services.GetRequiredService<ILogger<IntegrationTests>>();
+        var dbContext = testFactory.Services.GetRequiredService<AppDbContext>();
+        var util = testFactory.Services.GetRequiredService<IUtilService>();
+
+        config.SetConfigVar(CONFIG_KEY_JwtSettings_ClockSkewSeconds, "0");
+
+        config.SetConfigVar(CONFIG_KEY_JwtSettings_AccessTokenDurationSeconds,
+            accessTokenDuration.TotalSeconds.ToString());
+
+        config.SetConfigVar(CONFIG_KEY_JwtSettings_RefreshTokenDurationSeconds,
+            refreshTokenDuration.TotalSeconds.ToString());
+
+        config.SetConfigVar(CONFIG_KEY_JwtSettings_RefreshTokenRotationSkewSeconds,
+            refreshTokenRotationSkew.TotalSeconds.ToString());
+
+        var adminUsername = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
+        var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
+
+        logger.LogTrace("Login");
+
+        var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
+        {
+            UsernameOrEmail = adminUsername,
+            Password = adminPassword
+        })).ApplySetCookies(client);
+
+        Assert.Equal(HttpStatusCode.OK, loginRes.StatusCode);
+
+        var loginResObj = await loginRes.DeserializeAsync<LoginResponseDto>(util);
+        Assert.NotNull(loginResObj);
+
+        // var jwtCookies = loginRes.Headers.GetJwtCookiesFromResponse();
+        // Assert.NotNull(jwtCookies.AccessToken);
+
+        // var refreshToken1 = HttpUtility.UrlDecode(jwtCookies.RefreshToken);
+        // Assert.NotNull(refreshToken1);
+
+        var toWait = loginResObj.RefreshTokenExpiration - DateTimeOffset.UtcNow - TimeSpan.FromSeconds(1);
+        logger.LogTrace($"1) Wait ( {toWait.TotalSeconds} sec ) refresh token about to expire");
+
+        await Task.Delay(toWait);
+
+        // refresh token still valid, now slide a new refresh token through renew refresh token
+
+        var renewRes = (await client.GetAsync($"{AuthApiPrefix}/{nameof(AuthController.RenewRefreshToken)}")).ApplySetCookies(client);
+
+        toWait = refreshTokenDuration - TimeSpan.FromSeconds(1);
+        logger.LogTrace($"2) Wait ( {toWait.TotalSeconds} sec ) refresh token about to expire");
+
+        await Task.Delay(toWait);
+
+        // refresh token still valid because renewed
+
+        var currentUserRes = (await client.GetAsync($"{AuthApiPrefix}/{nameof(AuthController.CurrentUser)}")).ApplySetCookies(client);
+
+        Assert.Equal(HttpStatusCode.OK, currentUserRes.StatusCode);
+
+        // last renew
+        logger.LogTrace($"3) Last renew refresh token");
+        renewRes = (await client.GetAsync($"{AuthApiPrefix}/{nameof(AuthController.RenewRefreshToken)}")).ApplySetCookies(client);
+
+        // leave refresh expire using the refresh token provided configuration duration
+
+        toWait = refreshTokenDuration + TimeSpan.FromSeconds(1);
+        logger.LogTrace($"4) Wait ( {toWait.TotalSeconds} sec ) refresh token to expire");
+
+        await Task.Delay(toWait);
+
+        currentUserRes = (await client.GetAsync($"{AuthApiPrefix}/{nameof(AuthController.CurrentUser)}")).ApplySetCookies(client);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, currentUserRes.StatusCode);
+    }
+
+    /// <summary>
     /// Refresh token removed from db after logout.
     /// </summary>
     [Fact]

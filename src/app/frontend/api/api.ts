@@ -82,7 +82,7 @@ export interface CurrentUserResponseDto {
 
 
 /**
- * M:ExampleWebApp.Backend.WebApi.AuthController.CurrentUser response api specific status.  OK (Authentication valid.)  InvalidAuthentication (Invalid authentication.)  InvalidArgument (Invalid argument.)  AccessTokenNotFound (Invalid argument.)
+ * M:ExampleWebApp.Backend.WebApi.AuthController.CurrentUser response api specific status.  OK (Authentication valid.)  InvalidAuthentication (Invalid authentication.)  InvalidArgument (Invalid argument.)  AccessTokenNotFound (Access token not found.)
  * @export
  * @enum {string}
  */
@@ -101,7 +101,7 @@ export const CurrentUserStatus = {
     */
     InvalidArgument: 'InvalidArgument',
     /**
-    * Invalid argument.
+    * Access token not found.
     */
     AccessTokenNotFound: 'AccessTokenNotFound'
 } as const;
@@ -356,6 +356,12 @@ export interface LoginResponseDto {
      * @memberof LoginResponseDto
      */
     'permissions'?: Set<UserPermission> | null;
+    /**
+     * Expiration timestamp for the refresh token. To keep alive auth issue M:ExampleWebApp.Backend.WebApi.AuthController.RenewRefreshToken before   refresh token expire.
+     * @type {string}
+     * @memberof LoginResponseDto
+     */
+    'refreshTokenExpiration'?: string;
 }
 
 
@@ -430,6 +436,78 @@ export interface PasswordAuthOptions {
      */
     'requireUppercase': boolean;
 }
+/**
+ * 
+ * @export
+ * @interface RefreshTokenNfo
+ */
+export interface RefreshTokenNfo {
+    /**
+     * 
+     * @type {string}
+     * @memberof RefreshTokenNfo
+     */
+    'refreshToken'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof RefreshTokenNfo
+     */
+    'expiration'?: string;
+}
+/**
+ * M:ExampleWebApp.Backend.WebApi.AuthController.RenewRefreshToken response api specific status.  OK (Authentication valid.)  InvalidAuthentication (Invalid authentication.)  InvalidHttpContext (Invalid http context.)  AccessTokenNotFound (Access token not found.)  InvalidRefreshToken (Invalid refresh token.)
+ * @export
+ * @enum {string}
+ */
+
+export const RenewRefreshTokenStatus = {
+    /**
+    * Authentication valid.
+    */
+    OK: 'OK',
+    /**
+    * Invalid authentication.
+    */
+    InvalidAuthentication: 'InvalidAuthentication',
+    /**
+    * Invalid http context.
+    */
+    InvalidHttpContext: 'InvalidHttpContext',
+    /**
+    * Access token not found.
+    */
+    AccessTokenNotFound: 'AccessTokenNotFound',
+    /**
+    * Invalid refresh token.
+    */
+    InvalidRefreshToken: 'InvalidRefreshToken'
+} as const;
+
+export type RenewRefreshTokenStatus = typeof RenewRefreshTokenStatus[keyof typeof RenewRefreshTokenStatus];
+
+
+/**
+ * M:ExampleWebApp.Backend.WebApi.AuthController.RenewRefreshToken api response data.
+ * @export
+ * @interface RenewRereshTokenResponse
+ */
+export interface RenewRereshTokenResponse {
+    /**
+     * 
+     * @type {RenewRefreshTokenStatus}
+     * @memberof RenewRereshTokenResponse
+     */
+    'status': RenewRefreshTokenStatus;
+    /**
+     * 
+     * @type {RefreshTokenNfo}
+     * @memberof RenewRereshTokenResponse
+     */
+    'refreshTokenNfo'?: RefreshTokenNfo;
+}
+
+
 /**
  * M:ExampleWebApp.Backend.WebApi.AuthController.ListUsers(System.String) api response data.
  * @export
@@ -882,6 +960,36 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         },
         /**
          * 
+         * @summary Renew refresh token of current user if refresh token still valid.  This is used to extends refresh token duration avoiding closing frontend session.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthRenewRefreshTokenGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/Auth/RenewRefreshToken`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Reset lost password.
          * @param {string} [email] 
          * @param {string} [token] 
@@ -1037,6 +1145,18 @@ export const AuthApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Renew refresh token of current user if refresh token still valid.  This is used to extends refresh token duration avoiding closing frontend session.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiAuthRenewRefreshTokenGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RenewRereshTokenResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthRenewRefreshTokenGet(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthApi.apiAuthRenewRefreshTokenGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @summary Reset lost password.
          * @param {string} [email] 
          * @param {string} [token] 
@@ -1135,6 +1255,15 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
          */
         apiAuthLogoutGet(options?: any): AxiosPromise<void> {
             return localVarFp.apiAuthLogoutGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Renew refresh token of current user if refresh token still valid.  This is used to extends refresh token duration avoiding closing frontend session.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthRenewRefreshTokenGet(options?: any): AxiosPromise<RenewRereshTokenResponse> {
+            return localVarFp.apiAuthRenewRefreshTokenGet(options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1248,6 +1377,17 @@ export class AuthApi extends BaseAPI {
      */
     public apiAuthLogoutGet(options?: RawAxiosRequestConfig) {
         return AuthApiFp(this.configuration).apiAuthLogoutGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Renew refresh token of current user if refresh token still valid.  This is used to extends refresh token duration avoiding closing frontend session.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthApi
+     */
+    public apiAuthRenewRefreshTokenGet(options?: RawAxiosRequestConfig) {
+        return AuthApiFp(this.configuration).apiAuthRenewRefreshTokenGet(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

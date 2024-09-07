@@ -1,5 +1,5 @@
 import {
-    Box, Button, colors, Container,
+    Box, Button, Container,
     CssBaseline,
     LinearProgress,
     TextField,
@@ -10,14 +10,16 @@ import { useNavigate } from 'react-router'
 import { GlobalState } from '../redux/states/GlobalState'
 import React, { useEffect, useState } from 'react'
 import { setSuccessfulLogin, setUrlWanted } from '../redux/slices/globalSlice'
-import { APP_TITLE, APP_URL_Home, APP_URL_Login, DEFAULT_COLOR_TIPS, DEFAULT_FONTSIZE_MEDIUM, DEFAULT_FONTSIZE_NORMAL, DEFAULT_FONTWEIGHT_BOLD, DEFAULT_SIZE_SMALL, DEFAULT_SIZE_XSMALL, LOCAL_STORAGE_CURRENT_USER_NFO } from '../constants/general'
+import {
+    APP_TITLE, APP_URL_Home, APP_URL_Login, DEFAULT_COLOR_TIPS,
+    DEFAULT_SIZE_SMALL, LOCAL_STORAGE_CURRENT_USER_NFO,
+    LOCAL_STORAGE_REFRESH_TOKEN_EXPIRE
+} from '../constants/general'
 import { CurrentUserNfo } from '../types/CurrentUserNfo'
-import { SnackNfoType } from '../types/SnackNfo'
 import AppLogo from '../images/app-icon.svg?react'
 import { authApi } from '../axios.manager'
 import { useParams } from 'react-router-dom'
-import { delay, handleApiException, nullOrUndefined, setSnack } from '../utils/utils'
-import { AutoFixOff } from '@mui/icons-material'
+import { handleApiException, nullOrUndefined, setSnack } from '../utils/utils'
 import { AxiosError } from 'axios'
 
 export const LoginPage = () => {
@@ -99,6 +101,12 @@ export const LoginPage = () => {
                         LOCAL_STORAGE_CURRENT_USER_NFO,
                         JSON.stringify(currentUser)
                     );
+
+                    if (response.data.refreshTokenExpiration)
+                        localStorage.setItem(
+                            LOCAL_STORAGE_REFRESH_TOKEN_EXPIRE,
+                            response.data.refreshTokenExpiration
+                        );
                 }
                 else
                     setSnack({

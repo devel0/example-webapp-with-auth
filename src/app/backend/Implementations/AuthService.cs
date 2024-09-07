@@ -134,7 +134,7 @@ public class AuthService : IAuthService
         await jwtService.MaintenanceRefreshTokenAsync(username, cancellationToken);
 
         var accessToken = jwtService.GenerateAccessToken(username, email, claims);
-        var refreshToken = await jwtService.GenerateRefreshTokenAsync(username, cancellationToken);
+        var refreshTokenNfo = await jwtService.GenerateRefreshTokenAsync(username, cancellationToken);
 
         var persist = false;
         await signInManager.SignInWithClaimsAsync(user, persist, claims);
@@ -152,7 +152,7 @@ public class AuthService : IAuthService
 
         environment.SetCookieOptions(configuration, opts, setExpiresAsRefreshToken: true);
         httpContext.Response.Cookies.Append(WEB_CookieName_XAccessToken, accessToken, opts);
-        httpContext.Response.Cookies.Append(WEB_CookieName_XRefreshToken, refreshToken, opts);
+        httpContext.Response.Cookies.Append(WEB_CookieName_XRefreshToken, refreshTokenNfo.RefreshToken, opts);
 
         var roles = claims.GetRoles();
 
@@ -162,7 +162,8 @@ public class AuthService : IAuthService
             UserName = userName,
             Email = user.Email!,
             Roles = roles,
-            Permissions = PermissionsFromRoles(roles.ToHashSet())
+            Permissions = PermissionsFromRoles(roles.ToHashSet()),
+            RefreshTokenExpiration = refreshTokenNfo.Expiration
         };
     }
 
@@ -212,6 +213,52 @@ public class AuthService : IAuthService
             {
                 Status = CurrentUserStatus.InvalidAuthentication
             };
+    }
+
+
+    public async Task<RenewRereshTokenResponse> RenewCurrentUserRefreshTokenAsync(CancellationToken cancellationToken)
+    {
+        var httpContext = httpContextAccessor.HttpContext;
+        if (httpContext is null)
+            return new RenewRereshTokenResponse
+            {
+                Status = RenewRefreshTokenStatus.InvalidHttpContext
+            };
+
+        var quser = httpContext.User;
+
+        if (quser is not null)
+        {
+            var userName = quser.FindFirstValue(ClaimTypes.NameIdentifier);
+            var email = quser.FindFirstValue(ClaimTypes.Email);
+
+            if (userName is null || email is null)
+                return new RenewRereshTokenResponse { Status = RenewRefreshTokenStatus.InvalidAuthentication };
+
+            var accessToken = httpContext.Request.Cookies[WEB_CookieName_XAccessToken];
+
+            if (accessToken is null)
+                return new RenewRereshTokenResponse { Status = RenewRefreshTokenStatus.AccessTokenNotFound };
+
+            var refreshToken = httpContext.Request.Cookies[WEB_CookieName_XRefreshToken];
+
+            if (refreshToken is null)
+                return new RenewRereshTokenResponse { Status = RenewRefreshTokenStatus.InvalidRefreshToken };
+
+            var renewedRefreshTokenNfo = await jwtService.RenewRefreshTokenAsync(userName, refreshToken, cancellationToken);
+
+            if (renewedRefreshTokenNfo is null)
+                return new RenewRereshTokenResponse { Status = RenewRefreshTokenStatus.InvalidRefreshToken };
+
+            var opts = new CookieOptions();
+            environment.SetCookieOptions(configuration, opts, setExpiresAsRefreshToken: true);
+            httpContext.Response.Cookies.Append(WEB_CookieName_XRefreshToken, renewedRefreshTokenNfo.RefreshToken, opts);
+
+            return new RenewRereshTokenResponse { Status = RenewRefreshTokenStatus.OK, RefreshTokenNfo = renewedRefreshTokenNfo };
+        }
+
+        else
+            return new RenewRereshTokenResponse { Status = RenewRefreshTokenStatus.InvalidAuthentication };
     }
 
     public async Task<HttpStatusCode> LogoutAsync(CancellationToken cancellationToken)
@@ -899,5 +946,6 @@ public class AuthService : IAuthService
             Status = ResetLostPasswordStatus.OK
         };
     }
+
 
 }

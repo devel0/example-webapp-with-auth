@@ -3,7 +3,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
 import { GlobalState } from '../redux/states/GlobalState'
-import { APP_URL_Login, APP_URL_Users, DEFAULT_SIZE_SMALL, DEFAULT_SIZE_XSMALL, LOCAL_STORAGE_CURRENT_USER_NFO } from '../constants/general'
+import { APP_URL_Login, APP_URL_Users, DEFAULT_SIZE_SMALL, DEFAULT_SIZE_XSMALL, LOCAL_STORAGE_CURRENT_USER_NFO, LOCAL_STORAGE_REFRESH_TOKEN_EXPIRE, RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC } from '../constants/general'
 import { useEffect, useState } from 'react'
 import { setLoggedOut, setSuccessfulLogin, setUrlWanted } from '../redux/slices/globalSlice'
 import { Box, Button, CssBaseline, LinearProgress } from '@mui/material'
@@ -12,6 +12,8 @@ import { AboutDialog } from '../dialogs/AboutDialog';
 import { CurrentUserNfo } from '../types/CurrentUserNfo';
 import { authApi } from '../axios.manager';
 import { AxiosError, HttpStatusCode } from 'axios';
+import { useInterval } from 'usehooks-ts';
+import { handleApiException } from '../utils/utils';
 
 type Props = {
     child: JSX.Element
@@ -23,6 +25,39 @@ const MainLayout = (props: Props) => {
     const navigate = useNavigate()
     const location = useLocation()
     const [aboutDialogOpen, setAboutDialogOpen] = useState(false)
+
+    useEffect(() => {
+        if (global.currentUserInitialized) {
+            const act = () => {
+                const q = localStorage.getItem(LOCAL_STORAGE_REFRESH_TOKEN_EXPIRE);
+                if (q) {
+                    const refreshTokenExpire = new Date(q);
+                    console.log(`refresh token will expire at ${refreshTokenExpire}`)
+
+                    const renewAt = new Date(refreshTokenExpire.getTime() - RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC * 1e3);
+                    const now = new Date()
+                    if (now.getTime() < renewAt.getTime()) {
+                        console.log(`  renew at ${renewAt}`)
+                        setTimeout(async () => {
+                            console.log("  renewing refresh token");
+                            try {
+                                const res = await authApi.apiAuthRenewRefreshTokenGet();
+                                if (res.data.refreshTokenNfo?.expiration) {
+                                    localStorage.setItem(LOCAL_STORAGE_REFRESH_TOKEN_EXPIRE, res.data.refreshTokenNfo.expiration);
+                                    act()
+                                }
+                            } catch (ex_) {
+                                const ex = ex_ as AxiosError
+                                handleApiException(ex, "Renew refresh token")
+                            }
+                        }, renewAt.getTime() - now.getTime());
+                    }
+                }
+            }
+
+            act()
+        }
+    }, [global.currentUserInitialized])
 
     useEffect(() => {
         if (location.pathname !== APP_URL_Login && (!global.currentUserInitialized || !global.currentUser)) {

@@ -19,7 +19,7 @@ public enum LoginStatus
     /// <summary>
     /// Invalid authentication.
     /// </summary>    
-    InvalidAuthentication,    
+    InvalidAuthentication,
 
     /// <summary>
     /// Authentication http context.
@@ -60,5 +60,11 @@ public class LoginResponseDto
     /// Permissions related to this user roles.
     /// </summary>
     public HashSet<UserPermission> Permissions { get; set; } = new();
+
+    /// <summary>
+    /// Expiration timestamp for the refresh token. To keep alive auth issue <see cref="AuthController.RenewRefreshToken"/> before 
+    /// refresh token expire.
+    /// </summary>
+    public DateTimeOffset RefreshTokenExpiration { get; set; }
 
 }

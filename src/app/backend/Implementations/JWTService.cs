@@ -103,7 +103,7 @@ public class JWTService : IJWTService
         };
     }
 
-    public async Task<string> GenerateRefreshTokenAsync(string userName, CancellationToken cancellationToken)
+    public async Task<RefreshTokenNfo> GenerateRefreshTokenAsync(string userName, CancellationToken cancellationToken)
     {
         string refreshToken;
 
@@ -136,7 +136,7 @@ public class JWTService : IJWTService
             semRefreshToken.Release();
         }
 
-        return refreshToken;
+        return new RefreshTokenNfo(refreshToken, newRt.Expires);
     }
 
     public async Task MaintenanceRefreshTokenAsync(string userName, CancellationToken cancellationToken)
@@ -217,7 +217,16 @@ public class JWTService : IJWTService
 
         var refreshToken = await GenerateRefreshTokenAsync(userName, cancellationToken);
 
-        return refreshToken;
+        return refreshToken.RefreshToken;
+    }
+
+    public async Task<RefreshTokenNfo?> RenewRefreshTokenAsync(
+        string userName, string currentRefreshToken, CancellationToken cancellationToken)
+    {
+        if (IsRefreshTokenStillValid(userName, currentRefreshToken))
+            return await GenerateRefreshTokenAsync(userName, cancellationToken);
+
+        return null;
     }
 
     public async Task<bool> RemoveRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
@@ -271,7 +280,7 @@ public class JWTService : IJWTService
             .FirstOrDefault(w => w.UserName == userName && w.RefreshToken == refreshToken);
 
         if (qrefresh is null)
-        {        
+        {
             return false; // refresh token associated with given username not found        
         }
 
@@ -279,7 +288,7 @@ public class JWTService : IJWTService
 
         if (qrefresh.Rotated is not null)
         {
-            var rotationSkewSeconds = configuration.GetConfigVar<double>(CONFIG_KEY_JwtSettings_RefreshTokenRotationSkewSeconds);            
+            var rotationSkewSeconds = configuration.GetConfigVar<double>(CONFIG_KEY_JwtSettings_RefreshTokenRotationSkewSeconds);
 
             if (qrefresh.Rotated.Value + TimeSpan.FromSeconds(rotationSkewSeconds) <= utcNow)
             {

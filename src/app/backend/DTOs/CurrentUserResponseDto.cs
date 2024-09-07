@@ -21,7 +21,7 @@ public enum CurrentUserStatus
     InvalidArgument,
 
     /// <summary>
-    /// Invalid argument.
+    /// Access token not found.
     /// </summary>        
     AccessTokenNotFound
 }

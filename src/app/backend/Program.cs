@@ -59,6 +59,9 @@ builder.SetupSpa();
 
 var app = builder.Build();
 
+// performs appsettings configuration sanity checks
+app.Configuration.SanityCheck();
+
 // use response compression
 app.SetupCompression();
 

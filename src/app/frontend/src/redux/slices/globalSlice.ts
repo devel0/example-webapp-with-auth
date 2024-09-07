@@ -30,7 +30,7 @@ export const globalSlice = createSlice({
 
       const currentUser = action.payload
       state.currentUser = currentUser
-      state.currentUserCanManageUsers = currentUser.permissions.indexOf(UserPermission.CreateNormalUser) !== -1
+      state.currentUserCanManageUsers = currentUser.permissions.indexOf(UserPermission.CreateNormalUser) !== -1      
     },
 
     setLoggedOut: (state) => {

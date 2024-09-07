@@ -1,5 +1,7 @@
 namespace ExampleWebApp.Backend.WebApi;
 
+public record RefreshTokenNfo(string RefreshToken, DateTimeOffset Expiration);
+
 /// <summary>
 /// JWT Service helper.
 /// </summary>
@@ -47,7 +49,7 @@ public interface IJWTService
 
     /// <summary>
     /// Renew given access token when it contains a principal not locked out 
-    /// within related given refresh token not yet expired.
+    /// within related given refresh token not yet expired.    
     /// </summary>
     /// <param name="accessToken">Access token ( even if its expired ).</param>
     /// <param name="refreshToken">Valid Refresh Token.</param>    
@@ -59,7 +61,7 @@ public interface IJWTService
     /// </summary>
     /// <param name="userName">Username which associate a new refresh token.</param>
     /// <returns>New valid refresh token associated to the given username.</returns>
-    Task<string> GenerateRefreshTokenAsync(string userName, CancellationToken cancellationToken);
+    Task<RefreshTokenNfo> GenerateRefreshTokenAsync(string userName, CancellationToken cancellationToken);
 
     /// <summary>
     /// Purges expired and rotated+skew expired refresh tokens.
@@ -71,8 +73,13 @@ public interface IJWTService
     /// Rotate given refresh token.
     /// </summary>    
     /// <param name="userName">Username associated to the given refresh token to rotate.</param>
-    /// <param name="refreshTokenToRotate">Refresh token to rotate.</param>/// 
+    /// <param name="refreshTokenToRotate">Refresh token to rotate.</param>
     Task<string?> RotateRefreshTokenAsync(string userName, string refreshTokenToRotate, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Renew refresh token from given username and valid refresh token.
+    /// </summary>
+    Task<RefreshTokenNfo?> RenewRefreshTokenAsync(string userName, string currentRefreshToken, CancellationToken cancellationToken);
 
     /// <summary>
     /// Remove given refresh token from db.

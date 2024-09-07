@@ -29,6 +29,12 @@ public interface IAuthService
         CancellationToken cancellationToken);
 
     /// <summary>
+    /// Renew refresh token of current user if refresh token still valid.
+    /// This is used to extends refresh token duration avoiding closing frontend session.
+    /// </summary>
+    Task<RenewRereshTokenResponse> RenewCurrentUserRefreshTokenAsync(CancellationToken cancellationToken);
+
+    /// <summary>
     /// Logout current user.
     /// </summary>    
     /// <param name="cancellationToken">Cancellation token.</param>
@@ -69,6 +75,6 @@ public interface IAuthService
         EditUserRequestDto editUserRequestDto, CancellationToken cancellationToken);
 
     Task<ResetLostPasswordResponseDto> ResetLostPasswordRequestAsync(
-        string email, string? token, string? resetPassword, CancellationToken cancellationToken);    
+        string email, string? token, string? resetPassword, CancellationToken cancellationToken);
 
 }
