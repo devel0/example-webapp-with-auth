@@ -6,7 +6,7 @@ API_SPEC_URL="https://dev-webapp-test.searchathing.com/swagger/v1/swagger.json"
 
 #--------
 
-APIFLD=$exdir/clientapp/api
+APIFLD=$exdir/src/app/frontend/api
 
 rm -fr $APIFLD
 
