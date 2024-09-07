@@ -456,6 +456,27 @@ export interface RefreshTokenNfo {
     'expiration'?: string;
 }
 /**
+ * M:ExampleWebApp.Backend.WebApi.AuthController.RenewRefreshToken api response data.
+ * @export
+ * @interface RenewRefreshTokenResponse
+ */
+export interface RenewRefreshTokenResponse {
+    /**
+     * 
+     * @type {RenewRefreshTokenStatus}
+     * @memberof RenewRefreshTokenResponse
+     */
+    'status': RenewRefreshTokenStatus;
+    /**
+     * 
+     * @type {RefreshTokenNfo}
+     * @memberof RenewRefreshTokenResponse
+     */
+    'refreshTokenNfo'?: RefreshTokenNfo;
+}
+
+
+/**
  * M:ExampleWebApp.Backend.WebApi.AuthController.RenewRefreshToken response api specific status.  OK (Authentication valid.)  InvalidAuthentication (Invalid authentication.)  InvalidHttpContext (Invalid http context.)  AccessTokenNotFound (Access token not found.)  InvalidRefreshToken (Invalid refresh token.)
  * @export
  * @enum {string}
@@ -485,27 +506,6 @@ export const RenewRefreshTokenStatus = {
 } as const;
 
 export type RenewRefreshTokenStatus = typeof RenewRefreshTokenStatus[keyof typeof RenewRefreshTokenStatus];
-
-
-/**
- * M:ExampleWebApp.Backend.WebApi.AuthController.RenewRefreshToken api response data.
- * @export
- * @interface RenewRereshTokenResponse
- */
-export interface RenewRereshTokenResponse {
-    /**
-     * 
-     * @type {RenewRefreshTokenStatus}
-     * @memberof RenewRereshTokenResponse
-     */
-    'status': RenewRefreshTokenStatus;
-    /**
-     * 
-     * @type {RefreshTokenNfo}
-     * @memberof RenewRereshTokenResponse
-     */
-    'refreshTokenNfo'?: RefreshTokenNfo;
-}
 
 
 /**
@@ -1149,7 +1149,7 @@ export const AuthApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiAuthRenewRefreshTokenGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RenewRereshTokenResponse>> {
+        async apiAuthRenewRefreshTokenGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RenewRefreshTokenResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthRenewRefreshTokenGet(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AuthApi.apiAuthRenewRefreshTokenGet']?.[localVarOperationServerIndex]?.url;
@@ -1262,7 +1262,7 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiAuthRenewRefreshTokenGet(options?: any): AxiosPromise<RenewRereshTokenResponse> {
+        apiAuthRenewRefreshTokenGet(options?: any): AxiosPromise<RenewRefreshTokenResponse> {
             return localVarFp.apiAuthRenewRefreshTokenGet(options).then((request) => request(axios, basePath));
         },
         /**

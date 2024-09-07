@@ -216,11 +216,11 @@ public class AuthService : IAuthService
     }
 
 
-    public async Task<RenewRereshTokenResponse> RenewCurrentUserRefreshTokenAsync(CancellationToken cancellationToken)
+    public async Task<RenewRefreshTokenResponse> RenewCurrentUserRefreshTokenAsync(CancellationToken cancellationToken)
     {
         var httpContext = httpContextAccessor.HttpContext;
         if (httpContext is null)
-            return new RenewRereshTokenResponse
+            return new RenewRefreshTokenResponse
             {
                 Status = RenewRefreshTokenStatus.InvalidHttpContext
             };
@@ -233,32 +233,32 @@ public class AuthService : IAuthService
             var email = quser.FindFirstValue(ClaimTypes.Email);
 
             if (userName is null || email is null)
-                return new RenewRereshTokenResponse { Status = RenewRefreshTokenStatus.InvalidAuthentication };
+                return new RenewRefreshTokenResponse { Status = RenewRefreshTokenStatus.InvalidAuthentication };
 
             var accessToken = httpContext.Request.Cookies[WEB_CookieName_XAccessToken];
 
             if (accessToken is null)
-                return new RenewRereshTokenResponse { Status = RenewRefreshTokenStatus.AccessTokenNotFound };
+                return new RenewRefreshTokenResponse { Status = RenewRefreshTokenStatus.AccessTokenNotFound };
 
             var refreshToken = httpContext.Request.Cookies[WEB_CookieName_XRefreshToken];
 
             if (refreshToken is null)
-                return new RenewRereshTokenResponse { Status = RenewRefreshTokenStatus.InvalidRefreshToken };
+                return new RenewRefreshTokenResponse { Status = RenewRefreshTokenStatus.InvalidRefreshToken };
 
             var renewedRefreshTokenNfo = await jwtService.RenewRefreshTokenAsync(userName, refreshToken, cancellationToken);
 
             if (renewedRefreshTokenNfo is null)
-                return new RenewRereshTokenResponse { Status = RenewRefreshTokenStatus.InvalidRefreshToken };
+                return new RenewRefreshTokenResponse { Status = RenewRefreshTokenStatus.InvalidRefreshToken };
 
             var opts = new CookieOptions();
             environment.SetCookieOptions(configuration, opts, setExpiresAsRefreshToken: true);
             httpContext.Response.Cookies.Append(WEB_CookieName_XRefreshToken, renewedRefreshTokenNfo.RefreshToken, opts);
 
-            return new RenewRereshTokenResponse { Status = RenewRefreshTokenStatus.OK, RefreshTokenNfo = renewedRefreshTokenNfo };
+            return new RenewRefreshTokenResponse { Status = RenewRefreshTokenStatus.OK, RefreshTokenNfo = renewedRefreshTokenNfo };
         }
 
         else
-            return new RenewRereshTokenResponse { Status = RenewRefreshTokenStatus.InvalidAuthentication };
+            return new RenewRefreshTokenResponse { Status = RenewRefreshTokenStatus.InvalidAuthentication };
     }
 
     public async Task<HttpStatusCode> LogoutAsync(CancellationToken cancellationToken)

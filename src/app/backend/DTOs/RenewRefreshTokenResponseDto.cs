@@ -35,7 +35,7 @@ public enum RenewRefreshTokenStatus
 /// <summary>
 /// <see cref="AuthController.RenewRefreshToken"/> api response data.
 /// </summary>
-public class RenewRereshTokenResponse
+public class RenewRefreshTokenResponse
 {
 
     /// <summary>

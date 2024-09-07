@@ -60,7 +60,7 @@ public class AuthController : ControllerBase
     /// This is used to extends refresh token duration avoiding closing frontend session.
     /// </summary>    
     [HttpGet]
-    public async Task<ActionResult<RenewRereshTokenResponse>> RenewRefreshToken()
+    public async Task<ActionResult<RenewRefreshTokenResponse>> RenewRefreshToken()
     {
         var res = await authService.RenewCurrentUserRefreshTokenAsync(cancellationToken);
 

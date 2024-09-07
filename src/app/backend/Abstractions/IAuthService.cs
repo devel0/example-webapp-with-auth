@@ -32,7 +32,7 @@ public interface IAuthService
     /// Renew refresh token of current user if refresh token still valid.
     /// This is used to extends refresh token duration avoiding closing frontend session.
     /// </summary>
-    Task<RenewRereshTokenResponse> RenewCurrentUserRefreshTokenAsync(CancellationToken cancellationToken);
+    Task<RenewRefreshTokenResponse> RenewCurrentUserRefreshTokenAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// Logout current user.
