@@ -330,7 +330,21 @@ Installing root-ca certificate imply that certificates generated within that wil
 - use of the access token allow the server to authenticate the user by reading user, role and other info contained in the token itself; note that these info are not encrypted and can be viewed, but the token contains a signature that can't be generated from other than the server that contains the JWT key to create the signature itself. In other words the server validate the access token and signature match considering as valid the provided identity informations ( because it was the server itself that signed the data no other could generate corresponding signature ). This requires less hardware resources than using a db to validate the user.
 - for paranoid setting the expiration of an access token should short and this maintain ability to execute high rate operations retaining the ability to block a user within a short response time. In fact a valid access token can't revoked by default rule but having a short time of validity allow the server to ban any other authorized api for that user simply disabling it. In fact after user is disabled the process of renew of another access token, even with a valid refresh token ( that has longer expire time ) gets [disabled immediately][27].
 - more, when a refresh token is used to renew an access token it gets rotated invalidating the previous one ; to avoid a refresh token considered invalid because rotate in subsequent network calls a [JwtSettings:RefreshTokenDurationSkewSeconds][28] appsetting variable allow to avoid that finishing the train of api ; at some time when this window ends a new login will required because Unauthorized 401 http status code will considered from the [axios interceptor][29] a reason to terminate the activity ( in the coding use only Forbid for general deny permission purpose ).
-- in order to allow frontend application run longer than refresh token expiration, expecially if used a short refresh token ( ie. 5min ), the [frontend will schedule][30] a renew of refresh token, using the current valid auth, 30sec before the refresh token expires; this way the session continue without the need to login again.
+- in order to allow frontend application run longer than refresh token expiration, expecially if used a short refresh token ( ie. 5min ), the [frontend will schedule][30] a renew of refresh token, using the current valid auth, 30sec before the refresh token expires; this way the session continue without the need to login again. Following an excerpt with testing parameters ( AccessTokenDurationSeconds=10, RefreshTokenDurationSeconds=20, RefreshTokenDurationSkewSeconds=2 ) :
+
+```log
+Layout.tsx:35 refresh token will expire at Sat Sep 07 2024 23:50:20 GMT+0200 (Central European Summer Time)
+Layout.tsx:40   renew at Sat Sep 07 2024 23:50:10 GMT+0200 (Central European Summer Time)
+Layout.tsx:42   renewing refresh token
+Layout.tsx:35 refresh token will expire at Sat Sep 07 2024 23:50:30 GMT+0200 (Central European Summer Time)
+Layout.tsx:40   renew at Sat Sep 07 2024 23:50:20 GMT+0200 (Central European Summer Time)
+Layout.tsx:42   renewing refresh token
+Layout.tsx:35 refresh token will expire at Sat Sep 07 2024 23:50:41 GMT+0200 (Central European Summer Time)
+Layout.tsx:40   renew at Sat Sep 07 2024 23:50:31 GMT+0200 (Central European Summer Time)
+Layout.tsx:42   renewing refr
+```
+
+In the frontend, by default a the renewal of refresh token [happens 30 sec before][31] expiration, but in this dev mode test it happens 10 sec before the expiration.
 
 ### backend
 
@@ -767,3 +781,4 @@ dotnet add package Microsoft.AspNetCore.Mvc.Testing --version 8.0.8
 [28]: https://github.com/devel0/example-webapp-with-auth/blob/be5e6f2f49ebe67771b884fe19ce4ae119a9b828/WebApiServer/Implementations/JWTService.cs#L282
 [29]: https://github.com/devel0/example-webapp-with-auth/blob/813787e23f498ec1dc522649c9ae1354a1257a1a/clientapp/src/axios.manager.ts#L34-L41
 [30]: https://github.com/devel0/example-webapp-with-auth/blob/ac90faf78ff30fe3b06bcf7bd44430fcd4c3ea2b/src/app/frontend/src/components/Layout.tsx#L29-L60
+[31]: https://github.com/devel0/example-webapp-with-auth/blob/ac90faf78ff30fe3b06bcf7bd44430fcd4c3ea2b/src/app/frontend/src/constants/general.ts#L28
