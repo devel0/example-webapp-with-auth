@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
 import { GlobalState } from '../redux/states/GlobalState'
 import { Box, Button } from '@mui/material'
 import { useEffect } from 'react'
-import { APP_TITLE, DEFAULT_SIZE_SMALL } from '../constants/general'
+import { APP_TITLE, DEFAULT_SIZE_1_REM } from '../constants/general'
 import { mainApi } from '../axios.manager'
 import { handleApiException, setSnack } from '../utils/utils'
 import { AxiosError } from 'axios'
@@ -22,7 +22,7 @@ export const MainPage = () => {
     }, [])
 
     return (
-        <Box m={DEFAULT_SIZE_SMALL}>
+        <Box m={DEFAULT_SIZE_1_REM}>
             master page<br />
             current user: {global.currentUser?.userName}<br />
             roles: {global.currentUser?.roles}<br />

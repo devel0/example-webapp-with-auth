@@ -2,7 +2,7 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typogra
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
 import CloseIcon from '@mui/icons-material/Close';
-import { APP_TITLE, DEFAULT_FONTWEIGHT_BOLD, DEFAULT_SIZE_SMALL, DEFAULT_SIZE_XSMALL } from "../constants/general"
+import { APP_TITLE, DEFAULT_FONTWEIGHT_600, DEFAULT_SIZE_1_REM, DEFAULT_SIZE_0_5_REM } from "../constants/general"
 import { green, yellow } from "@mui/material/colors"
 
 export enum ConfirmDialogCloseResult {
@@ -51,7 +51,7 @@ export const ConfirmDialog = (props: ConfirmDialogProps) => {
             }}>
 
             <DialogTitle>
-                <Typography fontWeight={DEFAULT_FONTWEIGHT_BOLD}>
+                <Typography fontWeight={DEFAULT_FONTWEIGHT_600}>
                     {title ?? "Confirm dialog"}
                 </Typography>
                 <hr />
@@ -70,7 +70,7 @@ export const ConfirmDialog = (props: ConfirmDialogProps) => {
             <DialogActions>
                 <Box sx={{
                     display: 'flex',
-                    mt: DEFAULT_SIZE_SMALL
+                    mt: DEFAULT_SIZE_1_REM
                 }}>
                     <Box sx={{ flexGrow: 1 }} />
 
@@ -80,8 +80,8 @@ export const ConfirmDialog = (props: ConfirmDialogProps) => {
                             onClose?.(ConfirmDialogCloseResult.cancel)
                             setProps({ ...props, open: false })
                         }}
-                        sx={{ mr: DEFAULT_SIZE_SMALL }}>
-                        <DoDisturbIcon sx={{ mr: DEFAULT_SIZE_XSMALL }} />
+                        sx={{ mr: DEFAULT_SIZE_1_REM }}>
+                        <DoDisturbIcon sx={{ mr: DEFAULT_SIZE_0_5_REM }} />
                         Cancel
                     </Button>}
 
@@ -91,8 +91,8 @@ export const ConfirmDialog = (props: ConfirmDialogProps) => {
                             onClose?.(ConfirmDialogCloseResult.no)
                             setProps({ ...props, open: false })
                         }}
-                        sx={{ mr: DEFAULT_SIZE_SMALL }}>
-                        <CloseIcon sx={{ mr: DEFAULT_SIZE_XSMALL }} />
+                        sx={{ mr: DEFAULT_SIZE_1_REM }}>
+                        <CloseIcon sx={{ mr: DEFAULT_SIZE_0_5_REM }} />
                         No
                     </Button>}
 
@@ -102,7 +102,7 @@ export const ConfirmDialog = (props: ConfirmDialogProps) => {
                             setProps({ ...props, open: false })
                         }}
                         variant='outlined'>
-                        <DoneOutlineIcon sx={{ mr: DEFAULT_SIZE_XSMALL }} />
+                        <DoneOutlineIcon sx={{ mr: DEFAULT_SIZE_0_5_REM }} />
                         {yesButtonText ?? "Yes"}
                     </Button>}
                 </Box>

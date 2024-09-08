@@ -13,7 +13,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import AppLogo from '../images/app-icon.svg?react'
-import { APP_LOGO_TEXT, APP_URL_Home, DEFAULT_SIZE_SMALL, DEFAULT_SIZE_XSMALL } from '../constants/general';
+import { APP_LOGO_TEXT, APP_URL_Home, DEFAULT_SIZE_1_REM, DEFAULT_SIZE_0_5_REM } from '../constants/general';
 import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks';
 import { GlobalState } from '../redux/states/GlobalState';
 import { firstLetter } from '../utils/utils';
@@ -58,8 +58,8 @@ function ResponsiveAppBar(props: {
     return (
         <AppBar position="sticky" sx={{}}>
             <Box sx={{
-                ml: DEFAULT_SIZE_SMALL,
-                mr: DEFAULT_SIZE_SMALL
+                ml: DEFAULT_SIZE_1_REM,
+                mr: DEFAULT_SIZE_1_REM
             }}>
                 <Toolbar disableGutters>
                     {/* 
@@ -253,7 +253,7 @@ function ResponsiveAppBar(props: {
                                         handleCloseUserMenu()
                                     }}>
                                     <Box sx={{ display: 'flex' }}>
-                                        {setting.icon && <Box mr={DEFAULT_SIZE_XSMALL}>{setting.icon}</Box>}
+                                        {setting.icon && <Box mr={DEFAULT_SIZE_0_5_REM}>{setting.icon}</Box>}
                                         <Typography textAlign="center">{setting.label}</Typography>
                                     </Box>
                                 </MenuItem>

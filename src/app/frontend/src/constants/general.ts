@@ -42,17 +42,28 @@ export const THEME_LIGHT = "light";
 
 export const THEME_INITIAL: PaletteMode = THEME_DARK;
 
-export const DEFAULT_SIZE_XSMALL = '0.5rem'
-export const DEFAULT_SIZE_SMALL = '1rem'
-export const DEFAULT_SIZE_LARGE = '2rem'
-export const DEFAULT_SIZE_XLARGE = '4rem'
+/** XSMALL */
+export const DEFAULT_SIZE_0_5_REM = '0.5rem'
 
-export const DEFAULT_FONTWEIGHT_SEMIBOLD = 500
-export const DEFAULT_FONTWEIGHT_BOLD = 600
-export const DEFAULT_FONTWEIGHT_XBOLD = 900
+/** SMALL */
+export const DEFAULT_SIZE_1_REM = '1rem'
 
-export const DEFAULT_FONTSIZE_NORMAL = "1rem"
-export const DEFAULT_FONTSIZE_NORMAL2 = "1.25rem"
-export const DEFAULT_FONTSIZE_MEDIUM = "1.5rem"
+/** SMALL2 */
+export const DEFAULT_SIZE_1_25_REM = '1.25rem'
+
+/** LARGE */
+export const DEFAULT_SIZE_2_REM = '2rem'
+
+/** XLARGE */
+export const DEFAULT_SIZE_4_REM = '4rem'
+
+/** SEMIBOLD */
+export const DEFAULT_FONTWEIGHT_500 = 500
+
+/** BOLD */
+export const DEFAULT_FONTWEIGHT_600 = 600
+
+/** XBOLD */
+export const DEFAULT_FONTWEIGHT_900 = 900
 
 export const DEFAULT_COLOR_TIPS = green[400]

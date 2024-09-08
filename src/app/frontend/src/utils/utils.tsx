@@ -1,9 +1,6 @@
 import { enqueueSnackbar } from "notistack"
 import { SnackNfo } from "../types/SnackNfo"
-import {
-    DEFAULT_FONTSIZE_NORMAL, DEFAULT_FONTSIZE_NORMAL2, DEFAULT_FONTWEIGHT_SEMIBOLD,
-    DEFAULT_FONTWEIGHT_XBOLD
-} from "../constants/general"
+import { DEFAULT_FONTWEIGHT_500, DEFAULT_FONTWEIGHT_900, DEFAULT_SIZE_1_25_REM, DEFAULT_SIZE_1_REM } from "../constants/general"
 import { Box, Typography } from "@mui/material"
 import { AxiosError } from "axios"
 
@@ -42,15 +39,15 @@ export const setSnack = (nfo: SnackNfo) => {
     enqueueSnackbar({
         message: <Box>
             {nfo.title && <Typography
-                fontSize={DEFAULT_FONTSIZE_NORMAL2}
-                fontWeight={DEFAULT_FONTWEIGHT_XBOLD}>
+                fontSize={DEFAULT_SIZE_1_25_REM}
+                fontWeight={DEFAULT_FONTWEIGHT_900}>
                 {nfo.title}
             </Typography>}
 
             {nfo.msg.map((msg, msgIdx) =>
                 <Typography
-                    fontSize={DEFAULT_FONTSIZE_NORMAL}
-                    fontWeight={DEFAULT_FONTWEIGHT_SEMIBOLD}
+                    fontSize={DEFAULT_SIZE_1_REM}
+                    fontWeight={DEFAULT_FONTWEIGHT_500}
                     key={`snack-mex-${msgIdx}`}>
                     {msg}
                 </Typography>

@@ -12,7 +12,7 @@ import React, { useEffect, useState } from 'react'
 import { setSuccessfulLogin, setUrlWanted } from '../redux/slices/globalSlice'
 import {
     APP_TITLE, APP_URL_Home, APP_URL_Login, DEFAULT_COLOR_TIPS,
-    DEFAULT_SIZE_SMALL, LOCAL_STORAGE_CURRENT_USER_NFO,
+    DEFAULT_SIZE_1_REM, LOCAL_STORAGE_CURRENT_USER_NFO,
     LOCAL_STORAGE_REFRESH_TOKEN_EXPIRE
 } from '../constants/general'
 import { CurrentUserNfo } from '../types/CurrentUserNfo'
@@ -128,7 +128,7 @@ export const LoginPage = () => {
             <Box sx={{ alignSelf: 'center' }}>
                 <Container component="main" maxWidth="xs" >
                     <Box sx={{
-                        mt: DEFAULT_SIZE_SMALL,
+                        mt: DEFAULT_SIZE_1_REM,
                         display: 'flex',
                         justifyContent: 'center'
                     }}>
@@ -136,7 +136,7 @@ export const LoginPage = () => {
                     </Box>
 
                     <Box>
-                        <Typography variant='h6' mt={DEFAULT_SIZE_SMALL} textAlign={'center'}>{APP_TITLE}</Typography>
+                        <Typography variant='h6' mt={DEFAULT_SIZE_1_REM} textAlign={'center'}>{APP_TITLE}</Typography>
                     </Box>
 
                     {resetPasswordToken && <Typography sx={{ color: DEFAULT_COLOR_TIPS }}>

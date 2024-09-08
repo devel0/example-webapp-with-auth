@@ -3,7 +3,7 @@ import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAppDispatch, useAppSelector } from "../redux/hooks/hooks"
 import { GlobalState } from "../redux/states/GlobalState"
-import { DEFAULT_FONTWEIGHT_BOLD, DEFAULT_SIZE_SMALL, DEFAULT_SIZE_XSMALL } from "../constants/general"
+import { DEFAULT_FONTWEIGHT_600, DEFAULT_SIZE_1_REM, DEFAULT_SIZE_0_5_REM } from "../constants/general"
 import { useEffect, useState } from "react";
 import { passwordIsValid } from "../utils/password-validator";
 import { emailIsValid } from "../utils/email-validator";
@@ -124,7 +124,7 @@ export const EditUserDialog = (props: {
             }}>
 
             <DialogTitle>
-                <Typography fontWeight={DEFAULT_FONTWEIGHT_BOLD}>
+                <Typography fontWeight={DEFAULT_FONTWEIGHT_600}>
                     {nullOrUndefined(userData.existingUsername) ? 'New user' : `Edit user ${userData.existingUsername}`}
                 </Typography>
                 <hr />
@@ -233,7 +233,7 @@ export const EditUserDialog = (props: {
             <DialogActions>
                 <Box sx={{
                     display: 'flex',
-                    mt: DEFAULT_SIZE_SMALL
+                    mt: DEFAULT_SIZE_1_REM
                 }}>
                     <Box sx={{ flexGrow: 1 }} />
 
@@ -243,8 +243,8 @@ export const EditUserDialog = (props: {
                             resetFormData()
                             setOpen(false)
                         }}
-                        sx={{ mr: DEFAULT_SIZE_SMALL }}>
-                        <CloseIcon sx={{ mr: DEFAULT_SIZE_XSMALL }} />
+                        sx={{ mr: DEFAULT_SIZE_1_REM }}>
+                        <CloseIcon sx={{ mr: DEFAULT_SIZE_0_5_REM }} />
                         Cancel
                     </Button>
 
@@ -271,7 +271,7 @@ export const EditUserDialog = (props: {
                             }
                         }}
                         variant='outlined'>
-                        <DoneOutlineIcon sx={{ mr: DEFAULT_SIZE_XSMALL }} />
+                        <DoneOutlineIcon sx={{ mr: DEFAULT_SIZE_0_5_REM }} />
                         {userData.existingUsername === undefined ? 'Create' : 'Apply'}
                     </Button>
                 </Box>

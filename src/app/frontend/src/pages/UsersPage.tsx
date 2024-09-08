@@ -2,7 +2,7 @@ import { Box, Button } from "@mui/material"
 import { useAppDispatch, useAppSelector } from "../redux/hooks/hooks"
 import { GlobalState } from "../redux/states/GlobalState"
 import { useEffect, useState } from "react"
-import { APP_TITLE, DEFAULT_SIZE_SMALL } from "../constants/general"
+import { APP_TITLE, DEFAULT_SIZE_1_REM } from "../constants/general"
 import { DataGrid, GridColDef } from "@mui/x-data-grid"
 import { EditUserDialog, NewUserDataSample } from "../dialogs/EditUserDialog"
 import { AxiosError, HttpStatusCode } from "axios"
@@ -66,7 +66,7 @@ export const UsersPage = () => {
     ]
 
     return (
-        <Box m={DEFAULT_SIZE_SMALL}>
+        <Box m={DEFAULT_SIZE_1_REM}>
             <Box sx={{
                 display: 'flex'
             }}>

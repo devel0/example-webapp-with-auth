@@ -1,5 +1,5 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, useTheme } from "@mui/material"
-import { APP_TITLE, DEFAULT_FONTWEIGHT_BOLD, DEFAULT_SIZE_SMALL } from "../constants/general"
+import { APP_TITLE, DEFAULT_FONTWEIGHT_600, DEFAULT_SIZE_1_REM } from "../constants/general"
 import { green, yellow } from "@mui/material/colors"
 
 export const AboutDialog = (props: {
@@ -15,7 +15,7 @@ export const AboutDialog = (props: {
             onClose={() => setOpen(false)}>
 
             <DialogTitle>
-                <Typography fontWeight={DEFAULT_FONTWEIGHT_BOLD}>
+                <Typography fontWeight={DEFAULT_FONTWEIGHT_600}>
                     About
                 </Typography>
                 <hr />
@@ -36,7 +36,7 @@ export const AboutDialog = (props: {
             <DialogActions>
                 <Box sx={{
                     display: 'flex',
-                    mt: DEFAULT_SIZE_SMALL
+                    mt: DEFAULT_SIZE_1_REM
                 }}>
                     <Box sx={{ flexGrow: 1 }} />
                     <Button
@@ -44,7 +44,7 @@ export const AboutDialog = (props: {
                         onClick={() => {
                             setOpen(false)
                         }}
-                        sx={{ mr: DEFAULT_SIZE_SMALL }}>                        
+                        sx={{ mr: DEFAULT_SIZE_1_REM }}>                        
                         Close
                     </Button>
                 </Box>
