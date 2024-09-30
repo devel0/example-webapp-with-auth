@@ -64,22 +64,19 @@ public static partial class Extensions
     /// </summary>
     public static void ConfigSwagger(this WebApplication webApplication)
     {
-        if (webApplication.Environment.IsDevelopment())
-        {
-            var logger = webApplication.Logger;
+        var logger = webApplication.Logger;
 
-            webApplication.UseSwagger();
-            webApplication.UseSwaggerUI(c =>
-            {
-                c.InjectStylesheet("/swagger/SwaggerDark.css");
-            });
-            webApplication.MapGet("/swagger/SwaggerDark.css", async ([FromServices] CancellationToken cancellationToken) =>
-            {
-                var cssPathfilename = SWAGGER_CSS_PATH();
-                var css = await File.ReadAllBytesAsync(cssPathfilename, cancellationToken);
-                return Results.File(css, "text/css");
-            }).ExcludeFromDescription();
-        }
+        webApplication.UseSwagger();
+        webApplication.UseSwaggerUI(c =>
+        {
+            c.InjectStylesheet("/swagger/SwaggerDark.css");
+        });
+        webApplication.MapGet("/swagger/SwaggerDark.css", async ([FromServices] CancellationToken cancellationToken) =>
+        {
+            var cssPathfilename = SWAGGER_CSS_PATH();
+            var css = await File.ReadAllBytesAsync(cssPathfilename, cancellationToken);
+            return Results.File(css, "text/css");
+        }).ExcludeFromDescription();
     }
 
 }
