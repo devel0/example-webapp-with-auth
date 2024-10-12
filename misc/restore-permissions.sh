@@ -11,4 +11,4 @@ chmod -v +x \
     publish.sh \
     run-frontend.sh \
     deploy/scripts/prepare.sh \
-    doc/gen-db-dia.sh
+    misc/gen-db-dia.sh
