@@ -23,6 +23,11 @@ public static partial class Constants
     public const string CONFIG_KEY_ConnectionString = "ConnectionStrings:Main";
     public const string CONFIG_KEY_DbProvider = "DbProvider";
 
+    /// <summary>
+    /// if true produce snakecase mode tables ( useful for postgres db provider )
+    /// </summary>
+    public const string CONFIG_KEY_DbSchemaSnakeCase = "DbSchemaSnakeCase";
+
     public const string CONFIG_KEY_IsUnitTest = "IsUnitTest";
     public const string CONFIG_KEY_UnitTestConnectionString = "ConnectionStrings:UnitTest";
 

@@ -399,6 +399,7 @@ dotnet test --filter=TEST
 | EmailServer:SmtpServerPort              | Email server config used in reset password ( account smtp port )                                                           | 587                                                                                |
 | EmailServer:Security                    | Email server config used in reset password ( account protocol security )                                                   | "Tls"                                                                              |
 | EmailServer:FromDisplayName             | Email server config used in reset password ( account displayname of the sender )                                           | "Server"                                                                           |
+| DbSchemaSnakeCase                       | if true generates db schema with snake case mode ( useful for Postgres )                                                   |                                                                                    |
 
 The configuration is setup through [SetupAppSettings][14] method in order to evaluate:
 - `appsettings.json`
