@@ -1,20 +1,47 @@
 #!/usr/bin/env bash
 
+export NODE_OPTIONS=--use-openssl-ca
+
 exdir=$(dirname $(readlink -f "$BASH_SOURCE"))
 
-API_SPEC_URL="https://dev-webapp-test.searchathing.local/swagger/v1/swagger.json"
+source "$exdir"/src/app/frontend/.env.development
+
+app_api_spec_url="https://$VITE_SERVERNAME/swagger/v1/swagger.json"
+
+function isUrlAvail() {
+    q="$(curl $1 -o /dev/null -w '%{http_code}\n' -s)"
+    if [ "$q" == "200" ]; then
+        echo 1
+    else
+        echo 0
+    fi
+}
+
+app_api_avail="$(isUrlAvail "$app_api_spec_url")"
 
 #--------
 
-APIFLD=$exdir/src/app/frontend/api
+if [ "$app_api_avail" == "1" ]; then
 
-rm -fr $APIFLD
+    APIFLD=$exdir/src/app/frontend/api
 
-mkdir $APIFLD
+    rm -fr $APIFLD
 
-cd $exdir 
+    mkdir $APIFLD
 
-npx @openapitools/openapi-generator-cli generate \
-    -i "$API_SPEC_URL" \
-    -g typescript-axios \
-    -o $APIFLD
+    cd $exdir
+
+    npx @openapitools/openapi-generator-cli generate \
+        -i "$app_api_spec_url" \
+        -g typescript-axios \
+        -o $APIFLD
+
+    app_api_generated="1"
+
+fi
+
+if [ "$app_api_generated" != "1" ]; then
+
+    echo "(W): skip typescript api from $app_api_spec_url"    
+
+fi
