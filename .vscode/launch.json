@@ -35,7 +35,7 @@
             "name": "Launch Chrome",
             "request": "launch",
             "type": "chrome",
-            "url": "https://dev-webapp-test.searchathing.com/app",
+            "url": "https://dev-webapp-test.searchathing.local/app",
             "webRoot": "${workspaceFolder}/src/app/frontend"
         }
     ]

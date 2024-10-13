@@ -14,7 +14,7 @@ APP_ID=""
 printHelp() {
     echo "$0 argmuments:"
     echo "  -h <sshhost>        ssh host where to publish ( ie. main-test )"
-    echo "  -sn <servername>    nginx app servername ( ie. mytest.searchathing.com )"
+    echo "  -sn <servername>    nginx app servername ( ie. mytest.searchathing.local )"
     echo "  -id <appid>         app identifier ( ie. mytest )"    
     echo "  -f                  force overwrite existing"
 }

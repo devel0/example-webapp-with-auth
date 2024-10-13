@@ -156,7 +156,7 @@ accepted values for `EmailServer:Security` are `Tls`, `Ssl`, `Auto`, `None`.
 code .
 ```
 
-- choose `.NET Core Launch (web)` from run and debug then hit F5 ( this will start asp net web server on `https://webapp-test.searchathing.com/swagger/index.html` )
+- choose `.NET Core Launch (web)` from run and debug then hit F5 ( this will start asp net web server on `https://webapp-test.searchathing.local/swagger/index.html` )
 
 - restore client node modules
 
@@ -236,7 +236,7 @@ mkdir -p ~/sscerts
 chmod 700 ~/sscerts
 ```
 
-- create cert parameters file `~/sscerts/searchathing.com.params` ( replace `searchathing.com` with your own )
+- create cert parameters file `~/sscerts/searchathing.local.params` ( replace `searchathing.local` with your own )
 
 ```
 COUNTRY="IT"
@@ -251,26 +251,26 @@ DURATION_DAYS=36500 # 100 years
 - create root-ca certificates
 
 ```sh
-CERTPARAMS=~/sscerts/searchathing.com.params create-root-ca.sh
+CERTPARAMS=~/sscerts/searchathing.local.params create-root-ca.sh
 ```
 
 - generated root-ca files
 
 | file                             | description                                                                             |
 | -------------------------------- | --------------------------------------------------------------------------------------- |
-| `~/sscerts/searchathing.com.crt` | root-ca certificate that you can register into the browser to trust linked certificates |
-| `~/sscerts/searchathing.com.key` | key of the root-ca certificte ( this is NOT NEEDED anywhere, do not share )             |
+| `~/sscerts/searchathing.local.crt` | root-ca certificate that you can register into the browser to trust linked certificates |
+| `~/sscerts/searchathing.local.key` | key of the root-ca certificte ( this is NOT NEEDED anywhere, do not share )             |
 
 - create test certificates ( note: this generate a wildcard certificate `*.yourdomain`, so can be reused for other development projects )
 
 ```sh
-CERTPARAMS=~/sscerts/searchathing.com.params create-cert.sh --add-empty --add-wildcard
+CERTPARAMS=~/sscerts/searchathing.local.params create-cert.sh --add-empty --add-wildcard
 ```
 
 | file                                              | description                                  |
 | ------------------------------------------------- | -------------------------------------------- |
-| `~/sscerts/searchathing.com/searchathing.com.crt` | is the certificate crt for nginx https proxy |
-| `~/sscerts/searchathing.com/searchathing.com.key` | is the certificate key for nginx https proxy |
+| `~/sscerts/searchathing.local/searchathing.local.crt` | is the certificate crt for nginx https proxy |
+| `~/sscerts/searchathing.local/searchathing.local.key` | is the certificate key for nginx https proxy |
 
 ### setup development nginx
 
@@ -297,7 +297,7 @@ ln -s PATH_TO/example-webapp-with-auth/deploy/nginx/dev/webapp-test.conf dev-web
 #-----------------------------------
 # DEVELOPMENT
 #-----------------------------------
-127.0.0.1 dev-webapp-test.searchathing.com
+127.0.0.1 dev-webapp-test.searchathing.local
 ```
 
 ### install root ca for local development
@@ -305,15 +305,15 @@ ln -s PATH_TO/example-webapp-with-auth/deploy/nginx/dev/webapp-test.conf dev-web
 Installing root-ca certificate imply that certificates generated within that will be consequently trusted.
 
 - **chrome**: settings/Privacy and security/Security/Manage certificates/Authorities/Import
-  - select `~/sscerts/searchathing.com_CA.crt`
+  - select `~/sscerts/searchathing.local_CA.crt`
   - tick `Trust this certificate for identifying websites`
 
 - **firefox**: settings/Privacy & Security/Certificates/View Certificates/Authorities/Import
-  - select `~/sscerts/searchathing.com_CA.crt`
+  - select `~/sscerts/searchathing.local_CA.crt`
   - tick `Trust this CA to identify websites`
   
 - **shell**
-  - copy `~/sscerts/searchathing.com_CA.crt` to `/usr/local/share/ca-certificates`
+  - copy `~/sscerts/searchathing.local_CA.crt` to `/usr/local/share/ca-certificates`
   - issue `sudo update-ca-certificates`
 
 ## dev notes
@@ -379,7 +379,7 @@ dotnet test --filter=TEST
 
 | param name                              | description                                                                                                                | example                                                                            |
 | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| AppServerName                           | Used to build [app url][10] for the reset password link.                                                                   | "dev-webapp-test.searchathing.com"                                                 |
+| AppServerName                           | Used to build [app url][10] for the reset password link.                                                                   | "dev-webapp-test.searchathing.local"                                                 |
 | DbProvider                              | Used to [inject db provider service][12].                                                                                  | "Postgres"                                                                         |
 | ConnectionStrings:Main                  | Used to build application [db context datasource][11].                                                                     | "Host=localhost; Database=ExampleWebApp; Username=postgres; Password=somepass"     |
 | IsUnitTest                              | Used to build [unit test application datasource][11] in unit test mode. Will be set to `true` from the [test factory][13]. | false                                                                              |
@@ -451,7 +451,7 @@ cd example-webapp-with-auth
 ./gen-api.sh
 ```
 
-- browse through swagger interface ( avail in development environment ) ie. https://dev-webapp-test.searchathing.com/swagger
+- browse through swagger interface ( avail in development environment ) ie. https://dev-webapp-test.searchathing.local/swagger
 
 #### invoke api
 
@@ -489,7 +489,7 @@ try {
   - retrieve existing user by given email
   - retrieve configuration parameters for mail server
   - retrieve configuration parameter for app servername in order to build a reset url like the follow
-  `https://webapp-test.searchathing.com/app/Login/:from/RESET_TOKEN` ( `:from` parameter will considered null )
+  `https://webapp-test.searchathing.local/app/Login/:from/RESET_TOKEN` ( `:from` parameter will considered null )
   - email with reset password link sent
   
 - gui snack notification
@@ -612,7 +612,7 @@ the syntax is
 ```sh
 ./publish.sh argmuments:
   -h <sshhost>        ssh host where to publish ( ie. main-test )
-  -sn <servername>    nginx app servername ( ie. mytest.searchathing.com )
+  -sn <servername>    nginx app servername ( ie. mytest.searchathing.local )
   -id <appid>         app identifier ( ie. mytest )
   -f                  force overwrite existing
 ```
@@ -620,7 +620,7 @@ the syntax is
 then invoke
 
 ```sh
-./publish.sh -h main-test -sn mytest.searchathing.com -id mytest
+./publish.sh -h main-test -sn mytest.searchathing.local -id mytest
 ```
 
 #### manual tuning

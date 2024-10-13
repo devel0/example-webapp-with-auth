@@ -2,7 +2,7 @@
 
 exdir=$(dirname $(readlink -f "$BASH_SOURCE"))
 
-API_SPEC_URL="https://dev-webapp-test.searchathing.com/swagger/v1/swagger.json"
+API_SPEC_URL="https://dev-webapp-test.searchathing.local/swagger/v1/swagger.json"
 
 #--------
 

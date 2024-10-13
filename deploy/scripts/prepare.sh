@@ -9,7 +9,7 @@ APP_ID=""
 printHelp() {    
     echo "$0 argmuments:"    
     echo "  -id <appid>         app identifier ( ie. mytest )"    
-    echo "  -sn <servername>    nginx app servername ( ie. mytest.searchathing.com )"
+    echo "  -sn <servername>    nginx app servername ( ie. mytest.searchathing.local )"
     echo "  -f                  force overwrite existing"
 }
 
