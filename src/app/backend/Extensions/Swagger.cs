@@ -15,7 +15,8 @@ public static partial class Extensions
 
             // options.DocumentFilter<CustomModelDocumentFilter<SomeExportedApiAddictionalType>>();
 
-            var xmlFiles = Directory.GetFiles(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
+            var xmlFiles = Directory.GetFiles(AppContext.BaseDirectory, "*.xml");
+            // var xmlFiles = Directory.GetFiles(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
 
             foreach (var xmlFile in xmlFiles)
                 options.IncludeXmlComments(xmlFile);
