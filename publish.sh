@@ -4,7 +4,7 @@
 
 exdir=$(dirname $(readlink -f "$BASH_SOURCE"))
 
-FORCE=false
+FORCE="0"
 BACKEND_SRCDIR="$exdir"/src/app/backend
 FRONTEND_SRCDIR="$exdir"/src/app/frontend
 APP_SSH_HOST=""
@@ -40,7 +40,7 @@ while [ "$1" != "" ]; do
     fi
 
     if [ "$1" == "-f" ]; then
-        FORCE=true
+        FORCE="1"
         shift
         continue
     fi
@@ -125,7 +125,7 @@ rsync -arvx --delete deploy/ $APP_SSH_HOST:$REMOTE_DEPLOY/
 
 forceargs=""
 
-if $FORCE; then forceargs="-f"; fi
+if [ "$FORCE" == "1" ]; then forceargs="-f"; fi
 
 ssh $APP_SSH_HOST "$REMOTE_DEPLOY/scripts/prepare.sh" -sn "$APP_SERVERNAME" -id "$APP_ID" "$forceargs"
 excode="$?"

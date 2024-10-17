@@ -2,7 +2,7 @@
 
 source /etc/environment
 
-FORCE=false
+FORCE="0"
 APP_SEVERNAME=""
 APP_ID=""
 
@@ -28,7 +28,7 @@ while [ "$1" != "" ]; do
     fi    
 
     if [ "$1" == "-f" ]; then
-        FORCE=true
+        FORCE="1"
         shift
     fi    
 
@@ -68,7 +68,7 @@ SERVICES=(
 
 for i in ${SERVICES[@]}; do
 
-    if $FORCE || [ ! -e /etc/systemd/system/$APP_ID-$i ]; then
+    if [ "$FORCE" == "1" ] || [ ! -e /etc/systemd/system/$APP_ID-$i ]; then
 
         cp -v /root/deploy/$APP_ID/service/$i /etc/systemd/system/$APP_ID-$i
 
@@ -93,7 +93,7 @@ for i in ${NGINX_FILES[@]}; do
 
     RESTART_NGINX=false
 
-    if $FORCE || [ ! -e /etc/nginx/conf.d/$APP_ID-$i ]; then
+    if [ "$FORCE" == "1" ] || [ ! -e /etc/nginx/conf.d/$APP_ID-$i ]; then
 
         DSTCONF="/etc/nginx/conf.d/$APP_ID-$i"
 
