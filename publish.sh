@@ -125,7 +125,7 @@ rsync -arvx --delete deploy/ $APP_SSH_HOST:$REMOTE_DEPLOY/
 
 forceargs=""
 
-if $force; then forceargs="-f"; fi
+if $FORCE; then forceargs="-f"; fi
 
 ssh $APP_SSH_HOST "$REMOTE_DEPLOY/scripts/prepare.sh" -sn "$APP_SERVERNAME" -id "$APP_ID" "$forceargs"
 excode="$?"
