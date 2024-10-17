@@ -68,7 +68,7 @@ SERVICES=(
 
 for i in ${SERVICES[@]}; do
 
-    if $force || [ ! -e /etc/systemd/system/$APP_ID-$i ]; then
+    if $FORCE || [ ! -e /etc/systemd/system/$APP_ID-$i ]; then
 
         cp -v /root/deploy/$APP_ID/service/$i /etc/systemd/system/$APP_ID-$i
 
@@ -93,7 +93,7 @@ for i in ${NGINX_FILES[@]}; do
 
     RESTART_NGINX=false
 
-    if $force || [ ! -e /etc/nginx/conf.d/$APP_ID-$i ]; then
+    if $FORCE || [ ! -e /etc/nginx/conf.d/$APP_ID-$i ]; then
 
         DSTCONF="/etc/nginx/conf.d/$APP_ID-$i"
 
