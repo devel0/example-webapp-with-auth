@@ -10,13 +10,7 @@ public class RenewAccessTokenNfo
     /// Access token.
     /// </summary>   
     [Required]
-    public required string AccessToken { get; set; }
-
-    /// <summary>
-    /// Refresh token ( existing or new one ).
-    /// </summary>    
-    [Required]
-    public required string RefreshToken { get; set; }
+    public required string AccessToken { get; set; }    
 
     /// <summary>
     /// Username.

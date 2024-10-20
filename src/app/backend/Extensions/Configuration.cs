@@ -18,13 +18,7 @@ public static partial class Extensions
             configuration.GetConfigVar<double>(CONFIG_KEY_JwtSettings_RefreshTokenDurationSeconds);
 
         if (accessTokenDurationSeconds >= refreshTokenDurationSeconds)
-            throw new Exception($"{CONFIG_KEY_JwtSettings_RefreshTokenDurationSeconds} must less than {CONFIG_KEY_JwtSettings_AccessTokenDurationSeconds}");
-
-        var refreshTokenDurationSkewSeconds =
-            configuration.GetConfigVar<double>(CONFIG_KEY_JwtSettings_RefreshTokenRotationSkewSeconds);
-
-        if (refreshTokenDurationSkewSeconds >= refreshTokenDurationSeconds)
-            throw new Exception($"{CONFIG_KEY_JwtSettings_RefreshTokenRotationSkewSeconds} must less than {CONFIG_KEY_JwtSettings_RefreshTokenDurationSeconds}");        
+            throw new Exception($"access token {CONFIG_KEY_JwtSettings_AccessTokenDurationSeconds} secs must less than refresh token {CONFIG_KEY_JwtSettings_RefreshTokenDurationSeconds} secs");        
     }
 
 }

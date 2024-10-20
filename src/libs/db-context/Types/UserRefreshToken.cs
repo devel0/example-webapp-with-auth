@@ -21,12 +21,6 @@ public class UserRefreshToken
     public required DateTimeOffset Issued { get; set; }
 
     /// <summary>
-    /// rotated utc timestamp ; refresh tokens with non null Rotated that are great to
-    /// (utc now + RefreshTokenRotationSkewSeconds) will be deleted on next refresh token validity checks.
-    /// </summary>    
-    public DateTimeOffset? Rotated { get; set; }
-
-    /// <summary>
     /// expires utc timestamp
     /// </summary>    
     [Required]

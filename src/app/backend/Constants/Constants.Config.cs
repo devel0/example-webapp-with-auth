@@ -46,11 +46,6 @@ public static partial class Constants
     /// </summary>
     public const string CONFIG_KEY_JwtSettings_RefreshTokenDurationSeconds = "JwtSettings:RefreshTokenDurationSeconds";
 
-    /// <summary>
-    /// post-duration of refresh token after rotation
-    /// </summary>
-    public const string CONFIG_KEY_JwtSettings_RefreshTokenRotationSkewSeconds = "JwtSettings:RefreshTokenDurationSkewSeconds";
-
     public const string CONFIG_KEY_JwtSettings_ClockSkewSeconds = "JwtSettings:ClockSkewSeconds";
 
     public const string CONFIG_KEY_SeedUsers_Admin_UserName = "SeedUsers:Admin:UserName";

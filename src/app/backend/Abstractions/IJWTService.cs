@@ -67,14 +67,7 @@ public interface IJWTService
     /// Purges expired and rotated+skew expired refresh tokens.
     /// </summary>
     /// <param name="userName">Username which purge refresh tokens.</param>
-    Task MaintenanceRefreshTokenAsync(string userName, CancellationToken cancellationToken);
-
-    /// <summary>
-    /// Rotate given refresh token.
-    /// </summary>    
-    /// <param name="userName">Username associated to the given refresh token to rotate.</param>
-    /// <param name="refreshTokenToRotate">Refresh token to rotate.</param>
-    Task<string?> RotateRefreshTokenAsync(string userName, string refreshTokenToRotate, CancellationToken cancellationToken);
+    Task MaintenanceRefreshTokenAsync(string userName, CancellationToken cancellationToken);    
 
     /// <summary>
     /// Renew refresh token from given username and valid refresh token.

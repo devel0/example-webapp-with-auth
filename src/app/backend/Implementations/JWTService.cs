@@ -90,14 +90,10 @@ public class JWTService : IJWTService
         if (email is null) throw new Exception("email not set");
 
         var resToken = GenerateAccessToken(claimsUsername, email, userManager.GetJWTClaims(quser));
-        var resRefreshToken = await RotateRefreshTokenAsync(claimsUsername, refreshToken, cancellationToken);
-
-        if (resRefreshToken is null) return null;
 
         return new RenewAccessTokenNfo
         {
             AccessToken = resToken,
-            RefreshToken = resRefreshToken,
             UserName = claimsUsername,
             Principal = principal
         };
@@ -141,22 +137,8 @@ public class JWTService : IJWTService
 
     public async Task MaintenanceRefreshTokenAsync(string userName, CancellationToken cancellationToken)
     {
-        var rotationSkew = TimeSpan.FromSeconds(
-            configuration.GetConfigVar<double>(CONFIG_KEY_JwtSettings_RefreshTokenRotationSkewSeconds));
-
         var qRefreshTokensToPurge = dbContext.UserRefreshTokens
-            .Where(r =>
-                r.UserName == userName &&
-                (
-                    r.Expires < DateTimeOffset.UtcNow
-                    ||
-                    // if rotated before expiration is invalid after rotation + rotationSkew
-                    (
-                        r.Rotated != null
-                        &&
-                        r.Rotated.Value + rotationSkew < DateTimeOffset.UtcNow
-                    )
-                ))
+            .Where(r => r.UserName == userName && r.Expires < DateTimeOffset.UtcNow)
             .ToList();
 
         // logger.LogTrace($"purging {qRefreshTokensToPurge.Count} refresh tokens");
@@ -174,50 +156,6 @@ public class JWTService : IJWTService
                 semRefreshToken.Release();
             }
         }
-    }
-
-    public async Task<string?> RotateRefreshTokenAsync(
-        string userName, string refreshTokenToRotate, CancellationToken cancellationToken)
-    {
-        var rotationSkew = TimeSpan.FromSeconds(
-            configuration.GetConfigVar<double>(CONFIG_KEY_JwtSettings_RefreshTokenRotationSkewSeconds));
-
-        // purge expired and rotated refresh token related to username                
-
-        var validRefreshToken = dbContext.UserRefreshTokens
-            .FirstOrDefault(r =>
-                r.UserName == userName &&
-                r.RefreshToken == refreshTokenToRotate &&
-                (
-                    r.Rotated == null
-                    ||
-                    DateTimeOffset.UtcNow <= r.Rotated + rotationSkew
-                ));
-
-        if (validRefreshToken is null) return null;
-
-        // mark rotation if not already
-        if (validRefreshToken.Rotated is null)
-        {
-            await semRefreshToken.WaitAsync(cancellationToken);
-            try
-            {
-                validRefreshToken.Rotated = DateTimeOffset.UtcNow;
-                await dbContext.SaveChangesAsync(cancellationToken);
-            }
-            finally
-            {
-                semRefreshToken.Release();
-            }
-        }
-
-        if (validRefreshToken is not null) return validRefreshToken.RefreshToken;
-
-        // generate new refresh token
-
-        var refreshToken = await GenerateRefreshTokenAsync(userName, cancellationToken);
-
-        return refreshToken.RefreshToken;
     }
 
     public async Task<RefreshTokenNfo?> RenewRefreshTokenAsync(
@@ -286,22 +224,7 @@ public class JWTService : IJWTService
 
         var utcNow = DateTimeOffset.UtcNow;
 
-        if (qrefresh.Rotated is not null)
-        {
-            var rotationSkewSeconds = configuration.GetConfigVar<double>(CONFIG_KEY_JwtSettings_RefreshTokenRotationSkewSeconds);
-
-            if (qrefresh.Rotated.Value + TimeSpan.FromSeconds(rotationSkewSeconds) <= utcNow)
-            {
-                return false;
-            }
-        }
-
-        if (utcNow >= qrefresh.Expires)
-        {
-            return false; // refresh token expired                
-        }
-
-        return true;
+        return qrefresh.Expires > utcNow;
     }
 
 
