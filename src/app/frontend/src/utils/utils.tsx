@@ -3,7 +3,7 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { SnackNfo } from "../types/SnackNfo"
 import { DEFAULT_FONTWEIGHT_500, DEFAULT_FONTWEIGHT_900, DEFAULT_SIZE_1_25_REM, DEFAULT_SIZE_1_REM } from "../constants/general"
 import { Box, Button, Typography } from "@mui/material"
-import { AxiosError } from "axios"
+import { AxiosError, HttpStatusCode } from "axios"
 import { from } from "linq-to-typescript";
 
 export const firstLetter = (str: string | undefined, capitalize: boolean = false) => {
@@ -31,7 +31,7 @@ export const handleApiException = async (ex: AxiosError, prefixMsg: string = 'Er
     setSnack({
         title: prefixMsg,
         msg: msgs,
-        type: "error"
+        type: ex.response?.status === HttpStatusCode.BadRequest ? "warning" : "error"
     })
 }
 
@@ -91,7 +91,7 @@ export const setSnack = (nfo: SnackNfo) => {
 
         variant: nfo.type,
 
-        preventDuplicate: true,
+        preventDuplicate: true,    
 
         autoHideDuration: nfo.durationMs === null ? null : (nfo.durationMs ?? 6000),
 
