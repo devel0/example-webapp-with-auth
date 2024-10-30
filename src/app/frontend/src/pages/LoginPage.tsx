@@ -75,7 +75,7 @@ export const LoginPage = () => {
 
             } catch (_ex) {
                 const ex = _ex as AxiosError
-                handleApiException(ex)
+                handleApiException(ex, 'Reset password error')
             }
         }
 
@@ -115,7 +115,7 @@ export const LoginPage = () => {
                     })
             } catch (_ex) {
                 const ex = _ex as AxiosError
-                handleApiException(ex)
+                handleApiException(ex, 'Login error')
             }
 
         }
@@ -197,7 +197,7 @@ export const LoginPage = () => {
                                     })
                                 } catch (_ex) {
                                     const ex = _ex as AxiosError
-                                    handleApiException(ex)
+                                    handleApiException(ex, 'Reset password error')
                                 }
 
                                 setSendingPasswordResetProgress(false)
