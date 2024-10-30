@@ -3,7 +3,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
 import { GlobalState } from '../redux/states/GlobalState'
-import { APP_URL_Login, APP_URL_Users, DEFAULT_SIZE_1_REM, DEFAULT_SIZE_0_5_REM, LOCAL_STORAGE_CURRENT_USER_NFO, LOCAL_STORAGE_REFRESH_TOKEN_EXPIRE, RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC } from '../constants/general'
+import { APP_URL_Login, APP_URL_Users, DEFAULT_SIZE_1_REM, DEFAULT_SIZE_0_5_REM, LOCAL_STORAGE_CURRENT_USER_NFO, LOCAL_STORAGE_REFRESH_TOKEN_EXPIRE, RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC, APP_URL_Home } from '../constants/general'
 import { useEffect, useState } from 'react'
 import { setLoggedOut, setSuccessfulLogin, setUrlWanted } from '../redux/slices/globalSlice'
 import { Box, Button, CssBaseline, LinearProgress } from '@mui/material'
@@ -12,7 +12,6 @@ import { AboutDialog } from '../dialogs/AboutDialog';
 import { CurrentUserNfo } from '../types/CurrentUserNfo';
 import { authApi } from '../axios.manager';
 import { AxiosError, HttpStatusCode } from 'axios';
-import { useInterval } from 'usehooks-ts';
 import { handleApiException } from '../utils/utils';
 
 type Props = {
@@ -97,7 +96,8 @@ const MainLayout = (props: Props) => {
         {
             hidden: !global.currentUserCanManageUsers,
             label: 'Users',
-            onClick: () => navigate(APP_URL_Users)
+            selected: location.pathname === APP_URL_Users,
+            url: APP_URL_Users
         },
         {
             label: 'About',

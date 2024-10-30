@@ -2,9 +2,15 @@ import { closeSnackbar, enqueueSnackbar } from "notistack"
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { SnackNfo } from "../types/SnackNfo"
 import { DEFAULT_FONTWEIGHT_500, DEFAULT_FONTWEIGHT_900, DEFAULT_SIZE_1_25_REM, DEFAULT_SIZE_1_REM } from "../constants/general"
-import { Box, Button, Typography } from "@mui/material"
+import { Box, Button, styled, Typography } from "@mui/material"
+import { LinkProps } from "react-router-dom"
 import { AxiosError, HttpStatusCode } from "axios"
 import { from } from "linq-to-typescript";
+
+export const LinkButton = styled(Button)<LinkProps>(({ theme }) => ({
+    // your link styles
+    // width: '100%'
+}))
 
 export const firstLetter = (str: string | undefined, capitalize: boolean = false) => {
     if (str && str.length > 0) {

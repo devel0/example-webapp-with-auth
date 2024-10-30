@@ -16,15 +16,17 @@ import AppLogo from '../images/app-icon.svg?react'
 import { APP_LOGO_TEXT, APP_URL_Home, DEFAULT_SIZE_1_REM, DEFAULT_SIZE_0_5_REM } from '../constants/general';
 import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks';
 import { GlobalState } from '../redux/states/GlobalState';
-import { firstLetter } from '../utils/utils';
+import { firstLetter, LinkButton } from '../utils/utils';
 import ThemeChooser from './ThemeChooser';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material';
 
 export interface AppBarItem {
     hidden?: boolean,
     label: string,
     icon?: JSX.Element,
+    url?: string,
+    selected?: boolean,
     onClick?: () => void,
 }
 
@@ -67,18 +69,20 @@ function ResponsiveAppBar(props: {
                      DESKTOP LOGO                     
                     -----------------------------------------------------------------------
                     */}
-                    <div
-                        onClick={() => navigate(APP_URL_Home)}
-                        style={{
-                            display: 'flex',
-                            cursor: 'pointer'
+                    <Box
+                        sx={{
+                            display: 'flex',                            
                         }}>
-                        <Box sx={{
-                            display: { xs: 'none', md: 'flex' },
-                            mr: 2
-                        }} >
+
+                        <LinkButton
+                            LinkComponent={Link}
+                            to={APP_URL_Home}
+                            sx={{
+                                display: { xs: 'none', md: 'flex' },
+                                mr: 2
+                            }} >
                             <AppLogo width='100%' height='50px' />
-                        </Box>
+                        </LinkButton>
 
                         {APP_LOGO_TEXT && <Typography
                             variant="h6"
@@ -96,7 +100,7 @@ function ResponsiveAppBar(props: {
                         >
                             {APP_LOGO_TEXT}
                         </Typography>}
-                    </div>
+                    </Box>
 
                     {/* 
                     -----------------------------------------------------------------------
@@ -108,7 +112,9 @@ function ResponsiveAppBar(props: {
                         display: { xs: 'none', md: 'flex' }
                     }}>
                         {pages.filter(w => w.hidden !== true).map((page, pageIdx) => (
-                            <Button
+                            <LinkButton
+                                LinkComponent={Link}
+                                to={page.url ?? ''}
                                 key={`dsk-page-${pageIdx}`}
                                 onClick={() => {
                                     page.onClick?.()
@@ -116,8 +122,12 @@ function ResponsiveAppBar(props: {
                                 }}
                                 sx={{ my: 2, color: 'white', display: 'block' }}
                             >
-                                {page.label}
-                            </Button>
+                                <Typography sx={{
+                                    textDecoration: page.selected === true ? 'underline' : null
+                                }}>
+                                    {page.label}
+                                </Typography>
+                            </LinkButton>
                         ))}
                     </Box>
 
