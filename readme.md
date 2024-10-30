@@ -63,6 +63,7 @@
   - Login / Logout / Reset lost password through email link
   - User manager with auth controller [edit user][3] to create, edit username, password, email, roles, disable
   - Light/Dark themes, Snacks
+  - PWA capabilities ( installable w/chrome )
 
 - Debugging
   - backend and frontend debugging in a solution from the same IDE
