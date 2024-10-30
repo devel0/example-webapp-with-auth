@@ -25,6 +25,9 @@ public static partial class Extensions
                 if (ex is not null)
                 {
 
+                    if (ex is BadHttpRequestException badRequest)
+                        throw ex;
+
                     if (ex.InnerException is PostgresException psqlException)
                         msg = psqlException.Message.Lines().FirstOrDefault();
 
