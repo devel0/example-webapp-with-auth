@@ -217,8 +217,11 @@ public class AuthController : ControllerBase
     /// </summary>    
     [HttpGet]
     [AllowAnonymous]
-    public async Task<ActionResult> ResetLostPassword(string email, string? token, string? resetPassword)
+    public async Task<ActionResult> ResetLostPassword(string? email, string? token, string? resetPassword)
     {
+        if (email is null)
+            throw new BadHttpRequestException("Email address required.");
+
         var res = await authService.ResetLostPasswordRequestAsync(
             email,
             token,
