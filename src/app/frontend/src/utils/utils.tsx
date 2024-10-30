@@ -4,6 +4,7 @@ import { SnackNfo } from "../types/SnackNfo"
 import { DEFAULT_FONTWEIGHT_500, DEFAULT_FONTWEIGHT_900, DEFAULT_SIZE_1_25_REM, DEFAULT_SIZE_1_REM } from "../constants/general"
 import { Box, Button, Typography } from "@mui/material"
 import { AxiosError } from "axios"
+import { from } from "linq-to-typescript";
 
 export const firstLetter = (str: string | undefined, capitalize: boolean = false) => {
     if (str && str.length > 0) {
@@ -17,12 +18,15 @@ export const firstLetter = (str: string | undefined, capitalize: boolean = false
 export const nullOrUndefined = (x: any) => x === null || x === undefined
 
 export const handleApiException = async (ex: AxiosError, prefixMsg: string = 'Error') => {
-    let msgs = [`${prefixMsg}: ${ex.response?.statusText}`]
+    let msgs = [`${ex.response?.statusText}`]
 
     const detail = (ex.response?.data as any)?.detail
 
-    if (detail)
-        msgs.push(`Detail: ${detail}`)
+    if (typeof detail === 'string') {
+        const str: string = detail
+        const ss = str.split('\n')
+        for (let i = 0; i < ss.length; ++i) msgs.push(ss[i])
+    }
 
     setSnack({
         title: prefixMsg,
@@ -47,14 +51,42 @@ export const setSnack = (nfo: SnackNfo) => {
                 {nfo.title}
             </Typography>}
 
-            {nfo.msg.map((msg, msgIdx) =>
+            {nfo.msg.length > 0 && <Box>
                 <Typography
                     fontSize={DEFAULT_SIZE_1_REM}
                     fontWeight={DEFAULT_FONTWEIGHT_500}
-                    key={`snack-mex-${msgIdx}`}>
-                    {msg}
+                    key={`snack-mex-0`}>
+                    {nfo.msg[0]}
                 </Typography>
-            )}
+
+                {nfo.msg.length > 2 ?
+
+                    <ul>
+                        {from(nfo.msg).skip(1).toArray().map((msg, msgIdx) => <li key={`snack-mex-${msgIdx}`}>
+                            <Typography
+                                fontSize={DEFAULT_SIZE_1_REM}
+                                fontWeight={DEFAULT_FONTWEIGHT_500}>
+                                {msg}
+                            </Typography>
+
+                        </li>)}
+                    </ul>
+
+                    :
+
+                    nfo.msg.length > 1 &&
+
+                    <Typography
+                        fontSize={DEFAULT_SIZE_1_REM}
+                        fontWeight={DEFAULT_FONTWEIGHT_500}
+                        key={`snack-mex-0`}>
+                        {nfo.msg[1]}
+                    </Typography>
+
+                }
+            </Box>
+
+            }
         </div>,
 
         variant: nfo.type,
