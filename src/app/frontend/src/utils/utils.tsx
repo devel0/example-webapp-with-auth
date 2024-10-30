@@ -1,7 +1,8 @@
-import { enqueueSnackbar } from "notistack"
+import { closeSnackbar, enqueueSnackbar } from "notistack"
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { SnackNfo } from "../types/SnackNfo"
 import { DEFAULT_FONTWEIGHT_500, DEFAULT_FONTWEIGHT_900, DEFAULT_SIZE_1_25_REM, DEFAULT_SIZE_1_REM } from "../constants/general"
-import { Box, Typography } from "@mui/material"
+import { Box, Button, Typography } from "@mui/material"
 import { AxiosError } from "axios"
 
 export const firstLetter = (str: string | undefined, capitalize: boolean = false) => {
@@ -36,8 +37,10 @@ export function delay(ms: number) {
 
 export const setSnack = (nfo: SnackNfo) => {
 
-    enqueueSnackbar({
-        message: <Box>
+    const id = enqueueSnackbar({
+        message: <div onClick={() => {
+            closeSnackbar(id)
+        }}>
             {nfo.title && <Typography
                 fontSize={DEFAULT_SIZE_1_25_REM}
                 fontWeight={DEFAULT_FONTWEIGHT_900}>
@@ -52,13 +55,16 @@ export const setSnack = (nfo: SnackNfo) => {
                     {msg}
                 </Typography>
             )}
-        </Box>,
+        </div>,
 
         variant: nfo.type,
 
         preventDuplicate: true,
 
-        autoHideDuration: nfo.durationMs === null ? null : (nfo.durationMs ?? 6000)
+        autoHideDuration: nfo.durationMs === null ? null : (nfo.durationMs ?? 6000),
+
+        hideIconVariant: nfo.type === 'error'
+
     })
 
 }
