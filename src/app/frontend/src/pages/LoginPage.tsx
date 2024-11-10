@@ -148,6 +148,7 @@ export const LoginPage = () => {
                             margin="normal"
                             required
                             fullWidth
+                            autoCapitalize='none'
                             id="username"
                             name="username"
                             autoComplete="username"
@@ -160,6 +161,7 @@ export const LoginPage = () => {
                             margin="normal"
                             required
                             fullWidth
+                            autoCapitalize='none'
                             id="password"
                             name="password"
                             autoComplete="current-password"
