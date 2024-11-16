@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\app\backend\backend.csproj" />
+    <ProjectReference Include="..\webapi\webapi.csproj" />
   </ItemGroup>  
 
 </Project>

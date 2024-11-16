@@ -10,17 +10,19 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/app/backend/bin/Debug/net8.0/backend.dll",
+            "program": "${workspaceFolder}/src/backend/webapi/bin/Debug/net8.0/webapi.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/app/backend",
+            "cwd": "${workspaceFolder}/src/backend/webapi",
             "stopAtEntry": false,
             // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
-            // "serverReadyAction": {
-            //     "action": "openExternally",
-            //     "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-            // },
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
             "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                // "Serilog__MinimumLevel__Override__Microsoft": "Information",
+                // "Serilog__MinimumLevel__Override__Microsoft_AspNetCore": "Information",
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
@@ -36,7 +38,7 @@
             "request": "launch",
             "type": "chrome",
             "url": "https://dev-webapp-test.searchathing.local/app",
-            "webRoot": "${workspaceFolder}/src/app/frontend"
+            "webRoot": "${workspaceFolder}/src/frontend"
         }
     ]
 }

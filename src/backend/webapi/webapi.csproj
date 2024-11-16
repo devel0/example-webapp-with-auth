@@ -34,8 +34,8 @@
   </ItemGroup>  
 
   <ItemGroup>
-    <ProjectReference Include="..\..\libs\db-context\db-context.csproj" />
-    <ProjectReference Include="..\..\libs\db-migrations-psql\db-migrations-psql.csproj" />
+    <ProjectReference Include="..\db-context\db-context.csproj" />
+    <ProjectReference Include="..\db-migrations-psql\db-migrations-psql.csproj" />
   </ItemGroup>
 
   <!-- WEBAPI test https://learn.microsoft.com/it-it/aspnet/core/test/integration-tests?view=aspnetcore-8.0 -->

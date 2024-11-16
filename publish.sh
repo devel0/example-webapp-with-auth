@@ -5,8 +5,8 @@
 exdir=$(dirname $(readlink -f "$BASH_SOURCE"))
 
 FORCE="0"
-BACKEND_SRCDIR="$exdir"/src/app/backend
-FRONTEND_SRCDIR="$exdir"/src/app/frontend
+BACKEND_SRCDIR="$exdir"/src/backend
+FRONTEND_SRCDIR="$exdir"/src/frontend
 APP_SSH_HOST=""
 APP_SEVERNAME=""
 APP_ID=""

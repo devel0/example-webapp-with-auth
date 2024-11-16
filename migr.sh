@@ -2,11 +2,11 @@
 
 exdir=$(dirname $(readlink -f "$BASH_SOURCE"))
 
-cd "$exdir"/src/app/backend
+cd "$exdir"/src/backend
 
 dotnet ef migrations $@ \
     --context AppDbContext \
-    --project ../../libs/db-migrations-psql \
+    --project ../db-migrations-psql \
     -- --provider Postgres
 
 if [ "$1" == "" ]; then

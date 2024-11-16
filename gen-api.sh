@@ -13,7 +13,7 @@ export NODE_OPTIONS=--use-openssl-ca
 
 exdir=$(dirname $(readlink -f "$BASH_SOURCE"))
 
-source "$exdir"/src/app/frontend/.env.development
+source "$exdir"/src/frontend/.env.development
 
 app_api_spec_url="https://$VITE_SERVERNAME/swagger/v1/swagger.json"
 
@@ -23,7 +23,7 @@ app_api_avail="$(isUrlAvail "$app_api_spec_url")"
 
 if [ "$app_api_avail" == "1" ]; then
 
-    APIFLD="$exdir"/src/app/frontend/api
+    APIFLD="$exdir"/src/frontend/api
 
     rm -fr "$APIFLD"
 
