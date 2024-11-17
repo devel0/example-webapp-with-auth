@@ -12,4 +12,8 @@
       Version="$(MSCoreVersion)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="netcore-ext" Version="2.8.0" />
+  </ItemGroup>
+
 </Project>

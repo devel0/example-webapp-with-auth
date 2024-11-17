@@ -15,3 +15,4 @@ global using CodeCasing;
 // project
 global using static ExampleWebApp.Backend.Data.Constants;
 global using ExampleWebApp.Backend.Data.Types;
+global using ExampleWebApp.Backend.Abstractions;

@@ -21,18 +21,16 @@ public class JWTService : IJWTService
         this.dbContext = dbContext;
     }
 
-    public TimeSpan AccessTokenLifetime => TimeSpan.FromSeconds(
-        configuration.GetConfigVar<int>(CONFIG_KEY_JwtSettings_AccessTokenDurationSeconds));
+    public TimeSpan AccessTokenLifetime => configuration.AppConfig().Auth.Jwt.AccessTokenDuration;
 
-    public TimeSpan RefreshTokenLifetime => TimeSpan.FromSeconds(
-        configuration.GetConfigVar<int>(CONFIG_KEY_JwtSettings_RefreshTokenDurationSeconds));
+    public TimeSpan RefreshTokenLifetime => configuration.AppConfig().Auth.Jwt.RefreshTokenDuration;
 
-    public SymmetricSecurityKey JwtEncryptionKey => new SymmetricSecurityKey(
-        Convert.FromBase64String(configuration.GetConfigVar(CONFIG_KEY_JwtSettings_Key)));
+    public SymmetricSecurityKey JwtEncryptionKey =>
+        new SymmetricSecurityKey(Convert.FromBase64String(configuration.AppConfig().Auth.Jwt.Key));
 
-    public string Issuer => configuration.GetConfigVar(CONFIG_KEY_JwtSettings_Issuer);
+    public string Issuer => configuration.AppConfig().Auth.Jwt.Issuer;
 
-    public string Audience => configuration.GetConfigVar(CONFIG_KEY_JwtSettings_Audience);
+    public string Audience => configuration.AppConfig().Auth.Jwt.Audience;
 
     public string GenerateAccessToken(string username, string email, IList<Claim> claims)
     {

@@ -4,8 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <UserSecretsId>7f2db397-8b60-4b4f-9f83-2b6936d632e9</UserSecretsId>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>    
+    <UserSecretsId>0482afb0-cc38-4ac3-b932-c8aa5cd52958</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,8 +25,7 @@
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.2" />
     <PackageReference Include="Serilog.Expressions" Version="5.0.0" />
     <PackageReference Include="Serilog.Sinks.Async" Version="2.0.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
-    <PackageReference Include="netcore-ext" Version="2.7.3" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />    
   </ItemGroup>  
 
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
@@ -36,6 +35,7 @@
   <ItemGroup>
     <ProjectReference Include="..\db-context\db-context.csproj" />
     <ProjectReference Include="..\db-migrations-psql\db-migrations-psql.csproj" />
+    <ProjectReference Include="..\abstractions\abstractions.csproj" />
   </ItemGroup>
 
   <!-- WEBAPI test https://learn.microsoft.com/it-it/aspnet/core/test/integration-tests?view=aspnetcore-8.0 -->
@@ -57,7 +57,7 @@
     <!-- Include the newly-built files in the publish output -->
     <ItemGroup>
       <DistFiles Include="$(SpaRoot)dist\**" />
-      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+      <ResolvedFileToPublish Include="@(DistFiles-&gt;'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
         <RelativePath>clientapp\%(DistFiles.RecursiveDir)%(DistFiles.Filename)%(DistFiles.Extension)</RelativePath>
         <!-- <RelativePath>%(DistFiles.Identity)</RelativePath> -->
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

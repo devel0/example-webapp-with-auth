@@ -26,8 +26,7 @@ public static partial class Toolkit
 
         var key = RandomJwtEncryptionKey();
 
-        var accessTokenLifetime = TimeSpan.FromSeconds(
-            config.GetConfigVar<double>(CONFIG_KEY_JwtSettings_AccessTokenDurationSeconds));
+        var accessTokenLifetime = config.AppConfig().Auth.Jwt.AccessTokenDuration;
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {

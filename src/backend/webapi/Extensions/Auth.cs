@@ -114,18 +114,22 @@ public static partial class Extensions
     public static TokenValidationParameters GetTokenVaildationParameters(this IConfiguration configuration,
         bool validateIssuer = true,
         bool validateAudience = true,
-        bool validateLifetime = true) =>
-        new TokenValidationParameters
+        bool validateLifetime = true)
+    {
+        var appConfig = configuration.AppConfig();
+
+        return new TokenValidationParameters
         {
             ValidateIssuer = validateIssuer,
             ValidateAudience = validateAudience,
             ValidateLifetime = validateLifetime,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = configuration.GetConfigVar(CONFIG_KEY_JwtSettings_Issuer),
-            ValidAudience = configuration.GetConfigVar(CONFIG_KEY_JwtSettings_Audience),
-            IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(configuration.GetConfigVar(CONFIG_KEY_JwtSettings_Key))),
-            ClockSkew = TimeSpan.FromSeconds(configuration.GetConfigVar<int>(CONFIG_KEY_JwtSettings_ClockSkewSeconds)),
+            ValidIssuer = appConfig.Auth.Jwt.Issuer,
+            ValidAudience = appConfig.Auth.Jwt.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(appConfig.Auth.Jwt.Key)),
+            ClockSkew = appConfig.Auth.Jwt.ClockSkew
         };
+    }
 
     /// <summary>
     /// /// Add authentication with JWT scheme.
@@ -186,7 +190,7 @@ public static partial class Extensions
                                     var opts = new CookieOptions();
 
                                     hostEnvironment.SetCookieOptions(builder.Configuration, opts, setExpiresAsRefreshToken: true);
-                                    context.HttpContext.Response.Cookies.Append(WEB_CookieName_XAccessToken, res.AccessToken, opts);                                    
+                                    context.HttpContext.Response.Cookies.Append(WEB_CookieName_XAccessToken, res.AccessToken, opts);
 
                                     context.Principal = res.Principal;
                                     context.Success();
@@ -233,8 +237,7 @@ public static partial class Extensions
 
         if (setExpiresAsRefreshToken)
         {
-            var cookieDuration = TimeSpan.FromSeconds(
-                configuration.GetConfigVar<int>(CONFIG_KEY_JwtSettings_RefreshTokenDurationSeconds));
+            var cookieDuration = configuration.AppConfig().Auth.Jwt.RefreshTokenDuration;
 
             cookieOptions.Expires = DateTimeOffset.Now.Add(cookieDuration);
         }

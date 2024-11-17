@@ -8,13 +8,20 @@ public static partial class Extensions
     /// </summary>    
     public static void ConfigureDatabase(this WebApplicationBuilder webApplicationBuilder)
     {
-        var isUnitTest = webApplicationBuilder.Configuration.GetConfigVar<bool>(CONFIG_KEY_IsUnitTest);
+        var appConfig = webApplicationBuilder.Configuration.AppConfig();
 
-        var connString = isUnitTest ?
-            webApplicationBuilder.Configuration.GetConfigVar(CONFIG_KEY_UnitTestConnectionString) :
-            webApplicationBuilder.Configuration.GetConfigVar(CONFIG_KEY_ConnectionString);
+        var isUnitTest = appConfig.IsUnitTest;
 
-        var provider = webApplicationBuilder.Configuration.GetConfigVar<ConfigValuesDbProvider>(CONFIG_KEY_DbProvider);
+        var connectionName = isUnitTest ? UNIT_TEST_DB_CONN_NAME : appConfig.Database.ConnectionName;
+
+        var qDbConfig = appConfig.Database.Connections.FirstOrDefault(w => w.Name == connectionName);
+
+        if (qDbConfig is null)
+            throw new Exception($"Can't find suitable connection named \"{connectionName}\" in configuration");
+
+        var connString = qDbConfig.ConnectionString;
+
+        var provider = qDbConfig.Provider;
 
         //
         // normal config for db providers
@@ -24,7 +31,7 @@ public static partial class Extensions
             switch (provider)
             {
 
-                case ConfigValuesDbProvider.Postgres:
+                case AppConfig.DatabaseConfig.ConnectionItemConfig.DbProviderConfig.Postgres:
                     {
                         options.UseNpgsql(connString, x => x.MigrationsAssembly("db-migrations-psql"));
                     }

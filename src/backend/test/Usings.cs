@@ -24,9 +24,11 @@ global using Xunit;
 global using Xunit.Abstractions;
 
 // project
+global using static ExampleWebApp.Backend.Abstractions.Constants;
 global using static ExampleWebApp.Backend.WebApi.Constants;
 global using static ExampleWebApp.Backend.WebApi.Types.Toolkit;
 global using static Test.Toolkit;
+global using ExampleWebApp.Backend.Abstractions;
 global using ExampleWebApp.Backend.Data;
 global using ExampleWebApp.Backend.Data.Types;
 global using ExampleWebApp.Backend.WebApi;

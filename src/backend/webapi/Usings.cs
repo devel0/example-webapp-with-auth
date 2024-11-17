@@ -36,20 +36,23 @@ global using Microsoft.Net.Http.Headers;
 global using Microsoft.OpenApi.Models;
 
 // thirdy
+global using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 global using MimeKit;
 global using Npgsql;
 global using SearchAThing.Ext;
 global using Serilog;
 global using Serilog.Templates;
 global using Serilog.Templates.Themes;
-global using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 global using Swashbuckle.AspNetCore.Annotations;
 global using Swashbuckle.AspNetCore.SwaggerGen;
 global using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
 
 // project
+global using static ExampleWebApp.Backend.Abstractions.Constants;
 global using static ExampleWebApp.Backend.WebApi.Constants;
 global using static ExampleWebApp.Backend.WebApi.Types.Toolkit;
+global using ExampleWebApp.Backend.Abstractions;
+global using ExampleWebApp.Backend.Abstractions.Types;
 global using ExampleWebApp.Backend.Data;
 global using ExampleWebApp.Backend.Data.Types;
 global using ExampleWebApp.Backend.WebApi;

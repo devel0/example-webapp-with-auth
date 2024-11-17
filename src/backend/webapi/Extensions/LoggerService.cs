@@ -7,7 +7,7 @@ public static partial class Extensions
     {
 
         builder.Host.UseSerilog((context, sp, configuration) =>
-        {
+        {                        
             configuration.ReadFrom.Configuration(context.Configuration);
             configuration.Enrich.FromLogContext();
 

@@ -19,7 +19,8 @@ public partial class AppDbContext : IdentityDbContext<ApplicationUser>
     {
         base.OnModelCreating(builder);
 
-        var useSnakeCaseMode = configuration.GetConfigVar<bool>(CONFIG_KEY_DbSchemaSnakeCase);
+        // TODO: x database config
+        var useSnakeCaseMode = configuration.AppConfig().Database.SchemaSnakeCase;
 
         if (useSnakeCaseMode == true)
         {

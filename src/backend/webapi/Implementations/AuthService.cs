@@ -868,15 +868,17 @@ public class AuthService : IAuthService
             };
         }
 
-        var emailServerUsername = configuration.GetConfigVar<string>(CONFIG_KEY_EmailServer_Username);
-        var emailServerPassword = configuration.GetConfigVar<string>(CONFIG_KEY_EmailServer_Password);
-        var emailServerSmtpServerName = configuration.GetConfigVar<string>(CONFIG_KEY_EmailServer_SmtpServer);
-        var emailServerSmtpServerPort = configuration.GetConfigVar<int>(CONFIG_KEY_EmailServer_SmtpServerPort);
-        var emailServerSecurityOption = configuration.GetConfigVar<ConfigValuesEmailServerSecurity>(CONFIG_KEY_EmailServer_Security);
+        var appConfig = configuration.AppConfig();
 
-        var emailServerFromDisplayName = configuration.GetConfigVar<string?>(CONFIG_KEY_EmailServer_FromDisplayName) ?? "Server";
+        var emailServerUsername = appConfig.EmailServer.Username;
+        var emailServerPassword = appConfig.EmailServer.Password;
+        var emailServerSmtpServerName = appConfig.EmailServer.SmtpServer;
+        var emailServerSmtpServerPort = appConfig.EmailServer.SmtpServerPort;
+        var emailServerSecurityOption = appConfig.EmailServer.Security;
 
-        var appServerName = configuration.GetConfigVar<string>(CONFIG_KEY_AppServerName);
+        var emailServerFromDisplayName = appConfig.EmailServer.FromDisplayName;
+
+        var appServerName = appConfig.Server.HostName;
 
         var pwToken = await userManager.GeneratePasswordResetTokenAsync(user);
 
@@ -897,7 +899,7 @@ public class AuthService : IAuthService
         {
             switch (emailServerSecurityOption)
             {
-                case ConfigValuesEmailServerSecurity.None:
+                case AppConfig.EmailServerConfig.SecurityEnum.None:
                     await client.ConnectAsync(
                         emailServerSmtpServerName,
                         emailServerSmtpServerPort,
@@ -905,7 +907,7 @@ public class AuthService : IAuthService
                         cancellationToken);
                     break;
 
-                case ConfigValuesEmailServerSecurity.Auto:
+                case AppConfig.EmailServerConfig.SecurityEnum.Auto:
                     await client.ConnectAsync(
                         emailServerSmtpServerName,
                         emailServerSmtpServerPort,
@@ -913,7 +915,7 @@ public class AuthService : IAuthService
                         cancellationToken);
                     break;
 
-                case ConfigValuesEmailServerSecurity.Ssl:
+                case AppConfig.EmailServerConfig.SecurityEnum.Ssl:
                     await client.ConnectAsync(
                         emailServerSmtpServerName,
                         emailServerSmtpServerPort,
@@ -921,7 +923,7 @@ public class AuthService : IAuthService
                         cancellationToken);
                     break;
 
-                case ConfigValuesEmailServerSecurity.Tls:
+                case AppConfig.EmailServerConfig.SecurityEnum.Tls:
                     await client.ConnectAsync(
                         emailServerSmtpServerName,
                         emailServerSmtpServerPort,

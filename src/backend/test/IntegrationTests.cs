@@ -1,3 +1,5 @@
+using static ExampleWebApp.Backend.Abstractions.Types.AppConfig.DatabaseConfig.SeedConfig;
+
 namespace Test;
 
 public class IntegrationTests
@@ -14,6 +16,16 @@ public class IntegrationTests
 
     static readonly string AuthApiPrefix = $"{API_PREFIX}/{nameof(AuthController).StripEnd("Controller")}";
 
+    UserConfig
+    GetAdminUserConfig(IConfiguration configuration)
+    {
+        var qAdminSeed = configuration.AppConfig().Database.Seed.Users.FirstOrDefault(w => w.Roles.Any(x => x == ROLE_admin));
+
+        if (qAdminSeed is null) throw new Exception($"can't find an admin role user in configuration");
+
+        return qAdminSeed;
+    }
+
     /// <summary>
     /// Test login admin works with username.
     /// </summary>
@@ -25,8 +37,9 @@ public class IntegrationTests
         var client = testFactory.Client;
         var config = testFactory.Services.GetRequiredService<IConfiguration>();
 
-        var adminUsername = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
-        var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
+        var adminUserConfig = GetAdminUserConfig(config);
+        var adminUsername = adminUserConfig.Username;
+        var adminPassword = adminUserConfig.Password;
 
         // login with username
 
@@ -50,8 +63,9 @@ public class IntegrationTests
         var client = testFactory.Client;
         var config = testFactory.Services.GetRequiredService<IConfiguration>();
 
-        var adminEmail = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Email);
-        var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
+        var adminUserConfig = GetAdminUserConfig(config);
+        var adminEmail = adminUserConfig.Email;
+        var adminPassword = adminUserConfig.Password;
 
         // login with email
 
@@ -76,10 +90,11 @@ public class IntegrationTests
         var config = testFactory.Services.GetRequiredService<IConfiguration>();
         var util = testFactory.Services.GetRequiredService<IUtilService>();
 
-        var adminUsername = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
-        var adminEmail = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Email);
-        var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
-        var adminRoles = new List<string> { ROLE_admin };
+        var adminUserConfig = GetAdminUserConfig(config);
+        var adminUsername = adminUserConfig.Username;
+        var adminEmail = adminUserConfig.Email;
+        var adminPassword = adminUserConfig.Password;
+        var adminRoles = adminUserConfig.Roles;
 
         // login with username
 
@@ -116,8 +131,9 @@ public class IntegrationTests
         var client = testFactory.Client;
         var config = testFactory.Services.GetRequiredService<IConfiguration>();
 
-        var adminUsername = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
-        var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password) + "WRONG";
+        var adminUserConfig = GetAdminUserConfig(config);
+        var adminUsername = adminUserConfig.Username;
+        var adminPassword = adminUserConfig.Password + "WRONG";
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
@@ -139,8 +155,9 @@ public class IntegrationTests
         var client = testFactory.Client;
         var config = testFactory.Services.GetRequiredService<IConfiguration>();
 
-        var adminEmail = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Email);
-        var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password) + "WRONG";
+        var adminUserConfig = GetAdminUserConfig(config);
+        var adminEmail = adminUserConfig.Email;
+        var adminPassword = adminUserConfig.Password + "WRONG";
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
@@ -165,12 +182,14 @@ public class IntegrationTests
         var client = testFactory.Client;
         var config = testFactory.Services.GetRequiredService<IConfiguration>();
 
-        config.SetConfigVar(CONFIG_KEY_JwtSettings_ClockSkewSeconds, "0");
-        config.SetConfigVar(CONFIG_KEY_JwtSettings_AccessTokenDurationSeconds, accessTokenDuration.TotalSeconds.ToString());
-        config.SetConfigVar(CONFIG_KEY_JwtSettings_RefreshTokenDurationSeconds, refreshTokenDuration.TotalSeconds.ToString());
+        var adminUserConfig = GetAdminUserConfig(config);
+        var adminUsername = adminUserConfig.Username;
+        var adminPassword = adminUserConfig.Password;
 
-        var adminUsername = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
-        var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
+        var appConfig = config.AppConfig();
+        appConfig.SetValue(config, x => x.Auth.Jwt.ClockSkew, TimeSpan.Zero);
+        appConfig.SetValue(config, x => x.Auth.Jwt.AccessTokenDuration, accessTokenDuration);
+        appConfig.SetValue(config, x => x.Auth.Jwt.RefreshTokenDuration, refreshTokenDuration);
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
@@ -201,12 +220,14 @@ public class IntegrationTests
         var client = testFactory.Client;
         var config = testFactory.Services.GetRequiredService<IConfiguration>();
 
-        config.SetConfigVar(CONFIG_KEY_JwtSettings_ClockSkewSeconds, "0");
-        config.SetConfigVar(CONFIG_KEY_JwtSettings_AccessTokenDurationSeconds, accessTokenDuration.TotalSeconds.ToString());
-        config.SetConfigVar(CONFIG_KEY_JwtSettings_RefreshTokenDurationSeconds, refreshTokenDuration.TotalSeconds.ToString());
+        var adminUserConfig = GetAdminUserConfig(config);
+        var adminUsername = adminUserConfig.Username;
+        var adminPassword = adminUserConfig.Password;
 
-        var adminUsername = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
-        var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
+        var appConfig = config.AppConfig();
+        appConfig.SetValue(config, x => x.Auth.Jwt.ClockSkew, TimeSpan.Zero);
+        appConfig.SetValue(config, x => x.Auth.Jwt.AccessTokenDuration, accessTokenDuration);
+        appConfig.SetValue(config, x => x.Auth.Jwt.RefreshTokenDuration, refreshTokenDuration);
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
@@ -222,12 +243,12 @@ public class IntegrationTests
 
         Assert.Equal(HttpStatusCode.OK, currentUserRes.StatusCode);
     }
-    
+
     /// <summary>
     /// Renewal of refresh token allow to slide the expiration.
     /// </summary>
     [Fact]
-    public async Task RewnewRefreshToken()
+    public async Task RenewRefreshToken()
     {
         var accessTokenDuration = TimeSpan.FromSeconds(1);
         var refreshTokenDuration = TimeSpan.FromSeconds(3);
@@ -241,16 +262,15 @@ public class IntegrationTests
         var dbContext = testFactory.Services.GetRequiredService<AppDbContext>();
         var util = testFactory.Services.GetRequiredService<IUtilService>();
 
-        config.SetConfigVar(CONFIG_KEY_JwtSettings_ClockSkewSeconds, "0");
+        var adminUserConfig = GetAdminUserConfig(config);
+        var adminUsername = adminUserConfig.Username;
+        var adminPassword = adminUserConfig.Password;
 
-        config.SetConfigVar(CONFIG_KEY_JwtSettings_AccessTokenDurationSeconds,
-            accessTokenDuration.TotalSeconds.ToString());
+        var appConfig = config.AppConfig();
 
-        config.SetConfigVar(CONFIG_KEY_JwtSettings_RefreshTokenDurationSeconds,
-            refreshTokenDuration.TotalSeconds.ToString());
-
-        var adminUsername = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
-        var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
+        appConfig.SetValue(config, x => x.Auth.Jwt.ClockSkew, TimeSpan.Zero);
+        appConfig.SetValue(config, x => x.Auth.Jwt.AccessTokenDuration, accessTokenDuration);
+        appConfig.SetValue(config, x => x.Auth.Jwt.RefreshTokenDuration, refreshTokenDuration);
 
         logger.LogTrace("Login");
 
@@ -318,6 +338,10 @@ public class IntegrationTests
         var logger = adminTestFactory.Services.GetRequiredService<ILogger<IntegrationTests>>();
         var util = adminTestFactory.Services.GetRequiredService<IUtilService>();
 
+        var adminUserConfig = GetAdminUserConfig(adminConfig);
+        var adminUsername = adminUserConfig.Username;
+        var adminPassword = adminUserConfig.Password;
+
         //
 
         using var userTestFactory = new TestFactory();
@@ -325,18 +349,10 @@ public class IntegrationTests
         var userClient = userTestFactory.Client;
         var userConfig = userTestFactory.Services.GetRequiredService<IConfiguration>();
 
-        userConfig.SetConfigVar(CONFIG_KEY_JwtSettings_ClockSkewSeconds, "0");
-
-        userConfig.SetConfigVar(CONFIG_KEY_JwtSettings_AccessTokenDurationSeconds,
-            accessTokenDuration.TotalSeconds.ToString());
-
-        userConfig.SetConfigVar(CONFIG_KEY_JwtSettings_RefreshTokenDurationSeconds,
-            refreshTokenDuration.TotalSeconds.ToString());        
-
-        //
-
-        var adminUsername = adminConfig.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
-        var adminPassword = adminConfig.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
+        var appConfig = userConfig.AppConfig();
+        appConfig.SetValue(userConfig, x => x.Auth.Jwt.ClockSkew, TimeSpan.Zero);
+        appConfig.SetValue(userConfig, x => x.Auth.Jwt.AccessTokenDuration, accessTokenDuration);
+        appConfig.SetValue(userConfig, x => x.Auth.Jwt.RefreshTokenDuration, refreshTokenDuration);
 
         var loginRes = (await adminClient.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
@@ -403,10 +419,10 @@ public class IntegrationTests
         await Task.Delay(toWait);
 
         // refresh token not valid because user disabled meanwhile
-        
+
         currentUserRes = (await userClient.GetAsync($"{AuthApiPrefix}/{nameof(AuthController.CurrentUser)}")).ApplySetCookies(userClient);
 
-        Assert.Equal(HttpStatusCode.Unauthorized, currentUserRes.StatusCode);        
+        Assert.Equal(HttpStatusCode.Unauthorized, currentUserRes.StatusCode);
     }
 
     /// <summary>
@@ -422,8 +438,9 @@ public class IntegrationTests
         var logger = testFactory.Services.GetRequiredService<ILogger<IntegrationTests>>();
         var dbContext = testFactory.Services.GetRequiredService<AppDbContext>();
 
-        var adminUsername = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
-        var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
+        var adminUserConfig = GetAdminUserConfig(config);
+        var adminUsername = adminUserConfig.Username;
+        var adminPassword = adminUserConfig.Password;
 
         logger.LogTrace("Login");
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
@@ -461,8 +478,13 @@ public class IntegrationTests
         var adminConfig = adminTestFactory.Services.GetRequiredService<IConfiguration>();
         var logger = adminTestFactory.Services.GetRequiredService<ILogger<IntegrationTests>>();
 
-        adminConfig.SetConfigVar(CONFIG_KEY_JwtSettings_ClockSkewSeconds, "0");
-        adminConfig.SetConfigVar(CONFIG_KEY_JwtSettings_AccessTokenDurationSeconds, accessTokenDuration.TotalSeconds.ToString());
+        var adminUserConfig = GetAdminUserConfig(adminConfig);
+        var adminUsername = adminUserConfig.Username;
+        var adminPassword = adminUserConfig.Password;
+
+        var appConfig = adminConfig.AppConfig();
+        appConfig.SetValue(adminConfig, x => x.Auth.Jwt.ClockSkew, TimeSpan.Zero);
+        appConfig.SetValue(adminConfig, x => x.Auth.Jwt.AccessTokenDuration, accessTokenDuration);
 
         //
 
@@ -471,13 +493,11 @@ public class IntegrationTests
         var userClient = userTestFactory.Client;
         var userConfig = userTestFactory.Services.GetRequiredService<IConfiguration>();
 
-        userConfig.SetConfigVar(CONFIG_KEY_JwtSettings_ClockSkewSeconds, "0");
-        userConfig.SetConfigVar(CONFIG_KEY_JwtSettings_AccessTokenDurationSeconds, accessTokenDuration.TotalSeconds.ToString());
+        var userAppConfig = userConfig.AppConfig();
+        appConfig.SetValue(userConfig, x => x.Auth.Jwt.ClockSkew, TimeSpan.Zero);
+        appConfig.SetValue(userConfig, x => x.Auth.Jwt.AccessTokenDuration, accessTokenDuration);
 
         //
-
-        var adminUsername = adminConfig.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
-        var adminPassword = adminConfig.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
 
         var loginRes = (await adminClient.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
@@ -546,10 +566,12 @@ public class IntegrationTests
         var client = testFactory.Client;
         var config = testFactory.Services.GetRequiredService<IConfiguration>();
 
-        var accessTokenDuration = TimeSpan.FromSeconds(config.GetConfigVar<double>(CONFIG_KEY_JwtSettings_AccessTokenDurationSeconds));
+        var adminUserConfig = GetAdminUserConfig(config);
+        var adminUsername = adminUserConfig.Username;
+        var adminPassword = adminUserConfig.Password;
 
-        var adminUsername = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
-        var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
+        var appConfig = config.AppConfig();
+        var accessTokenDuration = appConfig.Auth.Jwt.AccessTokenDuration;
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
@@ -587,8 +609,9 @@ public class IntegrationTests
         var client = testFactory.Client;
         var config = testFactory.Services.GetRequiredService<IConfiguration>();
 
-        var adminUsername = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
-        var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
+        var adminUserConfig = GetAdminUserConfig(config);
+        var adminUsername = adminUserConfig.Username;
+        var adminPassword = adminUserConfig.Password;
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
@@ -621,8 +644,9 @@ public class IntegrationTests
         var client = testFactory.Client;
         var config = testFactory.Services.GetRequiredService<IConfiguration>();
 
-        var adminUsername = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
-        var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
+        var adminUserConfig = GetAdminUserConfig(config);
+        var adminUsername = adminUserConfig.Username;
+        var adminPassword = adminUserConfig.Password;
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
@@ -653,8 +677,10 @@ public class IntegrationTests
         var config = testFactory.Services.GetRequiredService<IConfiguration>();
         var util = testFactory.Services.GetRequiredService<IUtilService>();
 
-        var adminUsername = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
-        var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
+        var adminUserConfig = GetAdminUserConfig(config);
+        var adminUsername = adminUserConfig.Username;
+        var adminEmail = adminUserConfig.Email;
+        var adminPassword = adminUserConfig.Password;
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
@@ -672,8 +698,8 @@ public class IntegrationTests
 
         Assert.NotNull(listUsers);
         Assert.Single(listUsers);
-        Assert.Equal(config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName), listUsers[0].UserName);
-        Assert.Equal(config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Email), listUsers[0].Email);
+        Assert.Equal(adminUsername, listUsers[0].UserName);
+        Assert.Equal(adminEmail, listUsers[0].Email);
         Assert.Equal(new List<string> { ROLE_admin }, listUsers[0].Roles);
     }
 
@@ -689,8 +715,9 @@ public class IntegrationTests
         var config = testFactory.Services.GetRequiredService<IConfiguration>();
         var util = testFactory.Services.GetRequiredService<IUtilService>();
 
-        var adminUsername = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
-        var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
+        var adminUserConfig = GetAdminUserConfig(config);
+        var adminUsername = adminUserConfig.Username;
+        var adminPassword = adminUserConfig.Password;
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
@@ -785,10 +812,11 @@ public class IntegrationTests
         var util = testFactory.Services.GetRequiredService<IUtilService>();
         var logger = testFactory.Services.GetRequiredService<ILogger<IntegrationTests>>();
 
-        var adminUsername = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
-        var adminEmail = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Email);
-        var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
-        var adminRoles = new[] { ROLE_admin };
+        var adminUserConfig = GetAdminUserConfig(config);
+        var adminUsername = adminUserConfig.Username;
+        var adminPassword = adminUserConfig.Password;
+        var adminEmail = adminUserConfig.Email;
+        var adminRoles = adminUserConfig.Roles;
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {
@@ -1319,10 +1347,11 @@ public class IntegrationTests
         var util = testFactory.Services.GetRequiredService<IUtilService>();
         var logger = testFactory.Services.GetRequiredService<ILogger<IntegrationTests>>();
 
-        var adminUsername = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_UserName);
-        var adminEmail = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Email);
-        var adminPassword = config.GetConfigVar<string>(CONFIG_KEY_SeedUsers_Admin_Password);
-        var adminRoles = new[] { ROLE_admin };
+        var adminUserConfig = GetAdminUserConfig(config);
+        var adminUsername = adminUserConfig.Username;
+        var adminEmail = adminUserConfig.Email;
+        var adminPassword = adminUserConfig.Password;
+        var adminRoles = adminUserConfig.Roles;
 
         var loginRes = (await client.PostAsJsonAsync($"{AuthApiPrefix}/{nameof(AuthController.Login)}", new LoginRequestDto
         {

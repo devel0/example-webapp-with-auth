@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace Test;
 
 public class TestFactory : IDisposable
@@ -31,7 +33,18 @@ public class TestFactory : IDisposable
 
             var config = builder.Build();
 
-            UnitTestConnectionString = config.GetConfigVar<string>(CONFIG_KEY_UnitTestConnectionString);
+            var appConfig = config.AppConfig();
+
+            appConfig.SetValue(config, x => x.IsUnitTest, true);            
+
+            var qDbConfig = appConfig.Database.Connections.FirstOrDefault(w => w.Name == UNIT_TEST_DB_CONN_NAME);
+
+            if (qDbConfig is null)
+            {
+                throw new Exception($"Can't find suitable connection named \"{UNIT_TEST_DB_CONN_NAME}\" in configuration");
+            }
+
+            UnitTestConnectionString = qDbConfig.ConnectionString;
 
             UnitTestDbName = UnitTestConnectionString.Split(';')
                 .Select(w => w.Trim())
@@ -43,7 +56,7 @@ public class TestFactory : IDisposable
         }
 
         // setting this config var cause the connection string database to another given name
-        Environment.SetEnvironmentVariable(CONFIG_KEY_IsUnitTest.Replace(":", "__"), "true");
+        // Environment.SetEnvironmentVariable(CONFIG_KEY_AppConfig_IsUnitTest.Replace(":", "__"), "true");
 
         Factory = new WebApplicationFactory<Program>();
 

@@ -109,6 +109,7 @@
 | misc                           | misc scripts ( restore scripts exec permissions, db dia gen script ) |
 | src                            | sources                                                              |
 | src/backend                    | c# backend                                                           |
+| src/backend/abstractions       | c# backend abstraction services                                      |
 | src/backend/db-context         | c# database context                                                  |
 | src/backend/db-migrations-psql | c# ef core psql migrations                                           |
 | src/backend/test               | c# backend integration test                                          |
@@ -155,17 +156,53 @@ DB_CONN_STRING="Host=localhost; Database=ExampleWebApp; Username=example_webapp_
 JWTKEY="$(openssl rand -hex 32)"
 ```
 
+optionally set unit test conn string
+
+```sh
+UNIT_TEST_DB_CONN_STRING="Host=localhost; Database=ExampleWebAppTest; Username=example_webapp_user; Password=$(cat ~/security/devel/ExampleWebApp/postgres-user)"
+```
+
 - set development user secrets
 
 ```sh
 cd src/backend/webapi
 dotnet user-secrets init
-dotnet user-secrets set "SeedUsers:Admin:Email" "$SEED_ADMIN_EMAIL"
-dotnet user-secrets set "SeedUsers:Admin:Password" "$SEED_ADMIN_PASS"
-dotnet user-secrets set "DbProvider" "$DB_PROVIDER"
-dotnet user-secrets set "ConnectionStrings:Main" "$DB_CONN_STRING"
-dotnet user-secrets set "JwtSettings:Key" "$JWTKEY"
+
+dotnet user-secrets set "AppConfig:Auth:Jwt:Key" "$JWTKEY"
+
+dotnet user-secrets set "AppConfig:Database:Seed:Users:0:Username" "admin"
+dotnet user-secrets set "AppConfig:Database:Seed:Users:0:Email" "$SEED_ADMIN_EMAIL"
+dotnet user-secrets set "AppConfig:Database:Seed:Users:0:Password" "$SEED_ADMIN_PASS"
+dotnet user-secrets set "AppConfig:Database:Seed:Users:0:Roles:0" "admin"
+
+dotnet user-secrets set "AppConfig:Database:ConnectionName" "Development"
+dotnet user-secrets set "AppConfig:Database:Connections:0:Name" "Development"
+dotnet user-secrets set "AppConfig:Database:Connections:0:ConnectionString" "$DB_CONN_STRING"
+dotnet user-secrets set "AppConfig:Database:Connections:0:Provider" "$DB_PROVIDER"
+
+# optionally configure also unit test db
+dotnet user-secrets set "AppConfig:Database:Connections:1:Name" "UnitTest"
+dotnet user-secrets set "AppConfig:Database:Connections:1:ConnectionString" "$UNIT_TEST_DB_CONN_STRING"
+dotnet user-secrets set "AppConfig:Database:Connections:1:Provider" "$DB_PROVIDER"
+
 cd ..
+```
+
+- example result of `dotnet user-secrets list`
+
+```sh
+AppConfig:Database:Seed:Users:0:Username = admin
+AppConfig:Database:Seed:Users:0:Roles:0 = admin
+AppConfig:Database:Seed:Users:0:Password = ADMINPASS
+AppConfig:Database:Seed:Users:0:Email = ADMIN@EMAIL.COM
+AppConfig:Database:Connections:1:Provider = Postgres
+AppConfig:Database:Connections:1:Name = UnitTest
+AppConfig:Database:Connections:1:ConnectionString = Host=localhost; Database=ExampleWebAppTest; Username=example_webapp_user; Password=DBPASS
+AppConfig:Database:Connections:0:Provider = Postgres
+AppConfig:Database:Connections:0:Name = Development
+AppConfig:Database:Connections:0:ConnectionString = Host=localhost; Database=ExampleWebApp; Username=example_webapp_user; Password=DBPASS
+AppConfig:Database:ConnectionName = Development
+AppConfig:Auth:Jwt:Key = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 ### configuration parameters for mail server
@@ -396,7 +433,7 @@ dotnet user-secrets set "ConnectionStrings:UnitTest" "$TEST_DB_CONN_STRING"
 cd ../../..
 ```
 
-- to run tests
+- to run tests ( requires about 1 min to complete )
 
 ```sh
 dotnet test
@@ -410,29 +447,30 @@ dotnet test --filter=TEST
 
 #### configuration parameters
 
-| param name                              | description                                                                                                                | example                                                                            |
-| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| AppServerName                           | Used to build [app url][10] for the reset password link.                                                                   | "dev-webapp-test.searchathing.local"                                               |
-| DbProvider                              | Used to [inject db provider service][12].                                                                                  | "Postgres"                                                                         |
-| ConnectionStrings:Main                  | Used to build application [db context datasource][11].                                                                     | "Host=localhost; Database=ExampleWebApp; Username=postgres; Password=somepass"     |
-| IsUnitTest                              | Used to build [unit test application datasource][11] in unit test mode. Will be set to `true` from the [test factory][13]. | false                                                                              |
-| ConnectionStrings:UnitTest              | Need to be set in order to run unit tests. Warning: database referred by this conn string will be dropped during tests.    | "Host=localhost; Database=ExampleWebAppTest; Username=postgres; Password=somepass" |
-| JwtSettings:Key                         | Symmetric key for JWT signature generation.                                                                                | (results from `openssl rand -hex 32` command)                                      |
-| JwtSettings:Issuer                      | Issuer of the JWT access token.                                                                                            | "https://www.example.com"                                                          |
-| JwtSettings:Audience                    | Audience of the JWT access token.                                                                                          | "https://www.example.com/app"                                                      |
-| JwtSettings:AccessTokenDurationSeconds  | JWT access token duration (seconds)                                                                                        | 300                                                                                |
-| JwtSettings:RefreshTokenDurationSeconds | JWT refresh token duration (seconds)                                                                                       | 1200                                                                               |
-| JwtSettings:ClockSkewSeconds            | JWT access token clock skew (seconds)                                                                                      | 0                                                                                  |
-| SeedUsers:Admin:UserName                | Default seeded admin username                                                                                              | admin                                                                              |
-| SeedUsers:Admin:Password                | Default seeded admin password                                                                                              | SomePass1!                                                                         |
-| SeedUsers:Admin:Email                   | Default seeded admin email                                                                                                 | admin@some.com                                                                     |
-| EmailServer:Username                    | Email server config used in reset password ( account username )                                                            | server@some.com                                                                    |
-| EmailServer:Password                    | Email server config used in reset password ( account password )                                                            |                                                                                    |
-| EmailServer:SmtpServerName              | Email server config used in reset password ( account smtp server )                                                         | smtp@some.com                                                                      |
-| EmailServer:SmtpServerPort              | Email server config used in reset password ( account smtp port )                                                           | 587                                                                                |
-| EmailServer:Security                    | Email server config used in reset password ( account protocol security )                                                   | "Tls"                                                                              |
-| EmailServer:FromDisplayName             | Email server config used in reset password ( account displayname of the sender )                                           | "Server"                                                                           |
-| DbSchemaSnakeCase                       | if true generates db schema with snake case mode ( useful for Postgres )                                                   |                                                                                    |
+| param name                                | description                                                                                                                | example                                                                        |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Server:HostName                           | Used to build [app url][10] for the reset password link.                                                                   | "dev-webapp-test.searchathing.local"                                           |
+| Database:SchemaSnakeCase                  | if true generates db schema with snake case mode ( useful for Postgres )                                                   |                                                                                |
+| Database:ConnectionName                   | Connection to user.                                                                                                        | "Development"                                                                  |
+| Database:Connections:IDX:Provider         | Used to [inject db provider service][12].                                                                                  | "Postgres"                                                                     |
+| Database:Connections:IDX:ConnectionString | Used to build application [db context datasource][11].                                                                     | "Host=localhost; Database=ExampleWebApp; Username=postgres; Password=somepass" |
+| Database:Seed:Users:IDX:UserName          | Default seeded user username                                                                                               | admin                                                                          |
+| Database:Seed:Users:IDX:Password          | Default seeded user password                                                                                               | SomePass1!                                                                     |
+| Database:Seed:Users:IDX:Email             | Default seeded user email                                                                                                  | admin@some.com                                                                 |
+| Database:Seed:Users:IDX:Roles             | Default seeded user roles                                                                                                  | admin                                                                          |
+| Auth:JwtSettings:Key                      | Symmetric key for JWT signature generation.                                                                                | (results from `openssl rand -hex 32` command)                                  |
+| Auth:JwtSettings:Issuer                   | Issuer of the JWT access token.                                                                                            | "https://www.example.com"                                                      |
+| Auth:JwtSettings:Audience                 | Audience of the JWT access token.                                                                                          | "https://www.example.com/app"                                                  |
+| Auth:JwtSettings:AccessTokenDuration      | JWT access token duration (TimeSpan)                                                                                       | "00:00:30"                                                                     |
+| Auth:JwtSettings:RefreshTokenDuration     | JWT refresh token duration (TimeSpan)                                                                                      | "7.00:00:00"                                                                   |
+| Auth:JwtSettings:ClockSkew                | JWT access token clock skew (TimeSpan)                                                                                     | "00:00:00"                                                                     |
+| EmailServer:Username                      | Email server config used in reset password ( account username )                                                            | server@some.com                                                                |
+| EmailServer:Password                      | Email server config used in reset password ( account password )                                                            |                                                                                |
+| EmailServer:SmtpServer                    | Email server config used in reset password ( account smtp server )                                                         | smtp@some.com                                                                  |
+| EmailServer:SmtpServerPort                | Email server config used in reset password ( account smtp port )                                                           | 587                                                                            |
+| EmailServer:Security                      | Email server config used in reset password ( account protocol security )                                                   | "Tls"                                                                          |
+| EmailServer:FromDisplayName               | Email server config used in reset password ( account displayname of the sender )                                           | "Server"                                                                       |
+| IsUnitTest                                | Used to build [unit test application datasource][11] in unit test mode. Will be set to `true` from the [test factory][13]. | false                                                                          |
 
 The configuration is setup through [SetupAppSettings][14] method in order to evaluate:
 - `appsettings.json`

@@ -6,15 +6,20 @@ public partial class UtilService :
 
     readonly ILogger logger;
     readonly IServiceProvider serviceProvider;
+    readonly IConfiguration configuration;
 
     public UtilService(
         IServiceProvider serviceProvider,
-        ILogger<UtilService> logger
+        ILogger<UtilService> logger,
+        IConfiguration configuration
         )
     {
         this.serviceProvider = serviceProvider;
         this.logger = logger;
+        this.configuration = configuration;
     }
+
+    public AppConfig AppConfig() => configuration.AppConfig();
 
     public JsonSerializerOptions ConfigureJsonSerializerOptions(JsonSerializerOptions options)
     {

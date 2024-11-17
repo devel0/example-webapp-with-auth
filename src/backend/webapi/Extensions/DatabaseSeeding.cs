@@ -12,29 +12,31 @@ public static partial class Extensions
         var logger = webApplication.Logger;
 
         using var scope = webApplication.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();        
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var usermgr = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         var rolemgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var config = webApplication.Configuration;
 
-        var adminUserName = config.GetConfigVar(CONFIG_KEY_SeedUsers_Admin_UserName);
-        var adminEmail = config.GetConfigVar(CONFIG_KEY_SeedUsers_Admin_Email);
-        var adminPassword = config.GetConfigVar(CONFIG_KEY_SeedUsers_Admin_Password);
+        var appConfig = config.AppConfig();
 
-        if (db.Users.Count() == 0)
-        {
+        foreach (var seedUser in appConfig.Database.Seed.Users)
+        {            
+            var q = await usermgr.FindByNameAsync(seedUser.Username);
+
+            if (q is not null) continue;
+
             var user = new ApplicationUser
             {
-                UserName = adminUserName,
-                Email = adminEmail
-            };            
+                UserName = seedUser.Username,
+                Email = seedUser.Email
+            };
 
-            var res = await usermgr.CreateAsync(user, adminPassword);
+            var res = await usermgr.CreateAsync(user, seedUser.Password);
             if (!res.Succeeded)
                 throw new Exception($"Unable to create initial user {string.Join(";", res.Errors.Select(w => w.Description))}");
 
-            await rolemgr.CreateAsync(new IdentityRole(ROLE_admin));
-            await rolemgr.CreateAsync(new IdentityRole(ROLE_normal));
+            foreach (var role in seedUser.Roles)
+                await rolemgr.CreateAsync(new IdentityRole(role));
 
             await usermgr.AddToRoleAsync(user, ROLE_admin);
             var confirmEmailToken = await usermgr.GenerateEmailConfirmationTokenAsync(user);
