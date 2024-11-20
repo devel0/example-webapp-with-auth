@@ -46,6 +46,10 @@ export const globalSlice = createSlice({
       document.body.style.colorScheme = theme
     },     
 
+    setIsMobile: (state, action: PayloadAction<boolean>) => {
+      state.isMobile = action.payload
+    },
+
   },
 
 });
@@ -57,6 +61,7 @@ export const {
   setSuccessfulLogin,
   setLoggedOut,
   setTheme,    
+  setIsMobile
 
 } = globalSlice.actions;
 

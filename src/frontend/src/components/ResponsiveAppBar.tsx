@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Link } from "react-router-dom"
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -6,33 +7,30 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 import AppLogo from '../images/app-icon.svg?react'
-import { APP_LOGO_TEXT, APP_URL_Home, DEFAULT_SIZE_1_REM, DEFAULT_SIZE_0_5_REM } from '../constants/general';
+import { APP_LOGO_TEXT, DEFAULT_SIZE_1_REM, DEFAULT_SIZE_0_5_REM, APP_URL_Home } from '../constants/general';
 import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks';
 import { GlobalState } from '../redux/states/GlobalState';
 import { firstLetter, LinkButton } from '../utils/utils';
 import ThemeChooser from './ThemeChooser';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material';
 
 export interface AppBarItem {
     hidden?: boolean,
     label: string,
+    selected?: boolean,
     icon?: JSX.Element,
     url?: string,
-    selected?: boolean,
     onClick?: () => void,
 }
 
 function ResponsiveAppBar(props: {
     pages: AppBarItem[],
-    settings: AppBarItem[]
+    settings: AppBarItem[]    
 }) {
     const global = useAppSelector<GlobalState>((state) => state.global)
     const dispatch = useAppDispatch()
@@ -69,27 +67,29 @@ function ResponsiveAppBar(props: {
                      DESKTOP LOGO                     
                     -----------------------------------------------------------------------
                     */}
-                    <Box
-                        sx={{
-                            display: 'flex',                            
+                    {global.isMobile === false && <div
+                        onClick={() => navigate(APP_URL_Home)}
+                        style={{
+                            display: 'flex',
+                            cursor: 'pointer'
                         }}>
 
-                        <LinkButton
-                            LinkComponent={Link}
-                            to={APP_URL_Home}
-                            sx={{
-                                display: { xs: 'none', md: 'flex' },
-                                mr: 2
-                            }} >
+                        <Link
+                            style={{
+                                // display: { xs: 'none', md: 'flex' },
+                                marginRight: DEFAULT_SIZE_0_5_REM
+                            }}
+                            to={APP_URL_Home}>
                             <AppLogo width='100%' height='50px' />
-                        </LinkButton>
+                        </Link>
 
                         {APP_LOGO_TEXT && <Typography
                             variant="h6"
                             noWrap
                             sx={{
                                 mr: 2,
-                                display: { xs: 'none', md: 'flex' },
+                                display: 'flex',
+                                // display: { xs: 'none', md: 'flex' },
                                 alignSelf: 'center',
                                 fontFamily: 'monospace',
                                 fontWeight: 700,
@@ -100,18 +100,19 @@ function ResponsiveAppBar(props: {
                         >
                             {APP_LOGO_TEXT}
                         </Typography>}
-                    </Box>
+                    </div>}
 
                     {/* 
                     -----------------------------------------------------------------------
                      DESKTOP MENU                     
                     -----------------------------------------------------------------------
                     */}
-                    <Box sx={{
+                    {global.isMobile === false && <Box sx={{
                         flexGrow: 1,
-                        display: { xs: 'none', md: 'flex' }
+                        display: 'flex'
                     }}>
                         {pages.filter(w => w.hidden !== true).map((page, pageIdx) => (
+
                             <LinkButton
                                 LinkComponent={Link}
                                 to={page.url ?? ''}
@@ -129,14 +130,14 @@ function ResponsiveAppBar(props: {
                                 </Typography>
                             </LinkButton>
                         ))}
-                    </Box>
+                    </Box>}
 
                     {/* 
                     -----------------------------------------------------------------------
                      MOBILE MENU                     
                     -----------------------------------------------------------------------
                     */}
-                    <Box sx={{ flexGrow: 0, display: { xs: 'flex', md: 'none' } }}>
+                    {global.isMobile && <Box sx={{ flexGrow: 0, display: 'flex', gap: DEFAULT_SIZE_0_5_REM, alignItems: 'center' }}>
                         <IconButton
                             size="large"
                             aria-label="account of current user"
@@ -147,6 +148,22 @@ function ResponsiveAppBar(props: {
                         >
                             <MenuIcon />
                         </IconButton>
+
+                        <IconButton
+                            size="large"
+                            aria-label="account of current user"
+                            aria-controls="menu-appbar"
+                            aria-haspopup="true"
+                            onClick={() => navigate(APP_URL_Home)}
+                            color="inherit"
+                        >
+                            <Box sx={{
+                                display: 'flex', gap: DEFAULT_SIZE_0_5_REM
+                            }}>
+                                <AppLogo width='100%' height='50px' />
+                            </Box>
+                        </IconButton>
+
                         <Menu
                             id="menu-appbar"
                             anchorEl={anchorElNav}
@@ -162,28 +179,34 @@ function ResponsiveAppBar(props: {
                             open={Boolean(anchorElNav)}
                             onClose={handleCloseNavMenu}
                             sx={{
-                                display: { xs: 'block', md: 'none' },
+                                display: 'block'
+                                // display: { xs: 'block', md: 'none' },
                             }}
                         >
                             {pages.filter(w => w.hidden !== true).map((page, pageIdx) => (
                                 <MenuItem
                                     key={`mob-page-${pageIdx}`}
                                     onClick={() => {
+                                        if (page.url)
+                                            navigate(page.url ?? '')
                                         page.onClick?.()
                                         handleCloseNavMenu()
                                     }}>
-                                    <Typography textAlign="center">{page.label}</Typography>
+                                    <Box sx={{ display: 'flex', gap: DEFAULT_SIZE_0_5_REM }}>
+                                        {page.icon}
+                                        <Typography textAlign="center">{page.label}</Typography>
+                                    </Box>
                                 </MenuItem>
                             ))}
                         </Menu>
-                    </Box>
+                    </Box>}
 
                     {/* 
                     -----------------------------------------------------------------------
                      MOBILE LOGO                     
                     -----------------------------------------------------------------------
                     */}
-                    <div
+                    {global.isMobile && <div
                         onClick={() => navigate(APP_URL_Home)}
                         style={{
                             display: 'flex',
@@ -194,36 +217,16 @@ function ResponsiveAppBar(props: {
                         <Box sx={{
                             display: 'flex',
                             width: '100%',
-                            justifyContent: 'center'
+                            justifyContent: 'flex-start'
                         }}>
 
                             <Box sx={{ display: 'flex' }}>
 
-                                <Box mr={1} sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }}>
-                                    <AppLogo width='100%' height='50px' />
-                                </Box>
-
-                                {APP_LOGO_TEXT && <Typography
-                                    variant="h5"
-                                    noWrap
-                                    sx={{
-                                        mr: 2,
-                                        display: { xs: 'flex', md: 'none' },
-                                        alignSelf: 'center',
-                                        fontFamily: 'monospace',
-                                        fontWeight: 700,
-                                        letterSpacing: '.3rem',
-                                        color: 'inherit',
-                                        textDecoration: 'none',
-                                    }}
-                                >
-                                    {APP_LOGO_TEXT}
-                                </Typography>}
 
                             </Box>
 
                         </Box>
-                    </div>
+                    </div>}
 
                     {/* 
                     -----------------------------------------------------------------------
@@ -232,6 +235,7 @@ function ResponsiveAppBar(props: {
                     */}
                     <Box sx={{ flexGrow: 0 }}>
                         <ThemeChooser />
+
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                                 <Avatar>
@@ -272,7 +276,7 @@ function ResponsiveAppBar(props: {
                     </Box>
                 </Toolbar>
             </Box>
-        </AppBar>
+        </AppBar >
     );
 }
 export default ResponsiveAppBar;

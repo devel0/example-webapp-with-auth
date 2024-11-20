@@ -106,3 +106,10 @@ export const setSnack = (nfo: SnackNfo) => {
     })
 
 }
+
+export const computeIsMobile = () => {
+    const w = window.innerWidth
+    const isMobile = w <= 600    
+
+    return isMobile
+}

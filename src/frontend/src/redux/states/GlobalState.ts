@@ -1,6 +1,7 @@
 import { PaletteMode } from "@mui/material";
 import { LOCAL_STORAGE_CURRENT_USER_NFO, LOCAL_STORAGE_THEME, THEME_INITIAL } from "../../constants/general";
 import { CurrentUserNfo } from "../../types/CurrentUserNfo";
+import { computeIsMobile } from "../../utils/utils";
 
 export interface GlobalState {
   theme: PaletteMode;
@@ -11,6 +12,7 @@ export interface GlobalState {
   currentUserInitialized: boolean;
   currentUserCanManageUsers: boolean;
   currentUser: CurrentUserNfo | undefined;  
+  isMobile: boolean
 }
 
 // retrieve authenticated user info from local storage
@@ -35,5 +37,6 @@ export const GlobalInitialState: GlobalState = {
   currentUserInitialized: false,
   currentUserCanManageUsers: false,
   currentUser: initialCurrentUser,  
+  isMobile: computeIsMobile()
 
 };

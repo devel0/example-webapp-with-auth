@@ -5,14 +5,15 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
 import { GlobalState } from '../redux/states/GlobalState'
 import { APP_URL_Login, APP_URL_Users, DEFAULT_SIZE_1_REM, DEFAULT_SIZE_0_5_REM, LOCAL_STORAGE_CURRENT_USER_NFO, LOCAL_STORAGE_REFRESH_TOKEN_EXPIRE, RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC, APP_URL_Home } from '../constants/general'
 import { useEffect, useState } from 'react'
-import { setLoggedOut, setSuccessfulLogin, setUrlWanted } from '../redux/slices/globalSlice'
+import { setIsMobile, setLoggedOut, setSuccessfulLogin, setUrlWanted } from '../redux/slices/globalSlice'
 import { Box, Button, CssBaseline, LinearProgress } from '@mui/material'
 import ResponsiveAppBar, { AppBarItem } from './ResponsiveAppBar'
 import { AboutDialog } from '../dialogs/AboutDialog';
 import { CurrentUserNfo } from '../types/CurrentUserNfo';
 import { authApi } from '../axios.manager';
 import { AxiosError, HttpStatusCode } from 'axios';
-import { handleApiException } from '../utils/utils';
+import { computeIsMobile, handleApiException } from '../utils/utils';
+import { useEventListener } from 'usehooks-ts';
 
 type Props = {
     child: JSX.Element
@@ -91,6 +92,10 @@ const MainLayout = (props: Props) => {
                 })
         }
     }, [location.pathname, global.currentUser, global.currentUserInitialized])
+
+    useEventListener('resize', () => {
+        dispatch(setIsMobile(computeIsMobile()))
+    })
 
     const menuPages: AppBarItem[] = [
         {
