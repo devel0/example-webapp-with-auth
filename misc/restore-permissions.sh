@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 exdir=$(dirname $(readlink -f "$BASH_SOURCE"))
 
