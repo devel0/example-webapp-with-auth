@@ -7,7 +7,7 @@ public class JWTService : IJWTService
     readonly UserManager<ApplicationUser> userManager;
     readonly AppDbContext dbContext;
 
-    static SemaphoreSlim semRefreshToken = new SemaphoreSlim(1);
+    static SemaphoreSlim semRefreshToken = new SemaphoreSlim(1, 1);
 
     public JWTService(
         ILogger<JWTService> logger,
