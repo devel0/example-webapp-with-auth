@@ -139,7 +139,7 @@ header "BUILDING $APP_ID SERVER"
 # ======================================================================
 
 dotnet publish -c Release --runtime linux-x64 --sc
-PREBUILT="$BACKEND_SRCDIR/bin/Release/net8.0/linux-x64/publish"
+PREBUILT="$BACKEND_SRCDIR/bin/Release/net9.0/linux-x64/publish"
 
 ssh $APP_SSH_HOST mkdir -p /srv/app/$APP_ID
 rsync -arx --delete $PREBUILT/ $APP_SSH_HOST:/srv/app/$APP_ID/bin/

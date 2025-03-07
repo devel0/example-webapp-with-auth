@@ -478,7 +478,7 @@ The configuration is setup through [SetupAppSettings][14] method in order to eva
 - environment variables replacing `:` with `__` ( used for [example][15] in the production environment )
 - user secrets used in development environment
 
-The configuration of appsettings json files will reapplied on change automatically even at runtime ( note that in debug environment you need to change appsettings json files that are inside `WebApiServer/bin/Debug/net8.0` folder )
+The configuration of appsettings json files will reapplied on change automatically even at runtime ( note that in debug environment you need to change appsettings json files that are inside `WebApiServer/bin/Debug/net9.0` folder )
 
 #### add more migrations
 
@@ -629,7 +629,7 @@ dotnet publish -c Release --runtime linux-x64 --sc
 
 - note: option `--sc` makes self contained with all required runtimes ( ie. no need to install dotnet runtime on the target platform )
 
-- published files will be in `webapi/bin/Release/net8.0/linux-x64/publish/`
+- published files will be in `webapi/bin/Release/net9.0/linux-x64/publish/`
 
 ### db machine prerequisite
 
@@ -715,7 +715,7 @@ then issue `service APP_ID-webapp restart`
 | folder                                    | description                                                                                         |
 | ----------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | /root/deploy/mytest                       | rsync of [deploy](./deploy/) folder                                                                 |
-| /srv/mytest/bin                           | rsync of self contained production `src/backend/webapi/bin/Release/net8.0/linux-x64/publish` folder |
+| /srv/mytest/bin                           | rsync of self contained production `src/backend/webapi/bin/Release/net9.0/linux-x64/publish` folder |
 | /etc/system/systemd/mytest-webapp.service | copy if not already exists of [webapp.service](./deploy/service/webapp.service)                     |
 | /etc/nginx/conf.d/mytest-webapp.conf      | copy if not already exists of [webapp.conf](./deploy/nginx/prod/webapp.conf)                        |
 
