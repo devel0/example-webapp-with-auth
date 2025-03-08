@@ -2,7 +2,7 @@
 
 exdir=$(dirname $(readlink -f "$BASH_SOURCE"))
 
-cd "$exdir"/src/backend
+cd "$exdir"/src/backend/webapi
 
 dotnet ef database $@ \
     --context AppDbcontext \
