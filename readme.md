@@ -436,13 +436,13 @@ cd ../../..
 - to run tests ( requires about 1 min to complete )
 
 ```sh
-dotnet test
+./run-test.sh --filter=Test.IntegrationTests.TestEditUser
 ```
 
 or run specific test with ( replace `TEST` with one from `dotnet test -t` )
 
 ```sh
-dotnet test --filter=TEST
+./run-test.sh --filter=TEST
 ```
 
 #### configuration parameters

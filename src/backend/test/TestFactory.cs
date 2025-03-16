@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using ExampleWebApp.Backend.Abstractions.Types;
 
 namespace Test;
 
@@ -27,6 +28,8 @@ public class TestFactory : IDisposable
     {
         // retrieve configuration before start web app factory in order to drop test db
         {
+            Environment.SetEnvironmentVariable($"{nameof(AppConfig)}__{nameof(AppConfig.IsUnitTest)}", "true");
+
             var builder = new ConfigurationBuilder();
 
             builder.SetupAppSettings("Development");
@@ -34,8 +37,6 @@ public class TestFactory : IDisposable
             var config = builder.Build();
 
             var appConfig = config.AppConfig();
-
-            appConfig.SetValue(config, x => x.IsUnitTest, true);            
 
             var qDbConfig = appConfig.Database.Connections.FirstOrDefault(w => w.Name == UNIT_TEST_DB_CONN_NAME);
 
