@@ -40,8 +40,10 @@ public static partial class Extensions
                 default: throw new NotImplementedException($"provider {provider} not implemented");
             }
 
-            options
-                .EnableSensitiveDataLogging();
+            options.EnableSensitiveDataLogging();
+
+            if (isUnitTest)
+                options.EnableServiceProviderCaching(false);
 
         });
     }
