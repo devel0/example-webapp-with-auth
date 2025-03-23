@@ -1,5 +1,7 @@
 using static ExampleWebApp.Backend.Abstractions.Types.AppConfig.DatabaseConfig.SeedConfig;
 
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
+
 namespace Test;
 
 public class IntegrationTests
