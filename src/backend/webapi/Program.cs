@@ -38,7 +38,7 @@ builder.Services.AddScoped<IUtilService, UtilService>();
 builder.Services.SetupRoles();
 
 // add controllers
-builder.Services.SetupControllers();
+builder.SetupControllers();
 
 builder.Services.AddProblemDetails();
 

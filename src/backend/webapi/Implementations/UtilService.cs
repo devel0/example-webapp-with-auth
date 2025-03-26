@@ -24,7 +24,7 @@ public partial class UtilService :
     public JsonSerializerOptions ConfigureJsonSerializerOptions(JsonSerializerOptions options)
     {
         options.Converters.Add(new JsonStringEnumConverter());
-        options.ReferenceHandler = ReferenceHandler.IgnoreCycles; // TOOD: verify if can use All        
+        options.ReferenceHandler = ReferenceHandler.Preserve;
 
         options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 
