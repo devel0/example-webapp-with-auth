@@ -2,13 +2,12 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import svgr from "vite-plugin-svgr";
 
-// https://vitejs.dev/config/
+// https://vite.dev/config/
 export default defineConfig({
   base: '/app',
   server: {
-    https: false,
+    allowedHosts: ['dev-webapp-test.searchathing.local'],
     port: 5100,
-    strictPort: true
   },
   plugins: [
     react(),
@@ -34,9 +33,4 @@ export default defineConfig({
     }),
   ],
   assetsInclude: ['src/images/*'],
-  
-  /** workaround error 'Popper styled_default is not a function'  */
-  optimizeDeps: {
-    include: ['@mui/material/Tooltip', '@emotion/styled'],
-  },
 })

@@ -1,9 +1,8 @@
-import { PayloadAction, createSlice, current } from "@reduxjs/toolkit";
-
-import { GlobalInitialState } from "../states/GlobalState";
 import { CurrentUserNfo } from "../../types/CurrentUserNfo";
-import { PaletteMode } from "@mui/material";
+import { GlobalInitialState } from "../states/GlobalState";
 import { LOCAL_STORAGE_THEME } from "../../constants/general";
+import { PaletteMode } from "@mui/material";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { UserPermission } from "../../../api";
 
 export const globalSlice = createSlice({

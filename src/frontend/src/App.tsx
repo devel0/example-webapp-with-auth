@@ -1,19 +1,17 @@
-import { useEffect } from 'react'
-import { ThemeProvider } from '@emotion/react'
-import { useAppDispatch, useAppSelector } from './redux/hooks/hooks'
 import './App.css'
-import { RouterProvider } from 'react-router-dom'
-import { GlobalState } from './redux/states/GlobalState'
-import { evalThemeChanged } from './styles/Theme'
-import React from 'react'
-import { CssBaseline } from '@mui/material'
-import { router } from './router'
 import { ConfigAxios } from './axios.manager'
+import { CssBaseline, ThemeProvider } from '@mui/material'
+import { evalThemeChanged } from './styles/Theme'
+import { GlobalState } from './redux/states/GlobalState'
+import { router } from './router'
+import { RouterProvider } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from './redux/hooks/hooks'
+import { useEffect, useMemo, useState } from 'react'
 
 function App() {
   const global = useAppSelector<GlobalState>((state) => state.global)
   const dispatch = useAppDispatch()
-  const theme = React.useMemo(() => evalThemeChanged(global), [global.theme])
+  const theme = useMemo(() => evalThemeChanged(global), [global.theme])
 
   useEffect(() => {
     ConfigAxios()
@@ -23,9 +21,8 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
 
-      <RouterProvider router={router} fallbackElement={<p>Loading...</p>} />
+      <RouterProvider router={router} />
     </ThemeProvider>
-
   )
 }
 

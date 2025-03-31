@@ -1,8 +1,8 @@
 <Project>
     <PropertyGroup>
         <noWarn>1591</noWarn>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>            
     
-        <MSCoreVersion>8.0.7</MSCoreVersion>
+        <MSCoreVersion>9.0.3</MSCoreVersion>
     </PropertyGroup>
 </Project>

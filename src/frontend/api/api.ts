@@ -59,25 +59,25 @@ export interface CurrentUserResponseDto {
      * @type {string}
      * @memberof CurrentUserResponseDto
      */
-    'userName'?: string | null;
+    'userName'?: string;
     /**
      * Email address.
      * @type {string}
      * @memberof CurrentUserResponseDto
      */
-    'email'?: string | null;
+    'email'?: string;
     /**
      * List of roles associated to this user.
      * @type {Set<string>}
      * @memberof CurrentUserResponseDto
      */
-    'roles'?: Set<string> | null;
+    'roles'?: Set<string>;
     /**
      * Permissions related to this user roles.
      * @type {Set<UserPermission>}
      * @memberof CurrentUserResponseDto
      */
-    'permissions'?: Set<UserPermission> | null;
+    'permissions'?: Set<UserPermission>;
 }
 
 
@@ -139,7 +139,7 @@ export interface DeleteUserResponseDto {
      * @type {Array<string>}
      * @memberof DeleteUserResponseDto
      */
-    'errors'?: Array<string> | null;
+    'errors'?: Array<string>;
 }
 
 
@@ -182,47 +182,47 @@ export type DeleteUserStatus = typeof DeleteUserStatus[keyof typeof DeleteUserSt
  */
 export interface EditUserRequestDto {
     /**
-     * Existing User name or null to create a new one using ExampleWebApp.Backend.WebApi.EditUserRequestDto.EditUsername.
+     * Existing User name or null to create a new one using ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.EditUserRequestDto.EditUsername.
      * @type {string}
      * @memberof EditUserRequestDto
      */
-    'existingUsername'?: string | null;
+    'existingUsername'?: string;
     /**
      * New email or null to leave unchanged.
      * @type {string}
      * @memberof EditUserRequestDto
      */
-    'editEmail'?: string | null;
+    'editEmail'?: string;
     /**
      * New username or null to leave unchanged.
      * @type {string}
      * @memberof EditUserRequestDto
      */
-    'editUsername'?: string | null;
+    'editUsername'?: string;
     /**
      * New password or null to leave unchanged.
      * @type {string}
      * @memberof EditUserRequestDto
      */
-    'editPassword'?: string | null;
+    'editPassword'?: string;
     /**
      * Roles to set to the user or null to leave unchanged.
      * @type {Array<string>}
      * @memberof EditUserRequestDto
      */
-    'editRoles'?: Array<string> | null;
+    'editRoles'?: Array<string>;
     /**
      * If true the user can\'t login after previous release access token expires.
      * @type {boolean}
      * @memberof EditUserRequestDto
      */
-    'editDisabled'?: boolean | null;
+    'editDisabled'?: boolean;
     /**
-     * Set the end date of lockout.  The user will be unable to login until ExampleWebApp.Backend.WebApi.EditUserRequestDto.EditLockoutEnd.  If ExampleWebApp.Backend.WebApi.EditUserRequestDto.EditLockoutEnd is set in the past the user will be re-enabled immediately.
+     * Set the end date of lockout. The user will be unable to login until ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.EditUserRequestDto.EditLockoutEnd. If ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.EditUserRequestDto.EditLockoutEnd is set in the past the user will be re-enabled immediately.
      * @type {string}
      * @memberof EditUserRequestDto
      */
-    'editLockoutEnd'?: string | null;
+    'editLockoutEnd'?: string;
 }
 /**
  * 
@@ -241,19 +241,19 @@ export interface EditUserResponseDto {
      * @type {Array<string>}
      * @memberof EditUserResponseDto
      */
-    'rolesAdded'?: Array<string> | null;
+    'rolesAdded'?: Array<string>;
     /**
      * Roles removed.
      * @type {Array<string>}
      * @memberof EditUserResponseDto
      */
-    'rolesRemoved'?: Array<string> | null;
+    'rolesRemoved'?: Array<string>;
     /**
      * List of edit user errors if any.
      * @type {Array<string>}
      * @memberof EditUserResponseDto
      */
-    'errors'?: Array<string> | null;
+    'errors'?: Array<string>;
 }
 
 
@@ -290,7 +290,7 @@ export type EditUserStatus = typeof EditUserStatus[keyof typeof EditUserStatus];
 
 
 /**
- * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.LoginRequestDto) api request data.
+ * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.LoginRequestDto) api request data.
  * @export
  * @interface LoginRequestDto
  */
@@ -300,7 +300,7 @@ export interface LoginRequestDto {
      * @type {string}
      * @memberof LoginRequestDto
      */
-    'usernameOrEmail'?: string | null;
+    'usernameOrEmail'?: string;
     /**
      * Password.
      * @type {string}
@@ -312,10 +312,10 @@ export interface LoginRequestDto {
      * @type {string}
      * @memberof LoginRequestDto
      */
-    'passwordResetToken'?: string | null;
+    'passwordResetToken'?: string;
 }
 /**
- * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.LoginRequestDto) api response data.
+ * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.LoginRequestDto) api response data.
  * @export
  * @interface LoginResponseDto
  */
@@ -331,33 +331,33 @@ export interface LoginResponseDto {
      * @type {string}
      * @memberof LoginResponseDto
      */
-    'userName'?: string | null;
+    'userName'?: string;
     /**
      * Email.
      * @type {string}
      * @memberof LoginResponseDto
      */
-    'email'?: string | null;
+    'email'?: string;
     /**
      * User roles.
      * @type {Array<string>}
      * @memberof LoginResponseDto
      */
-    'roles'?: Array<string> | null;
+    'roles'?: Array<string>;
     /**
      * 
      * @type {Array<string>}
      * @memberof LoginResponseDto
      */
-    'errors'?: Array<string> | null;
+    'errors'?: Array<string>;
     /**
      * Permissions related to this user roles.
      * @type {Set<UserPermission>}
      * @memberof LoginResponseDto
      */
-    'permissions'?: Set<UserPermission> | null;
+    'permissions'?: Set<UserPermission>;
     /**
-     * Expiration timestamp for the refresh token. To keep alive auth issue M:ExampleWebApp.Backend.WebApi.AuthController.RenewRefreshToken before   refresh token expire.
+     * Expiration timestamp for the refresh token. To keep alive auth issue M:ExampleWebApp.Backend.WebApi.AuthController.RenewRefreshToken before  refresh token expire.
      * @type {string}
      * @memberof LoginResponseDto
      */
@@ -366,7 +366,7 @@ export interface LoginResponseDto {
 
 
 /**
- * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.LoginRequestDto) response api specific status.  OK (Login vaild.)  UsernameOrEmailRequired (Missing username or email.)  InvalidAuthentication (Invalid authentication.)  InvalidHttpContext (Authentication http context.)
+ * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.LoginRequestDto) response api specific status.  OK (Login vaild.)  UsernameOrEmailRequired (Missing username or email.)  InvalidAuthentication (Invalid authentication.)  InvalidHttpContext (Authentication http context.)
  * @export
  * @enum {string}
  */
@@ -447,7 +447,7 @@ export interface RefreshTokenNfo {
      * @type {string}
      * @memberof RefreshTokenNfo
      */
-    'refreshToken'?: string | null;
+    'refreshToken'?: string;
     /**
      * 
      * @type {string}
@@ -551,13 +551,13 @@ export interface UserListItemResponseDto {
      */
     'emailConfirmed': boolean;
     /**
-     * Lockout end (UTC). ExampleWebApp.Backend.WebApi.UserListItemResponseDto.LockoutEnabled.
+     * Lockout end (UTC). ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.UserListItemResponseDto.LockoutEnabled.
      * @type {string}
      * @memberof UserListItemResponseDto
      */
     'lockoutEnd': string;
     /**
-     * If true the user is lockout until ExampleWebApp.Backend.WebApi.UserListItemResponseDto.LockoutEnd.
+     * If true the user is lockout until ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.UserListItemResponseDto.LockoutEnd.
      * @type {boolean}
      * @memberof UserListItemResponseDto
      */
@@ -764,11 +764,11 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         /**
          * 
          * @summary Delete user.
-         * @param {DeleteUserRequestDto} [deleteUserRequestDto] 
+         * @param {DeleteUserRequestDto} [body] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiAuthDeleteUserPost: async (deleteUserRequestDto?: DeleteUserRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiAuthDeleteUserPost: async (body?: DeleteUserRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/Auth/DeleteUser`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -788,7 +788,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(deleteUserRequestDto, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -798,11 +798,11 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         /**
          * 
          * @summary Edit user data
-         * @param {EditUserRequestDto} [editUserRequestDto] 
+         * @param {EditUserRequestDto} [body] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiAuthEditUserPost: async (editUserRequestDto?: EditUserRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiAuthEditUserPost: async (body?: EditUserRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/Auth/EditUser`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -822,7 +822,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(editUserRequestDto, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -897,11 +897,11 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         /**
          * 
          * @summary Login user by given username or email and auth password.
-         * @param {LoginRequestDto} [loginRequestDto] 
+         * @param {LoginRequestDto} [body] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiAuthLoginPost: async (loginRequestDto?: LoginRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiAuthLoginPost: async (body?: LoginRequestDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/Auth/Login`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -921,7 +921,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(loginRequestDto, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -960,7 +960,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         },
         /**
          * 
-         * @summary Renew refresh token of current user if refresh token still valid.  This is used to extends refresh token duration avoiding closing frontend session.
+         * @summary Renew refresh token of current user if refresh token still valid. This is used to extends refresh token duration avoiding closing frontend session.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1070,12 +1070,12 @@ export const AuthApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Delete user.
-         * @param {DeleteUserRequestDto} [deleteUserRequestDto] 
+         * @param {DeleteUserRequestDto} [body] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiAuthDeleteUserPost(deleteUserRequestDto?: DeleteUserRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteUserResponseDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthDeleteUserPost(deleteUserRequestDto, options);
+        async apiAuthDeleteUserPost(body?: DeleteUserRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteUserResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthDeleteUserPost(body, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AuthApi.apiAuthDeleteUserPost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -1083,12 +1083,12 @@ export const AuthApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Edit user data
-         * @param {EditUserRequestDto} [editUserRequestDto] 
+         * @param {EditUserRequestDto} [body] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiAuthEditUserPost(editUserRequestDto?: EditUserRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EditUserResponseDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthEditUserPost(editUserRequestDto, options);
+        async apiAuthEditUserPost(body?: EditUserRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EditUserResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthEditUserPost(body, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AuthApi.apiAuthEditUserPost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -1121,12 +1121,12 @@ export const AuthApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Login user by given username or email and auth password.
-         * @param {LoginRequestDto} [loginRequestDto] 
+         * @param {LoginRequestDto} [body] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiAuthLoginPost(loginRequestDto?: LoginRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LoginResponseDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthLoginPost(loginRequestDto, options);
+        async apiAuthLoginPost(body?: LoginRequestDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LoginResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthLoginPost(body, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AuthApi.apiAuthLoginPost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -1145,7 +1145,7 @@ export const AuthApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Renew refresh token of current user if refresh token still valid.  This is used to extends refresh token duration avoiding closing frontend session.
+         * @summary Renew refresh token of current user if refresh token still valid. This is used to extends refresh token duration avoiding closing frontend session.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1201,22 +1201,22 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
         /**
          * 
          * @summary Delete user.
-         * @param {DeleteUserRequestDto} [deleteUserRequestDto] 
+         * @param {DeleteUserRequestDto} [body] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiAuthDeleteUserPost(deleteUserRequestDto?: DeleteUserRequestDto, options?: any): AxiosPromise<DeleteUserResponseDto> {
-            return localVarFp.apiAuthDeleteUserPost(deleteUserRequestDto, options).then((request) => request(axios, basePath));
+        apiAuthDeleteUserPost(body?: DeleteUserRequestDto, options?: any): AxiosPromise<DeleteUserResponseDto> {
+            return localVarFp.apiAuthDeleteUserPost(body, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Edit user data
-         * @param {EditUserRequestDto} [editUserRequestDto] 
+         * @param {EditUserRequestDto} [body] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiAuthEditUserPost(editUserRequestDto?: EditUserRequestDto, options?: any): AxiosPromise<EditUserResponseDto> {
-            return localVarFp.apiAuthEditUserPost(editUserRequestDto, options).then((request) => request(axios, basePath));
+        apiAuthEditUserPost(body?: EditUserRequestDto, options?: any): AxiosPromise<EditUserResponseDto> {
+            return localVarFp.apiAuthEditUserPost(body, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1240,12 +1240,12 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
         /**
          * 
          * @summary Login user by given username or email and auth password.
-         * @param {LoginRequestDto} [loginRequestDto] 
+         * @param {LoginRequestDto} [body] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiAuthLoginPost(loginRequestDto?: LoginRequestDto, options?: any): AxiosPromise<LoginResponseDto> {
-            return localVarFp.apiAuthLoginPost(loginRequestDto, options).then((request) => request(axios, basePath));
+        apiAuthLoginPost(body?: LoginRequestDto, options?: any): AxiosPromise<LoginResponseDto> {
+            return localVarFp.apiAuthLoginPost(body, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1258,7 +1258,7 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
         },
         /**
          * 
-         * @summary Renew refresh token of current user if refresh token still valid.  This is used to extends refresh token duration avoiding closing frontend session.
+         * @summary Renew refresh token of current user if refresh token still valid. This is used to extends refresh token duration avoiding closing frontend session.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1312,25 +1312,25 @@ export class AuthApi extends BaseAPI {
     /**
      * 
      * @summary Delete user.
-     * @param {DeleteUserRequestDto} [deleteUserRequestDto] 
+     * @param {DeleteUserRequestDto} [body] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AuthApi
      */
-    public apiAuthDeleteUserPost(deleteUserRequestDto?: DeleteUserRequestDto, options?: RawAxiosRequestConfig) {
-        return AuthApiFp(this.configuration).apiAuthDeleteUserPost(deleteUserRequestDto, options).then((request) => request(this.axios, this.basePath));
+    public apiAuthDeleteUserPost(body?: DeleteUserRequestDto, options?: RawAxiosRequestConfig) {
+        return AuthApiFp(this.configuration).apiAuthDeleteUserPost(body, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Edit user data
-     * @param {EditUserRequestDto} [editUserRequestDto] 
+     * @param {EditUserRequestDto} [body] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AuthApi
      */
-    public apiAuthEditUserPost(editUserRequestDto?: EditUserRequestDto, options?: RawAxiosRequestConfig) {
-        return AuthApiFp(this.configuration).apiAuthEditUserPost(editUserRequestDto, options).then((request) => request(this.axios, this.basePath));
+    public apiAuthEditUserPost(body?: EditUserRequestDto, options?: RawAxiosRequestConfig) {
+        return AuthApiFp(this.configuration).apiAuthEditUserPost(body, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1359,13 +1359,13 @@ export class AuthApi extends BaseAPI {
     /**
      * 
      * @summary Login user by given username or email and auth password.
-     * @param {LoginRequestDto} [loginRequestDto] 
+     * @param {LoginRequestDto} [body] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AuthApi
      */
-    public apiAuthLoginPost(loginRequestDto?: LoginRequestDto, options?: RawAxiosRequestConfig) {
-        return AuthApiFp(this.configuration).apiAuthLoginPost(loginRequestDto, options).then((request) => request(this.axios, this.basePath));
+    public apiAuthLoginPost(body?: LoginRequestDto, options?: RawAxiosRequestConfig) {
+        return AuthApiFp(this.configuration).apiAuthLoginPost(body, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1381,7 +1381,7 @@ export class AuthApi extends BaseAPI {
 
     /**
      * 
-     * @summary Renew refresh token of current user if refresh token still valid.  This is used to extends refresh token duration avoiding closing frontend session.
+     * @summary Renew refresh token of current user if refresh token still valid. This is used to extends refresh token duration avoiding closing frontend session.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof AuthApi

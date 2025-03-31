@@ -1,29 +1,29 @@
-import * as React from 'react';
-import { Link } from "react-router-dom"
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import AppLogo from '../images/app-icon.svg?react'
 import { APP_LOGO_TEXT, DEFAULT_SIZE_1_REM, DEFAULT_SIZE_0_5_REM, APP_URL_Home } from '../constants/general';
-import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks';
-import { GlobalState } from '../redux/states/GlobalState';
 import { firstLetter, LinkButton } from '../utils/utils';
-import ThemeChooser from './ThemeChooser';
+import { GlobalState } from '../redux/states/GlobalState';
+import { Link } from "react-router-dom"
+import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material';
+import * as React from 'react';
+import AppBar from '@mui/material/AppBar';
+import AppLogo from '../images/app-icon.svg?react'
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuIcon from '@mui/icons-material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ThemeChooser from './ThemeChooser';
+import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 
 export interface AppBarItem {
     hidden?: boolean,
     label: string,
     selected?: boolean,
-    icon?: JSX.Element,
+    icon?: React.ReactElement,
     url?: string,
     onClick?: () => void,
 }

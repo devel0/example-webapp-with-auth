@@ -1,13 +1,12 @@
-import { closeSnackbar, enqueueSnackbar } from "notistack"
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import { SnackNfo } from "../types/SnackNfo"
-import { DEFAULT_FONTWEIGHT_500, DEFAULT_FONTWEIGHT_900, DEFAULT_SIZE_1_25_REM, DEFAULT_SIZE_1_REM } from "../constants/general"
-import { Box, Button, styled, Typography } from "@mui/material"
-import { LinkProps } from "react-router-dom"
 import { AxiosError, HttpStatusCode } from "axios"
+import { Box, Button, styled, Typography } from "@mui/material"
+import { closeSnackbar, enqueueSnackbar } from "notistack"
+import { DEFAULT_FONTWEIGHT_500, DEFAULT_FONTWEIGHT_900, DEFAULT_SIZE_1_25_REM, DEFAULT_SIZE_1_REM } from "../constants/general"
 import { from } from "linq-to-typescript";
+import { LinkProps } from "react-router-dom"
+import { SnackNfo } from "../types/SnackNfo"
 
-export const LinkButton = styled(Button)<LinkProps>(({ theme }) => ({
+export const LinkButton = styled(Button)<LinkProps>(() => ({
     // your link styles
     // width: '100%'
 }))
@@ -97,7 +96,7 @@ export const setSnack = (nfo: SnackNfo) => {
 
         variant: nfo.type,
 
-        preventDuplicate: true,    
+        preventDuplicate: true,
 
         autoHideDuration: nfo.durationMs === null ? null : (nfo.durationMs ?? 6000),
 
@@ -109,7 +108,7 @@ export const setSnack = (nfo: SnackNfo) => {
 
 export const computeIsMobile = () => {
     const w = window.innerWidth
-    const isMobile = w <= 600    
+    const isMobile = w <= 600
 
     return isMobile
 }

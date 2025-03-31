@@ -7,6 +7,7 @@ import { APP_TITLE, DEFAULT_SIZE_1_REM } from '../constants/general'
 import { mainApi } from '../axios.manager'
 import { handleApiException, setSnack } from '../utils/utils'
 import { AxiosError } from 'axios'
+import { from } from 'linq-to-typescript'
 
 export const MainPage = () => {
     const global = useAppSelector<GlobalState>((state) => state.global)
@@ -21,11 +22,13 @@ export const MainPage = () => {
         // })
     }, [])
 
+    // return <Box>dd</Box>
+
     return (
         <Box m={DEFAULT_SIZE_1_REM}>
             master page<br />
             current user: {global.currentUser?.userName}<br />
-            roles: {global.currentUser?.roles}<br />
+            roles: {from(global.currentUser?.roles ?? [])}<br />
 
             <Button onClick={async () => {
                 try {

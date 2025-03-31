@@ -109,7 +109,7 @@ export const UsersPage = () => {
                             onClose: async (reason) => {
                                 if (reason === ConfirmDialogCloseResult.yes) {
                                     try {
-                                        const res = await authApi.apiAuthDeleteUserPost({
+                                        await authApi.apiAuthDeleteUserPost({
                                             usernameToDelete: selectedUsername!
                                         })
 
@@ -149,7 +149,7 @@ export const UsersPage = () => {
                         ]
                     }
                 }}
-                onRowSelectionModelChange={(ids, detail) => {
+                onRowSelectionModelChange={(ids) => {
                     if (ids.length > 0) {
                         setSelectedUsername(ids[0].toString())
                     }

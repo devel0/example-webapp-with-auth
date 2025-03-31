@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/backend/webapi/bin/Debug/net9.0/webapi.dll",
+            "program": "${workspaceFolder}/src/backend/bin/Debug/net9.0/webapi.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/backend/webapi",
+            "cwd": "${workspaceFolder}/src/backend",
             "stopAtEntry": false,
             // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
             "serverReadyAction": {
@@ -20,9 +20,7 @@
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
             },
             "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development",
-                // "Serilog__MinimumLevel__Override__Microsoft": "Information",
-                // "Serilog__MinimumLevel__Override__Microsoft_AspNetCore": "Information",
+                "ASPNETCORE_ENVIRONMENT": "Development"
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"

@@ -1,6 +1,5 @@
 import { AuthOptions } from "../../api";
 import { ValidatorResult } from "../types/ValidatorResult";
-import { nullOrUndefined } from "./utils";
 
 const USERNAME_MIN_LENGTH = 3
 
