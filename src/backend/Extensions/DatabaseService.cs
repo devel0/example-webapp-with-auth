@@ -33,14 +33,20 @@ public static partial class Extensions
 
                 case AppConfig.DatabaseConfig.ConnectionItemConfig.DbProviderConfig.Postgres:
                     {
-                        options.UseNpgsql(connString);
+                        options.UseNpgsql(connString, options =>
+                        {
+                            var migrationAssembly = Assembly.GetAssembly(typeof(AppDbContext));
+                            if (migrationAssembly is null) throw new Exception($"couldn't find migration assembly");
+                            options.MigrationsAssembly(migrationAssembly);
+                        });
                     }
                     break;
 
                 default: throw new NotImplementedException($"provider {provider} not implemented");
             }
 
-            options.EnableSensitiveDataLogging();
+            if (!isUnitTest)
+                options.EnableSensitiveDataLogging();
 
             if (isUnitTest)
                 options.EnableServiceProviderCaching(false);

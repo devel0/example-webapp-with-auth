@@ -15,14 +15,17 @@ public class TestFactory : IDisposable
     public IServiceProvider Services => ServiceScope.ServiceProvider;
 
     public TestFactory()
-    {
+    {        
     }
 
     /// <summary>
     /// Initialize a test factory with IsUnitTest environment, test database dropped and service scope, http client allocted.
     /// </summary>
     public async Task InitAsync(bool dropDb = true, CancellationToken cancellationToken = default)
-    {
+    {                
+        // workaround for unit test from cmdline: https://github.com/npgsql/npgsql/issues/2896#issuecomment-753468244
+        NpgsqlConnection.ClearAllPools();        
+
         // retrieve configuration before start web app factory in order to drop test db
         {
             Environment.SetEnvironmentVariable($"{nameof(AppConfig)}__{nameof(AppConfig.IsUnitTest)}", "true");
@@ -42,7 +45,7 @@ public class TestFactory : IDisposable
                 throw new Exception($"Can't find suitable connection named \"{UNIT_TEST_DB_CONN_NAME}\" in configuration");
             }
 
-            UnitTestConnectionString = qDbConfig.ConnectionString;            
+            UnitTestConnectionString = qDbConfig.ConnectionString;
 
             UnitTestDbName = UnitTestConnectionString.Split(';')
                 .Select(w => w.Trim())
@@ -64,19 +67,19 @@ public class TestFactory : IDisposable
     }
 
     async Task DropDbAsync(CancellationToken cancellationToken = default)
-    {
+    {        
         var ss = UnitTestConnectionString.Split(';');
         var PostgresDbConnectionString = string.Join(';', ss
             .Where(r => r.Trim().Length > 0 && !r.Trim().StartsWith("Database", StringComparison.InvariantCultureIgnoreCase)))
             + "; Database=postgres";
 
-        await using var dataSource = NpgsqlDataSource.Create(PostgresDbConnectionString);        
+        await using var dataSource = NpgsqlDataSource.Create(PostgresDbConnectionString);
 
         // System.Console.WriteLine($"========> Dropping DB [{UnitTestDbName}]");        
 
         await using var cmd = dataSource.CreateCommand($"DROP DATABASE IF EXISTS \"{UnitTestDbName}\" WITH (FORCE)");
 
-        await cmd.ExecuteNonQueryAsync(cancellationToken);
+        await cmd.ExecuteNonQueryAsync(cancellationToken);        
     }
 
     public void Dispose()
