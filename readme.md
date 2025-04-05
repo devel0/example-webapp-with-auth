@@ -15,6 +15,7 @@
   - [adjust local dns](#adjust-local-dns)
   - [install root ca for local development](#install-root-ca-for-local-development)
 - [dev notes](#dev-notes)
+  - [Websockets](#websockets)
   - [JWT auth access and refresh token](#jwt-auth-access-and-refresh-token)
   - [backend](#backend)
     - [run tests](#run-tests)
@@ -404,6 +405,10 @@ Installing root-ca certificate imply that certificates generated within that wil
   - issue `sudo update-ca-certificates`
 
 ## dev notes
+
+### Websockets
+
+for websockets example [see here](https://github.com/devel0/example-webapi/blob/9f683560af83111b11fb54e1e34c071718379baa/Controllers/SampleController.cs#L35)
 
 ### JWT auth access and refresh token
 
