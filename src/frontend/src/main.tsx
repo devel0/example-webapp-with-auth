@@ -4,11 +4,11 @@ import { APP_TITLE } from './constants/general.ts'
 import { blue, green, orange, red } from '@mui/material/colors'
 import { createRoot } from 'react-dom/client'
 import { MaterialDesignContent, SnackbarProvider } from 'notistack'
+import { Provider } from 'react-redux'
 import { store } from './redux/stores/store.ts'
 import { StrictMode } from 'react'
 import { styled } from '@mui/material'
 import App from './App.tsx'
-import { Provider } from 'react-redux'
 
 document.title = APP_TITLE
 

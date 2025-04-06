@@ -1,13 +1,13 @@
 
-import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
-import { GlobalState } from '../redux/states/GlobalState'
-import { Box, Button } from '@mui/material'
-import { useEffect } from 'react'
 import { APP_TITLE, DEFAULT_SIZE_1_REM } from '../constants/general'
-import { mainApi } from '../axios.manager'
-import { handleApiException, setSnack } from '../utils/utils'
 import { AxiosError } from 'axios'
+import { Box, Button } from '@mui/material'
 import { from } from 'linq-to-typescript'
+import { GlobalState } from '../redux/states/GlobalState'
+import { handleApiException, setSnack } from '../utils/utils'
+import { mainApi } from '../axios.manager'
+import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
+import { useEffect } from 'react'
 
 export const MainPage = () => {
     const global = useAppSelector<GlobalState>((state) => state.global)

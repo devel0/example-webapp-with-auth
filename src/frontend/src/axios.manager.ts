@@ -1,9 +1,9 @@
-import { AuthApi, Configuration, MainApi } from "../api"
 import { API_URL, APP_URL_Login, LOCAL_STORAGE_CURRENT_USER_NFO } from "./constants/general"
+import { AuthApi, Configuration, MainApi } from "../api"
 import { setGeneralNetwork } from "./redux/slices/globalSlice";
-import axios, { AxiosError, HttpStatusCode } from "axios";
-import { store } from "./redux/stores/store";
 import { setSnack } from "./utils/utils";
+import { store } from "./redux/stores/store";
+import axios, { AxiosError, HttpStatusCode } from "axios";
 
 export const ConfigAxios = () => {
 

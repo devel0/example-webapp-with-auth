@@ -1,14 +1,9 @@
 // generic: https://redux.js.org/tutorials/quick-start
 // TS specific: https://react-redux.js.org/tutorials/typescript-quick-start
 
-import {
-  combineReducers,
-  configureStore,
-} from "@reduxjs/toolkit";
-
-import globalReducer from "../slices/globalSlice";
-
+import {  combineReducers,  configureStore,} from "@reduxjs/toolkit";
 import { enableMapSet } from 'immer'
+import globalReducer from "../slices/globalSlice";
 
 enableMapSet()
 

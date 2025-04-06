@@ -1,26 +1,20 @@
 import {
-    Box, Button, Container,
-    CssBaseline,
-    LinearProgress,
-    TextField,
-    Typography
-} from '@mui/material'
-import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
-import { useNavigate } from 'react-router'
-import { GlobalState } from '../redux/states/GlobalState'
-import React, { useEffect, useState } from 'react'
-import { setSuccessfulLogin, setUrlWanted } from '../redux/slices/globalSlice'
-import {
     APP_TITLE, APP_URL_Home, APP_URL_Login, DEFAULT_COLOR_TIPS,
     DEFAULT_SIZE_1_REM, LOCAL_STORAGE_CURRENT_USER_NFO,
     LOCAL_STORAGE_REFRESH_TOKEN_EXPIRE
 } from '../constants/general'
-import { CurrentUserNfo } from '../types/CurrentUserNfo'
-import AppLogo from '../images/app-icon.svg?react'
+import { Box, Button, Container, CssBaseline, LinearProgress, TextField, Typography } from '@mui/material'
 import { authApi } from '../axios.manager'
-import { useParams } from 'react-router-dom'
-import { handleApiException, nullOrUndefined, setSnack } from '../utils/utils'
 import { AxiosError } from 'axios'
+import { CurrentUserNfo } from '../types/CurrentUserNfo'
+import { GlobalState } from '../redux/states/GlobalState'
+import { handleApiException, nullOrUndefined, setSnack } from '../utils/utils'
+import { setSuccessfulLogin, setUrlWanted } from '../redux/slices/globalSlice'
+import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
+import { useNavigate } from 'react-router'
+import { useParams } from 'react-router-dom'
+import AppLogo from '../images/app-icon.svg?react'
+import React, { useEffect, useState } from 'react'
 
 export const LoginPage = () => {
     const global = useAppSelector<GlobalState>((state) => state.global)

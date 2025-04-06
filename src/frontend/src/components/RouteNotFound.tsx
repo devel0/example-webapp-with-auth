@@ -1,10 +1,10 @@
+import { APP_URL_Home } from "../constants/general";
 import { Box, Button, CssBaseline, Typography } from "@mui/material"
-import DirectionsOffIcon from '@mui/icons-material/DirectionsOff';
-import { useState } from "react";
 import { useInterval } from "usehooks-ts";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { yellow } from "@mui/material/colors";
-import { APP_URL_Home } from "../constants/general";
+import DirectionsOffIcon from '@mui/icons-material/DirectionsOff';
 
 export const RouteNotFound = () => {
     const [secToRedirect, setSecToRedirect] = useState(3)

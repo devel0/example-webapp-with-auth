@@ -1,14 +1,13 @@
-import { ThemeOptions, createTheme } from "@mui/material";
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 import { GlobalState } from "../redux/states/GlobalState";
-import { TypographyOptions } from "@mui/material/styles/createTypography";
-
-// https://fontsource.org/fonts/roboto
-import "@fontsource/roboto/400.css";
-import "@fontsource/roboto/500.css";
-import "@fontsource/roboto/700.css";
-import { THEME_DARK, THEME_LIGHT, light_bg_paper } from "../constants/general";
-import { setCssVars } from "./CssVars";
 import { orange } from "@mui/material/colors";
+import { setCssVars } from "./CssVars";
+import { THEME_DARK, THEME_LIGHT, light_bg_paper } from "../constants/general";
+import { ThemeOptions, createTheme } from "@mui/material";
+import { TypographyOptions } from "@mui/material/styles/createTypography";
 
 // palette { primary, secondary, error, warning, info, success }
 

@@ -1,7 +1,7 @@
-import { PaletteMode } from "@mui/material";
-import { LOCAL_STORAGE_CURRENT_USER_NFO, LOCAL_STORAGE_THEME, THEME_INITIAL } from "../../constants/general";
-import { CurrentUserNfo } from "../../types/CurrentUserNfo";
 import { computeIsMobile } from "../../utils/utils";
+import { CurrentUserNfo } from "../../types/CurrentUserNfo";
+import { LOCAL_STORAGE_CURRENT_USER_NFO, LOCAL_STORAGE_THEME, THEME_INITIAL } from "../../constants/general";
+import { PaletteMode } from "@mui/material";
 
 export interface GlobalState {
   theme: PaletteMode;

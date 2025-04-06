@@ -1,3 +1,7 @@
+import { generateUrl } from "../utils/utils";
+import { green } from "@mui/material/colors"
+import { PaletteMode } from "@mui/material";
+
 //------------------------------------------------------------------
 // API
 //------------------------------------------------------------------
@@ -10,10 +14,6 @@ export const API_URL = () => `https://${import.meta.env.VITE_SERVERNAME}`
 
 export const APP_TITLE = "WebAppTest";
 export const APP_LOGO_TEXT: string | undefined = "WEBAPP";
-
-import { PaletteMode } from "@mui/material";
-import { green } from "@mui/material/colors"
-import { generateUrl } from "../utils/utils";
 
 //------------------------------------------ urls
 

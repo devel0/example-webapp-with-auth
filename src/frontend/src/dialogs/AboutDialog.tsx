@@ -1,5 +1,5 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, useTheme } from "@mui/material"
 import { APP_TITLE, DEFAULT_FONTWEIGHT_600, DEFAULT_SIZE_1_REM } from "../constants/general"
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, useTheme } from "@mui/material"
 import { green, yellow } from "@mui/material/colors"
 
 export const AboutDialog = (props: {

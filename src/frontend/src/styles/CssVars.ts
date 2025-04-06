@@ -1,7 +1,7 @@
 import "@fontsource/roboto/400.css";
 import {
-  CSS_VAR_APP_BUTTON_BG, CSS_VAR_APP_BUTTON_FG, CSS_VAR_APP_CONTROL_BG,
-  CSS_VAR_TOOLBAR_TEXT_COLOR, light_bg_paper
+  CSS_VAR_APP_BUTTON_BG, CSS_VAR_APP_BUTTON_FG, CSS_VAR_APP_CONTROL_BG, CSS_VAR_TOOLBAR_TEXT_COLOR,
+  light_bg_paper
 } from "../constants/general";
 
 export const setCssVars = (isLightTheme: boolean) => {

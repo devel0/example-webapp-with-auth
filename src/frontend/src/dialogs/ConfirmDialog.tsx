@@ -1,9 +1,8 @@
+import { DEFAULT_FONTWEIGHT_600, DEFAULT_SIZE_1_REM, DEFAULT_SIZE_0_5_REM } from "../constants/general"
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, useTheme } from "@mui/material"
+import CloseIcon from '@mui/icons-material/Close';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
-import CloseIcon from '@mui/icons-material/Close';
-import { APP_TITLE, DEFAULT_FONTWEIGHT_600, DEFAULT_SIZE_1_REM, DEFAULT_SIZE_0_5_REM } from "../constants/general"
-import { green, yellow } from "@mui/material/colors"
 
 export enum ConfirmDialogCloseResult {
     close,

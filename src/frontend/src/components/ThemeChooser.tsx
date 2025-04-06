@@ -1,10 +1,10 @@
-import { IconButton, Tooltip } from '@mui/material'
-import NightlightIcon from '@mui/icons-material/Nightlight';
-import LightModeIcon from '@mui/icons-material/LightMode';
-import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
 import { GlobalState } from '../redux/states/GlobalState'
-import { THEME_DARK, THEME_LIGHT } from '../constants/general';
+import { IconButton, Tooltip } from '@mui/material'
 import { setTheme } from '../redux/slices/globalSlice';
+import { THEME_DARK, THEME_LIGHT } from '../constants/general';
+import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
+import LightModeIcon from '@mui/icons-material/LightMode';
+import NightlightIcon from '@mui/icons-material/Nightlight';
 
 export default function ThemeChooser() {
     const global = useAppSelector<GlobalState>((state) => state.global)
