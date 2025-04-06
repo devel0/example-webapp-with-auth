@@ -43,7 +43,7 @@ export const LoginPage = () => {
 
     useEffect(() => {
         if (global.currentUserInitialized && global.currentUser) {
-            if (global.urlWanted && global.urlWanted !== APP_URL_Login) {
+            if (global.urlWanted && global.urlWanted !== APP_URL_Login()) {
                 const urlWanted = global.urlWanted
 
                 dispatch(setUrlWanted(undefined))

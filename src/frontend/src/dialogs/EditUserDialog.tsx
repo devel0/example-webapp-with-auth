@@ -16,15 +16,7 @@ import { from } from "linq-to-typescript";
 import { AxiosError } from "axios";
 
 export const NewUserDataSample = () => {
-    let res: EditUserRequestDto = {
-        existingUsername: null,
-        editUsername: null,
-        editEmail: null,
-        editPassword: null,
-        editLockoutEnd: null,
-        editRoles: null,
-        editDisabled: null,
-    }
+    let res: EditUserRequestDto = { }
     return res
 }
 

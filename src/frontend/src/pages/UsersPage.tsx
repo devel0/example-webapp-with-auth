@@ -85,11 +85,8 @@ export const UsersPage = () => {
                         if (res.data.length > 0) {
                             const user = res.data[0]
                             setUserData({
-                                existingUsername: user.userName!,
-                                editUsername: null,
-                                editEmail: user.email,
-                                editLockoutEnd: null,
-                                editPassword: null,
+                                existingUsername: user.userName!,                                
+                                editEmail: user.email,                                
                                 editRoles: user.roles,
                                 editDisabled: user.disabled
                             })

@@ -13,15 +13,28 @@ export const APP_LOGO_TEXT: string | undefined = "WEBAPP";
 
 import { PaletteMode } from "@mui/material";
 import { green } from "@mui/material/colors"
+import { generateUrl } from "../utils/utils";
 
-export const APP_URL_BASE = "/app";
+//------------------------------------------ urls
 
-export const APP_URL_Home = `${APP_URL_BASE}`
-export const APP_URL_Login = `${APP_URL_BASE}/login/:from?/:token?`
-export const APP_URL_Users = `${APP_URL_BASE}/users`
+export const APP_URL_BASE =
+    "/app";
+
+export const APP_URL_Home =
+    `${APP_URL_BASE}`
+
+export const APP_URL_Login = (from?: string, token?: string) => generateUrl(
+    `${APP_URL_BASE}/login/:from/:token`, { from, token })
+
+export const APP_URL_Users =
+    `${APP_URL_BASE}/users`
+
+//------------------------------------------ urls (end)
 
 export const LOCAL_STORAGE_CURRENT_USER_NFO = "currentUserNfo";
+
 export const LOCAL_STORAGE_THEME = "theme";
+
 export const LOCAL_STORAGE_REFRESH_TOKEN_EXPIRE = "refreshTokenExpire";
 
 /** invoke RenewRefreshToken api before expiration */

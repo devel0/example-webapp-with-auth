@@ -1,6 +1,6 @@
 import { CurrentUserNfo } from "../../types/CurrentUserNfo";
 import { GlobalInitialState } from "../states/GlobalState";
-import { LOCAL_STORAGE_THEME } from "../../constants/general";
+import { LOCAL_STORAGE_CURRENT_USER_NFO, LOCAL_STORAGE_THEME } from "../../constants/general";
 import { PaletteMode } from "@mui/material";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { UserPermission } from "../../../api";
@@ -33,7 +33,9 @@ export const globalSlice = createSlice({
     },
 
     setLoggedOut: (state) => {
+      state.urlWanted = undefined
       state.currentUser = undefined
+      localStorage.removeItem(LOCAL_STORAGE_CURRENT_USER_NFO)
     },
 
     setTheme: (state, action: PayloadAction<PaletteMode>) => {

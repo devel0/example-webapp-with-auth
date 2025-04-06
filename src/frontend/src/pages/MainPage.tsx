@@ -33,6 +33,11 @@ export const MainPage = () => {
             <Button onClick={async () => {
                 try {
                     await mainApi.apiMainLongRunningGet()
+
+                    setSnack({
+                        msg: ['completed'],
+                        type: "success"
+                    })
                 } catch (_ex) {
                     const ex = _ex as AxiosError
                     handleApiException(ex)

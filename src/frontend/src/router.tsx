@@ -17,7 +17,7 @@ export const router = createBrowserRouter(
 
     // login
     {
-      path: APP_URL_Login,
+      path: APP_URL_Login(),
       element: <LoginPage />
     },
 

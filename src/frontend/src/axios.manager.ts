@@ -32,9 +32,9 @@ export const ConfigAxios = () => {
       store.dispatch(setGeneralNetwork(false))
 
       if (error?.response?.status === HttpStatusCode.Unauthorized) {
-        if (document.location.pathname !== APP_URL_Login) {
+        if (document.location.pathname !== APP_URL_Login()) {
           localStorage.removeItem(LOCAL_STORAGE_CURRENT_USER_NFO)
-          document.location = APP_URL_Login
+          document.location = APP_URL_Login()
         }
 
         return
