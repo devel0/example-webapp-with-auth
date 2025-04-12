@@ -1,3 +1,5 @@
+using Org.BouncyCastle.Bcpg.Sig;
+
 namespace ExampleWebApp.Backend.WebApi.Services.Auth;
 
 public class AuthService : IAuthService
@@ -150,9 +152,30 @@ public class AuthService : IAuthService
 
         var userName = user.UserName!;
 
-        environment.SetCookieOptions(configuration, opts, setExpiresAsRefreshToken: true);
-        httpContext.Response.Cookies.Append(WEB_CookieName_XAccessToken, accessToken, opts);
-        httpContext.Response.Cookies.Append(WEB_CookieName_XRefreshToken, refreshTokenNfo.RefreshToken, opts);
+        var appConfig = configuration.GetAppConfig();
+
+        // environment.SetCookieOptions(configuration, opts, setExpiresAsRefreshToken: true);
+        httpContext.Response.Cookies.Append(
+            WEB_CookieName_XAccessToken,
+            accessToken,
+            new CookieOptions
+            {
+                Secure = true,
+                HttpOnly = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow + appConfig.Auth.Jwt.AccessTokenDuration
+            });
+
+        httpContext.Response.Cookies.Append(
+            WEB_CookieName_XRefreshToken,
+            refreshTokenNfo.RefreshToken,
+            new CookieOptions
+            {
+                Secure = true,
+                HttpOnly = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow + appConfig.Auth.Jwt.RefreshTokenDuration
+            });
 
         var roles = claims.GetRoles();
 
@@ -250,9 +273,18 @@ public class AuthService : IAuthService
             if (renewedRefreshTokenNfo is null)
                 return new RenewRefreshTokenResponse { Status = RenewRefreshTokenStatus.InvalidRefreshToken };
 
-            var opts = new CookieOptions();
-            environment.SetCookieOptions(configuration, opts, setExpiresAsRefreshToken: true);
-            httpContext.Response.Cookies.Append(WEB_CookieName_XRefreshToken, renewedRefreshTokenNfo.RefreshToken, opts);
+            // var opts = new CookieOptions();
+            // environment.SetCookieOptions(configuration, opts, setExpiresAsRefreshToken: true);
+            httpContext.Response.Cookies.Append(
+                WEB_CookieName_XRefreshToken,
+                renewedRefreshTokenNfo.RefreshToken,
+                new CookieOptions
+                {
+                    Secure = true,
+                    HttpOnly = true,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTimeOffset.UtcNow + configuration.GetAppConfig().Auth.Jwt.RefreshTokenDuration
+                });
 
             return new RenewRefreshTokenResponse { Status = RenewRefreshTokenStatus.OK, RefreshTokenNfo = renewedRefreshTokenNfo };
         }

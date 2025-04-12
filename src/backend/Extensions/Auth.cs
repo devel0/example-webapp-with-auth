@@ -73,14 +73,15 @@ public static partial class Extensions
         builder.Services.ConfigureApplicationCookie(configure =>
         {
             configure.Cookie.Name = WEB_ApplicationCookieName;
-
-            builder.Environment.SetCookieOptions(configure.Cookie);
+            configure.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            configure.Cookie.HttpOnly = true;
+            configure.Cookie.SameSite = SameSiteMode.Strict;
         });
     }
 
     /// <summary>
     /// Add Identity provider with custom <see cref="ApplicationUser"/> user and system <see cref="IdentityRole"/> role management.
-    /// Add <see cref="ApplicationDbContext"/> ef store for the identities.
+    /// Add <see cref="AppDbContext"/> ef store for the identities.
     /// Add default token providers.
     /// </summary>        
     public static void SetupIdentityProvider(this IServiceCollection serviceCollection) => serviceCollection
@@ -101,11 +102,7 @@ public static partial class Extensions
         claims.Where(r => r.Type == ClaimTypes.Role).Select(w => w.Value).ToList();
 
     /// <summary>
-    /// Get JWT token validation parameters from given options and current configuration.
-    /// <seealso cref="CONFIG_KEY_JwtSettings_Issuer"/>
-    /// <seealso cref="CONFIG_KEY_JwtSettings_Audience"/>
-    /// <seealso cref="CONFIG_KEY_JwtSettings_Key"/>
-    /// <seealso cref="CONFIG_KEY_JwtSettings_ClockSkewSeconds"/>
+    /// Get JWT token validation parameters from given options and current configuration.    
     /// </summary>    
     /// <param name="validateIssuer">Will validate issuer (default: true).</param>
     /// <param name="validateAudience">Will validate audience (default: true).</param>
@@ -189,8 +186,16 @@ public static partial class Extensions
                                 {
                                     var opts = new CookieOptions();
 
-                                    hostEnvironment.SetCookieOptions(builder.Configuration, opts, setExpiresAsRefreshToken: true);
-                                    context.HttpContext.Response.Cookies.Append(WEB_CookieName_XAccessToken, res.AccessToken, opts);
+                                    context.HttpContext.Response.Cookies.Append(
+                                        WEB_CookieName_XAccessToken,
+                                        res.AccessToken,
+                                        new CookieOptions
+                                        {
+                                            Secure = true,
+                                            HttpOnly = true,
+                                            SameSite = SameSiteMode.Strict,
+                                            Expires = DateTimeOffset.UtcNow + builder.Configuration.GetAppConfig().Auth.Jwt.AccessTokenDuration
+                                        });
 
                                     context.Principal = res.Principal;
                                     context.Success();
@@ -210,38 +215,5 @@ public static partial class Extensions
             };
 
         });
-
-    /// <summary>
-    /// Configure given CookieBuilder to set Secure, HttpOnly and Strict SameSite options on created cookies.    
-    /// </summary>
-    public static void SetCookieOptions(this IHostEnvironment environment, CookieBuilder cookieBuilder)
-    {
-        cookieBuilder.SecurePolicy = CookieSecurePolicy.Always;
-        cookieBuilder.HttpOnly = true;
-        cookieBuilder.SameSite = SameSiteMode.Strict;
-    }
-
-    /// <summary>
-    /// Configure given CookieOptions to set Secure, HttpOnly and Strict SameSite options on created cookies.    
-    /// </summary>
-    /// <param name="environment"></param>
-    /// <param name="configuration"></param>
-    /// <param name="cookieOptions"></param>
-    /// <param name="setExpiresAsRefreshToken">if true set expiration time as from JwtSettings:RefreshTokenDurationSeconds</param>    
-    public static void SetCookieOptions(this IHostEnvironment environment, IConfiguration configuration,
-         CookieOptions cookieOptions, bool setExpiresAsRefreshToken = false)
-    {
-        cookieOptions.Secure = true;
-        cookieOptions.HttpOnly = true;
-        cookieOptions.SameSite = SameSiteMode.Strict;
-
-        if (setExpiresAsRefreshToken)
-        {
-            var cookieDuration = configuration.GetAppConfig().Auth.Jwt.RefreshTokenDuration;
-
-            cookieOptions.Expires = DateTimeOffset.Now.Add(cookieDuration);
-        }
-    }
-
 
 }
