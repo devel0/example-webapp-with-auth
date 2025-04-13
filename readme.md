@@ -123,6 +123,7 @@
     │       ├── types
     │       └── utils
     └── test
+        └── suites
 ```
 
 | folder                         | description                                                          |
@@ -412,15 +413,16 @@ for websockets example [see here](https://github.com/devel0/example-webapi/blob/
 
 ### JWT auth access and refresh token
 
-- authentication and authorization are managed entirely by the backend, in fact the frontend doesn't store any access token or restore token in local storage ; from the frontend side point of view the authentication is transparently managed through the browser `X-Access-Token` and `X-Refresh-Token` that the [server][23] sets after successful login through `Set-Cookie` header ( the frontend only call the login and logout webapi without storing anything on javascript side ):
-  - XSS ( Cross-site scripting ) attack are prevented because the absence of access token from the local storage makes javascript unable to read these token
-  - CSRF ( Cross-site request forgery ) attack are prevented because the cookie is stored within follow attributes
+- authentication and authorization are managed entirely by the backend, in fact the frontend doesn't store any access token or restore token in local storage ; from the frontend side point of view the authentication is transparently managed through the browser `X-Access-Token` and `X-Refresh-Token` that the [server][23] sets after successful login through `Set-Cookie` header ( the frontend only call the login and logout webapi without storing anything on javascript side ): when access token expired server renew if a valid refresh [token was found][33].
+  - **XSS ( Cross-site scripting )** attack are prevented because the absence of access token from the local storage makes javascript unable to read these token
+  - **CSRF ( Cross-site request forgery )** attack are prevented because the cookie is stored within follow attributes
     - `secure` : prevent the cookie to be stored against a phising site because https will identify the server autenticity
     - `httponly` : prevent the javascript to read the cookie ( only the browser can handle by sending through the request header )
     - `samesite strict` : prevent to send the access token to other servers
+    - do not use `HttpGet` methods for side effect methods preventing phising email link to make changes, while those crafted as HttpPost form gets blocked because came from localhost ( html email ).
 - web api controller methods are executable only from user with valid access token because of the [`[Authorize]`][24] attribute ; further refinement can require user to have one or more roles through the attribute specialization with [`Roles`][25]. To allow anonymous api use [`[AllowAnonymous]`][26] attribute.
 - use of the access token allow the server to authenticate the user by reading user, role and other info contained in the token itself; note that these info are not encrypted and can be viewed, but the token contains a signature that can't be generated from other than the server that contains the JWT key to create the signature itself. In other words the server validate the access token and signature match considering as valid the provided identity informations ( because it was the server itself that signed the data no other could generate corresponding signature ). This requires less hardware resources than using a db to validate the user.
-- for paranoid setting the expiration of an access token should short and this maintain ability to execute high rate operations retaining the ability to block a user within a short response time. In fact a valid access token can't revoked by default rule but having a short time of validity allow the server to ban any other authorized api for that user simply disabling it. In fact after user is disabled the process of renew of another access token, even with a valid refresh token ( that has longer expire time ) gets [disabled immediately][27].
+- for paranoid setting the expiration of an access token should short and this maintain ability to execute high rate operations retaining the ability to block a user within a short response time. In fact a valid access token can't revoked by default rule ( could implemented a cached list of disabled/lockedout users [here](34) ) but having a short time of validity allow the server to ban any other authorized api for that user simply disabling it. In fact after user is disabled the process of renew of another access token, even with a valid refresh token ( that has longer expire time ) gets [disabled immediately][27].
 - in order to allow frontend application run longer than refresh token expiration, expecially if used a short refresh token ( ie. 5min ), the [frontend will schedule][30] a renew of refresh token, using the current valid auth, 30sec before the refresh token expires; this way the session continue without the need to login again. Following an excerpt with testing parameters ( AccessTokenDurationSeconds=10, RefreshTokenDurationSeconds=20, RefreshTokenDurationSkewSeconds=2 ) :
 
 ```log
@@ -851,34 +853,35 @@ dotnet add package Microsoft.AspNetCore.Mvc.Testing --version 8.0.8
 ```
 
 [1]: https://github.com/devel0/knowledge/blob/168e6cec6fdc0298b21d758c198d6f9210032ba8/doc/psql-schema-crawler.md
-[2]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/WebApiServer/Types/UserPermission.cs#L124
-[3]: https://github.com/devel0/example-webapp-with-auth/blob/5d10bf357e6e256df16b9a517c113043dd15750f/WebApiServer/DTOs/EditUserRequestDto.cs#L6
-[4]: https://github.com/devel0/example-webapp-with-auth/blob/48959f45ddd2871ad2105cd8cf35128ef6136a72/clientapp/src/axios.manager.ts#L56
-[5]: https://github.com/devel0/example-webapp-with-auth/blob/48959f45ddd2871ad2105cd8cf35128ef6136a72/clientapp/src/utils/utils.tsx#L21
-[6]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/clientapp/src/pages/LoginPage.tsx#L182
-[7]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/WebApiServer/Controllers/AuthController.cs#L193
-[8]: https://github.com/devel0/example-webapp-with-auth/blob/31544b0b02a8be1211941416e70f3d6fb4cef44e/WebApiServer/Implementations/AuthService.cs#L778
-[9]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/clientapp/src/constants/general.ts#L5
-[10]: https://github.com/devel0/example-webapp-with-auth/blob/31544b0b02a8be1211941416e70f3d6fb4cef44e/WebApiServer/Implementations/AuthService.cs#L817
-[11]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/WebApiServer/Extensions/DatabaseService.cs#L13
-[12]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/WebApiServer/Extensions/DatabaseService.cs#L29
-[13]: https://github.com/devel0/example-webapp-with-auth/blob/31544b0b02a8be1211941416e70f3d6fb4cef44e/Test/TestFactory.cs#L45
-[14]: https://github.com/devel0/example-webapp-with-auth/blob/a04204f9014596509dcacd1af04a8579000d2fd6/WebApiServer/Extensions/AppSettingsService.cs#L13
+[2]: https://github.com/devel0/example-webapp-with-auth/blob/e0dfec4e37e72d8e8dbc555efebd3f5d7057be24/src/backend/Extensions/UserPermission.cs#L9
+[3]: https://github.com/devel0/example-webapp-with-auth/blob/e0dfec4e37e72d8e8dbc555efebd3f5d7057be24/src/backend/Services/Abstractions/Auth/DTOs/EditUserRequestDto.cs#L6
+[4]: https://github.com/devel0/example-webapp-with-auth/blob/55a3dbad41f62aa7f8338dc598ddffa0c34e1dfb/src/frontend/src/axios.manager.ts#L64
+[5]: https://github.com/devel0/example-webapp-with-auth/blob/ab81c927924d6184074cf64d41c87e203199a22c/src/frontend/src/utils/utils.tsx#L25
+[6]: https://github.com/devel0/example-webapp-with-auth/blob/55a3dbad41f62aa7f8338dc598ddffa0c34e1dfb/src/frontend/src/pages/LoginPage.tsx#L186
+[7]: https://github.com/devel0/example-webapp-with-auth/blob/53016a0e2b5d3b626b3d4b3eddae1893d09d3e92/src/backend/Controllers/AuthController.cs#L243
+[8]: https://github.com/devel0/example-webapp-with-auth/blob/53016a0e2b5d3b626b3d4b3eddae1893d09d3e92/src/backend/Services/Implementations/Auth/AuthService.cs#L865
+[9]: https://github.com/devel0/example-webapp-with-auth/blob/55a3dbad41f62aa7f8338dc598ddffa0c34e1dfb/src/frontend/src/constants/general.ts#L9
+[10]: https://github.com/devel0/example-webapp-with-auth/blob/53016a0e2b5d3b626b3d4b3eddae1893d09d3e92/src/backend/Services/Implementations/Auth/AuthService.cs#L906
+[11]: https://github.com/devel0/example-webapp-with-auth/blob/53016a0e2b5d3b626b3d4b3eddae1893d09d3e92/src/backend/Extensions/DatabaseService.cs#L15
+[12]: https://github.com/devel0/example-webapp-with-auth/blob/53016a0e2b5d3b626b3d4b3eddae1893d09d3e92/src/backend/Extensions/DatabaseService.cs#L36
+[13]: https://github.com/devel0/example-webapp-with-auth/blob/53016a0e2b5d3b626b3d4b3eddae1893d09d3e92/src/test/TestFactory.cs#L40
+[14]: https://github.com/devel0/example-webapp-with-auth/blob/e0dfec4e37e72d8e8dbc555efebd3f5d7057be24/src/backend/Extensions/AppSettingsService.cs#L13
 [15]: https://github.com/devel0/example-webapp-with-auth/blob/38ef8b0cab0763eac34e9887a861d574481a6801/deploy/webapp.env
-[16]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/clientapp/src/pages/LoginPage.tsx#L38
-[17]: https://github.com/devel0/example-webapp-with-auth/blob/31544b0b02a8be1211941416e70f3d6fb4cef44e/WebApiServer/Implementations/AuthService.cs#L788-L807
-[18]: https://github.com/devel0/example-webapp-with-auth/blob/9a94258665f2314ea77b5c662344803cc4b8dc86/WebApiServer/Implementations/AuthService.cs#L100
-[19]: https://github.com/devel0/example-webapp-with-auth/blob/5d10bf357e6e256df16b9a517c113043dd15750f/WebApiServer/Extensions/Auth.cs#L89
-[20]: https://github.com/devel0/example-webapp-with-auth/blob/9a94258665f2314ea77b5c662344803cc4b8dc86/WebApiServer/Implementations/AuthService.cs#L41
-[21]: https://github.com/devel0/example-webapp-with-auth/blob/9ba6d6599ad9f73548ced7335f945b59cb339e4f/clientapp/src/utils/password-validator.ts#L4
-[22]: https://github.com/devel0/example-webapp-with-auth/blob/d3685ff088fde20254e385c5ebcc13cd3dda6f2e/WebApiServer/Types/UserPermission.cs#L128
-[23]: https://github.com/devel0/example-webapp-with-auth/blob/adcabbb20a10091c56210183179f7bd7dd64359c/WebApiServer/Implementations/AuthService.cs#L151
-[24]: https://github.com/devel0/example-webapp-with-auth/blob/a04204f9014596509dcacd1af04a8579000d2fd6/WebApiServer/Controllers/MainController.cs#L7
-[25]: https://github.com/devel0/example-webapp-with-auth/blob/a04204f9014596509dcacd1af04a8579000d2fd6/WebApiServer/Controllers/MainController.cs#L27
-[26]: https://github.com/devel0/example-webapp-with-auth/blob/adcabbb20a10091c56210183179f7bd7dd64359c/WebApiServer/Controllers/AuthController.cs#L62
-[27]: https://github.com/devel0/example-webapp-with-auth/blob/4111643a52aa7f19c531ddcf88132d7d59c0b683/WebApiServer/Extensions/Auth.cs#L179
-[28]: https://github.com/devel0/example-webapp-with-auth/blob/be5e6f2f49ebe67771b884fe19ce4ae119a9b828/WebApiServer/Implementations/JWTService.cs#L282
-[29]: https://github.com/devel0/example-webapp-with-auth/blob/813787e23f498ec1dc522649c9ae1354a1257a1a/clientapp/src/axios.manager.ts#L34-L41
-[30]: https://github.com/devel0/example-webapp-with-auth/blob/ac90faf78ff30fe3b06bcf7bd44430fcd4c3ea2b/src/app/frontend/src/components/Layout.tsx#L29-L60
-[31]: https://github.com/devel0/example-webapp-with-auth/blob/ac90faf78ff30fe3b06bcf7bd44430fcd4c3ea2b/src/app/frontend/src/constants/general.ts#L28
-[32]: https://github.com/devel0/example-webapp-with-auth/blob/16296ad8d2d4f84bba95c181dd9f52dd4044a550/src/test/IntegrationTests.cs#L424
+[16]: https://github.com/devel0/example-webapp-with-auth/blob/55a3dbad41f62aa7f8338dc598ddffa0c34e1dfb/src/frontend/src/pages/LoginPage.tsx#L33
+[17]: https://github.com/devel0/example-webapp-with-auth/blob/53016a0e2b5d3b626b3d4b3eddae1893d09d3e92/src/backend/Services/Implementations/Auth/AuthService.cs#L875-L894
+[18]: https://github.com/devel0/example-webapp-with-auth/blob/53016a0e2b5d3b626b3d4b3eddae1893d09d3e92/src/backend/Services/Implementations/Auth/AuthService.cs#L91
+[19]: https://github.com/devel0/example-webapp-with-auth/blob/53016a0e2b5d3b626b3d4b3eddae1893d09d3e92/src/backend/Extensions/Auth.cs#L90
+[20]: https://github.com/devel0/example-webapp-with-auth/blob/53016a0e2b5d3b626b3d4b3eddae1893d09d3e92/src/backend/Services/Implementations/Auth/AuthService.cs#L32
+[21]: https://github.com/devel0/example-webapp-with-auth/blob/12e30851fc09d760e9b3c9407f9d0e59853f4080/src/frontend/src/utils/password-validator.ts#L4
+[22]: https://github.com/devel0/example-webapp-with-auth/blob/e0dfec4e37e72d8e8dbc555efebd3f5d7057be24/src/backend/Extensions/UserPermission.cs#L13
+[23]: https://github.com/devel0/example-webapp-with-auth/blob/53016a0e2b5d3b626b3d4b3eddae1893d09d3e92/src/backend/Services/Implementations/Auth/AuthService.cs#L143
+[24]: https://github.com/devel0/example-webapp-with-auth/blob/53016a0e2b5d3b626b3d4b3eddae1893d09d3e92/src/backend/Controllers/MainController.cs#L7
+[25]: https://github.com/devel0/example-webapp-with-auth/blob/53016a0e2b5d3b626b3d4b3eddae1893d09d3e92/src/backend/Controllers/MainController.cs#L27
+[26]: https://github.com/devel0/example-webapp-with-auth/blob/53016a0e2b5d3b626b3d4b3eddae1893d09d3e92/src/backend/Controllers/AuthController.cs#L112
+[27]: https://github.com/devel0/example-webapp-with-auth/blob/53016a0e2b5d3b626b3d4b3eddae1893d09d3e92/src/backend/Extensions/Auth.cs#L182
+[29]: https://github.com/devel0/example-webapp-with-auth/blob/55a3dbad41f62aa7f8338dc598ddffa0c34e1dfb/src/frontend/src/axios.manager.ts#L34-L41
+[30]: https://github.com/devel0/example-webapp-with-auth/blob/53016a0e2b5d3b626b3d4b3eddae1893d09d3e92/src/frontend/src/hooks/useLoginManager.tsx#L22-L54
+[31]: https://github.com/devel0/example-webapp-with-auth/blob/55a3dbad41f62aa7f8338dc598ddffa0c34e1dfb/src/frontend/src/constants/general.ts#L41
+[32]: https://github.com/devel0/example-webapp-with-auth/blob/53016a0e2b5d3b626b3d4b3eddae1893d09d3e92/src/test/suites/TestJwt.cs#L222
+[33]: https://github.com/devel0/example-webapp-with-auth/blob/5f5aaedf5d26daaa8f325c9afdeaf60ff1813665/src/backend/Extensions/Auth.cs#L181
+[34]: https://github.com/devel0/example-webapp-with-auth/blob/5f5aaedf5d26daaa8f325c9afdeaf60ff1813665/src/backend/Extensions/Auth.cs#L159
