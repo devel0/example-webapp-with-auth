@@ -154,10 +154,7 @@ public static partial class Extensions
 
                     if (context.Request.Cookies.ContainsKey(WEB_CookieName_XAccessToken))
                     {
-                        var accessToken = context.Request.Cookies[WEB_CookieName_XAccessToken];
-
-
-                        var decoded = jwtService.DecodeAccessToken(accessToken);
+                        var accessToken = context.Request.Cookies[WEB_CookieName_XAccessToken];                                                
                     
                         if (accessToken is not null && jwtService.IsAccessTokenValid(accessToken))
                         {
