@@ -59,11 +59,11 @@ public class LoginResponseDto
     /// <summary>
     /// Permissions related to this user roles.
     /// </summary>
-    public HashSet<UserPermission> Permissions { get; set; } = new();
+    public HashSet<UserPermission> Permissions { get; set; } = new();    
 
     /// <summary>
     /// Expiration timestamp for the refresh token. To keep alive auth issue <see cref="AuthController.RenewRefreshToken"/> before 
-    /// refresh token expire.
+    /// token expire.
     /// </summary>
     public DateTimeOffset RefreshTokenExpiration { get; set; }
 

@@ -1,4 +1,6 @@
-namespace Test;
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
+
+namespace ExampleWebApp.Backend.Test;
 
 public class TestFactory : IDisposable
 {
@@ -15,17 +17,14 @@ public class TestFactory : IDisposable
     public IServiceProvider Services => ServiceScope.ServiceProvider;
 
     public TestFactory()
-    {        
+    {
     }
 
     /// <summary>
     /// Initialize a test factory with IsUnitTest environment, test database dropped and service scope, http client allocted.
     /// </summary>
-    public async Task InitAsync(bool dropDb = true, CancellationToken cancellationToken = default)
-    {                
-        // workaround for unit test from cmdline: https://github.com/npgsql/npgsql/issues/2896#issuecomment-753468244
-        NpgsqlConnection.ClearAllPools();        
-
+    public async Task<HttpClient> InitAsync(bool dropDb = true, CancellationToken cancellationToken = default)
+    {
         // retrieve configuration before start web app factory in order to drop test db
         {
             Environment.SetEnvironmentVariable($"{nameof(AppConfig)}__{nameof(AppConfig.IsUnitTest)}", "true");
@@ -59,15 +58,17 @@ public class TestFactory : IDisposable
         // setting this config var cause the connection string database to another given name
         // Environment.SetEnvironmentVariable(CONFIG_KEY_AppConfig_IsUnitTest.Replace(":", "__"), "true");
 
-        Factory = new WebApplicationFactory<Program>();
+        Factory = new WebApplicationFactory<Program>();        
 
         Client = Factory.CreateClient();
 
-        ServiceScope = Factory.Services.CreateScope();
+        ServiceScope = Factory.Services.CreateScope();        
+
+        return Client;
     }
 
     async Task DropDbAsync(CancellationToken cancellationToken = default)
-    {        
+    {
         var ss = UnitTestConnectionString.Split(';');
         var PostgresDbConnectionString = string.Join(';', ss
             .Where(r => r.Trim().Length > 0 && !r.Trim().StartsWith("Database", StringComparison.InvariantCultureIgnoreCase)))
@@ -75,15 +76,13 @@ public class TestFactory : IDisposable
 
         await using var dataSource = NpgsqlDataSource.Create(PostgresDbConnectionString);
 
-        // System.Console.WriteLine($"========> Dropping DB [{UnitTestDbName}]");        
-
         await using var cmd = dataSource.CreateCommand($"DROP DATABASE IF EXISTS \"{UnitTestDbName}\" WITH (FORCE)");
 
-        await cmd.ExecuteNonQueryAsync(cancellationToken);        
+        await cmd.ExecuteNonQueryAsync(cancellationToken);
     }
 
     public void Dispose()
-    {
+    {        
         Factory.Dispose();
     }
 

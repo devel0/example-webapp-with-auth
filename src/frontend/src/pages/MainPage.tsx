@@ -5,7 +5,7 @@ import { Box, Button } from '@mui/material'
 import { from } from 'linq-to-typescript'
 import { GlobalState } from '../redux/states/GlobalState'
 import { handleApiException, setSnack } from '../utils/utils'
-import { mainApi } from '../axios.manager'
+import { authApi, mainApi } from '../axios.manager'
 import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
 import { useEffect } from 'react'
 
@@ -32,6 +32,8 @@ export const MainPage = () => {
 
             <Button onClick={async () => {
                 try {
+                    // await authApi.apiAuthRenewAccessTokenGet();
+                    
                     await mainApi.apiMainLongRunningGet()
 
                     setSnack({

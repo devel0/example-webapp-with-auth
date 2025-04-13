@@ -69,7 +69,7 @@ public static partial class Extensions
 
         webApplication.UseSwagger(c =>
         {
-            c.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi2_0;
+            //c.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi2_0;
         });
         webApplication.UseSwaggerUI(c =>
         {

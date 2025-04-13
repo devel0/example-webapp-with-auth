@@ -1,7 +1,17 @@
-namespace Test;
+namespace ExampleWebApp.Backend.Test;
 
 public static class Extensions
 {
+
+
+    public static UserConfig GetAdminUserConfig(this IConfiguration configuration)
+    {
+        var qAdminSeed = configuration.GetAppConfig().Database.Seed.Users.FirstOrDefault(w => w.Roles.Any(x => x == ROLE_admin));
+
+        if (qAdminSeed is null) throw new Exception($"can't find an admin role user in configuration");
+
+        return qAdminSeed;
+    }
 
     /// <summary>
     /// Extracts X data from Set-Cookie cookie in given response headers.
@@ -68,7 +78,7 @@ public static class Extensions
         if (!cookieReplaced)
         {
             client.DefaultRequestHeaders.Add(WEB_Cookie, $"{cookieName}={cookieValue}");
-        }        
+        }
     }
 
     /// <summary>

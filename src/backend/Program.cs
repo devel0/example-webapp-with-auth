@@ -96,7 +96,7 @@ app.UseAuthorization();
 app.ConfigApis();
 
 // add endpoints controller related
-app.MapControllers();
+app.MapControllers(); 
 
 // auto apply database pending migrations
 await app.ApplyDatabaseMigrations(cts.Token);

@@ -1,4 +1,4 @@
-namespace Test;
+namespace ExampleWebApp.Backend.Test;
 
 public record UserCredentialNfo(string username, string email, string password, string testPrefix);
 

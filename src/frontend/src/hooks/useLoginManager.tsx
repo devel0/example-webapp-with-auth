@@ -12,34 +12,37 @@ import { useAppSelector, useAppDispatch } from "../redux/hooks/hooks"
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 
+let handlerRegistered = false
+
 export const useLoginManager = () => {
     const global = useAppSelector<GlobalState>((state) => state.global)
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
 
     useEffect(() => {
-        if (global.currentUserInitialized) {
+        if (!handlerRegistered && global.currentUserInitialized) {
+
+            handlerRegistered = true            
+
             const act = () => {
                 const q = localStorage.getItem(LOCAL_STORAGE_REFRESH_TOKEN_EXPIRE);
                 if (q) {
-                    const refreshTokenExpire = new Date(q);
-                    console.log(`refresh token will expire at ${refreshTokenExpire}`)
+                    const refreshTokenExpire = new Date(q);                    
 
                     const renewAt = new Date(refreshTokenExpire.getTime() - RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC * 1e3);
                     const now = new Date()
                     if (now.getTime() < renewAt.getTime()) {
-                        console.log(`  renew at ${renewAt}`)
-                        setTimeout(async () => {
-                            console.log("  renewing refresh token");
+                        console.log(`Renew refresh token at ${renewAt}`)
+                        setTimeout(async () => {                            
                             try {
-                                const res = await authApi.apiAuthRenewRefreshTokenGet();
+                                const res = await authApi.apiAuthRenewRefreshTokenPost();
                                 if (res.data.refreshTokenNfo?.expiration) {
                                     localStorage.setItem(LOCAL_STORAGE_REFRESH_TOKEN_EXPIRE, res.data.refreshTokenNfo.expiration);
                                     act()
                                 }
                             } catch (ex_) {
                                 const ex = ex_ as AxiosError
-                                handleApiException(ex, "Renew refresh token")
+                                handleApiException(ex, "Renew refresh token failed")
                             }
                         }, renewAt.getTime() - now.getTime());
                     }

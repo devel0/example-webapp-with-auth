@@ -23,7 +23,7 @@ public class MainController : ControllerBase
     /// <summary>
     /// Long running api test.
     /// </summary>    
-    [HttpGet]
+    [HttpGet]    
     [Authorize(Roles = ROLE_admin)]
     public async Task<ActionResult> LongRunning()
     {

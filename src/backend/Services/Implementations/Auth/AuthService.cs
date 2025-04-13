@@ -1,5 +1,3 @@
-using Org.BouncyCastle.Bcpg.Sig;
-
 namespace ExampleWebApp.Backend.WebApi.Services.Auth;
 
 public class AuthService : IAuthService
@@ -8,36 +6,27 @@ public class AuthService : IAuthService
     readonly RoleManager<IdentityRole> roleManager;
     readonly SignInManager<ApplicationUser> signInManager;
     readonly IJWTService jwtService;
-    readonly IHttpContextAccessor httpContextAccessor;
-    readonly IHostEnvironment environment;
+    readonly IHttpContextAccessor httpContextAccessor;    
     readonly ILogger<AuthService> logger;
-    readonly IConfiguration configuration;
-    readonly IAuthenticationService authenticationService;
-    readonly IUtilService util;
+    readonly IConfiguration configuration;    
 
     public AuthService(
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager,
         SignInManager<ApplicationUser> signInManager,
         IJWTService jwtService,
-        IHttpContextAccessor httpContextAccessor,
-        IHostEnvironment environment,
+        IHttpContextAccessor httpContextAccessor,        
         ILogger<AuthService> logger,
-        IConfiguration configuration,
-        IAuthenticationService authenticationService,
-        IUtilService util
+        IConfiguration configuration
         )
     {
         this.userManager = userManager;
         this.roleManager = roleManager;
         this.signInManager = signInManager;
         this.jwtService = jwtService;
-        this.httpContextAccessor = httpContextAccessor;
-        this.environment = environment;
+        this.httpContextAccessor = httpContextAccessor;        
         this.logger = logger;
-        this.configuration = configuration;
-        this.authenticationService = authenticationService;
-        this.util = util;
+        this.configuration = configuration;        
     }
 
     public AuthOptions AuthOptions()
@@ -101,7 +90,8 @@ public class AuthService : IAuthService
 
         if (loginRequestDto.PasswordResetToken is not null)
         {
-            var resetRes = await userManager.ResetPasswordAsync(user, loginRequestDto.PasswordResetToken, loginRequestDto.Password);
+            var resetRes = await userManager.ResetPasswordAsync(
+                user, loginRequestDto.PasswordResetToken, loginRequestDto.Password);
 
             if (!resetRes.Succeeded)
                 return new LoginResponseDto
@@ -135,13 +125,11 @@ public class AuthService : IAuthService
 
         await jwtService.MaintenanceRefreshTokenAsync(username, cancellationToken);
 
-        var accessToken = jwtService.GenerateAccessToken(username, email, claims);
+        var accessTokenNfo = jwtService.GenerateAccessToken(username, email, claims);
         var refreshTokenNfo = await jwtService.GenerateRefreshTokenAsync(username, cancellationToken);
 
         var persist = false;
         await signInManager.SignInWithClaimsAsync(user, persist, claims);
-
-        var opts = new CookieOptions();
 
         var httpContext = httpContextAccessor.HttpContext;
         if (httpContext is null)
@@ -152,30 +140,8 @@ public class AuthService : IAuthService
 
         var userName = user.UserName!;
 
-        var appConfig = configuration.GetAppConfig();
-
-        // environment.SetCookieOptions(configuration, opts, setExpiresAsRefreshToken: true);
-        httpContext.Response.Cookies.Append(
-            WEB_CookieName_XAccessToken,
-            accessToken,
-            new CookieOptions
-            {
-                Secure = true,
-                HttpOnly = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.UtcNow + appConfig.Auth.Jwt.AccessTokenDuration
-            });
-
-        httpContext.Response.Cookies.Append(
-            WEB_CookieName_XRefreshToken,
-            refreshTokenNfo.RefreshToken,
-            new CookieOptions
-            {
-                Secure = true,
-                HttpOnly = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.UtcNow + appConfig.Auth.Jwt.RefreshTokenDuration
-            });
+        jwtService.AddAccessTokenToHttpResponse(httpContext.Response, accessTokenNfo);
+        jwtService.AddRefreshTokenToHttpResponse(httpContext.Response, refreshTokenNfo);
 
         var roles = claims.GetRoles();
 
@@ -185,7 +151,7 @@ public class AuthService : IAuthService
             UserName = userName,
             Email = user.Email!,
             Roles = roles,
-            Permissions = PermissionsFromRoles(roles.ToHashSet()),
+            Permissions = PermissionsFromRoles(roles.ToHashSet()),            
             RefreshTokenExpiration = refreshTokenNfo.Expiration
         };
     }
@@ -211,7 +177,7 @@ public class AuthService : IAuthService
                     Status = CurrentUserStatus.InvalidAuthentication
                 };
 
-            var accessToken = httpContextAccessor.HttpContext.Request.Cookies[WEB_CookieName_XAccessToken];
+            var accessToken = jwtService.GetAccessTokenFromHttpRequest(httpContextAccessor.HttpContext.Request);
 
             if (accessToken is null)
                 return new CurrentUserResponseDto
@@ -238,7 +204,6 @@ public class AuthService : IAuthService
             };
     }
 
-
     public async Task<RenewRefreshTokenResponse> RenewCurrentUserRefreshTokenAsync(CancellationToken cancellationToken)
     {
         var httpContext = httpContextAccessor.HttpContext;
@@ -258,39 +223,66 @@ public class AuthService : IAuthService
             if (userName is null || email is null)
                 return new RenewRefreshTokenResponse { Status = RenewRefreshTokenStatus.InvalidAuthentication };
 
-            var accessToken = httpContext.Request.Cookies[WEB_CookieName_XAccessToken];
-
-            if (accessToken is null)
-                return new RenewRefreshTokenResponse { Status = RenewRefreshTokenStatus.AccessTokenNotFound };
-
-            var refreshToken = httpContext.Request.Cookies[WEB_CookieName_XRefreshToken];
-
+            var refreshToken = jwtService.GetRefreshTokenFromHttpRequest(httpContext.Request);
             if (refreshToken is null)
                 return new RenewRefreshTokenResponse { Status = RenewRefreshTokenStatus.InvalidRefreshToken };
 
-            var renewedRefreshTokenNfo = await jwtService.RenewRefreshTokenAsync(userName, refreshToken, cancellationToken);
-
+            var renewedRefreshTokenNfo = await jwtService.RenewRefreshTokenAsync(refreshToken, cancellationToken);
             if (renewedRefreshTokenNfo is null)
                 return new RenewRefreshTokenResponse { Status = RenewRefreshTokenStatus.InvalidRefreshToken };
 
-            // var opts = new CookieOptions();
-            // environment.SetCookieOptions(configuration, opts, setExpiresAsRefreshToken: true);
-            httpContext.Response.Cookies.Append(
-                WEB_CookieName_XRefreshToken,
-                renewedRefreshTokenNfo.RefreshToken,
-                new CookieOptions
-                {
-                    Secure = true,
-                    HttpOnly = true,
-                    SameSite = SameSiteMode.Strict,
-                    Expires = DateTimeOffset.UtcNow + configuration.GetAppConfig().Auth.Jwt.RefreshTokenDuration
-                });
+            jwtService.AddRefreshTokenToHttpResponse(httpContext.Response, renewedRefreshTokenNfo);
 
-            return new RenewRefreshTokenResponse { Status = RenewRefreshTokenStatus.OK, RefreshTokenNfo = renewedRefreshTokenNfo };
+            return new RenewRefreshTokenResponse
+            {
+                Status = RenewRefreshTokenStatus.OK,
+                RefreshTokenNfo = renewedRefreshTokenNfo
+            };
         }
 
         else
-            return new RenewRefreshTokenResponse { Status = RenewRefreshTokenStatus.InvalidAuthentication };
+            return new RenewRefreshTokenResponse
+            {
+                Status = RenewRefreshTokenStatus.InvalidAuthentication
+            };
+    }
+
+    public async Task<RenewAccessTokenResponse> RenewCurrentUserAccessTokenAsync(CancellationToken cancellationToken)
+    {
+        var httpContext = httpContextAccessor.HttpContext;
+        if (httpContext is null)
+            return new RenewAccessTokenResponse
+            {
+                Status = RenewAccessTokenStatus.InvalidHttpContext
+            };
+
+        var quser = httpContext.User;
+
+        if (quser is not null)
+        {            
+            var refreshToken = jwtService.GetRefreshTokenFromHttpRequest(httpContext.Request);
+            if (refreshToken is null)
+                return new RenewAccessTokenResponse { Status = RenewAccessTokenStatus.InvalidRefreshToken };
+
+            var renewedAccessTokenNfo = await jwtService.RenewAccessTokenAsync(refreshToken, cancellationToken);
+            if (renewedAccessTokenNfo is null)
+                return new RenewAccessTokenResponse { Status = RenewAccessTokenStatus.InvalidRefreshToken };
+
+            else
+                jwtService.AddAccessTokenToHttpResponse(httpContext.Response, renewedAccessTokenNfo);
+
+            return new RenewAccessTokenResponse
+            {
+                Status = RenewAccessTokenStatus.OK,
+                AccessTokenNfo = renewedAccessTokenNfo
+            };
+        }
+
+        else
+            return new RenewAccessTokenResponse
+            {
+                Status = RenewAccessTokenStatus.InvalidAuthentication
+            };
     }
 
     public async Task<HttpStatusCode> LogoutAsync(CancellationToken cancellationToken)
@@ -299,10 +291,11 @@ public class AuthService : IAuthService
         if (httpContext is null)
             return HttpStatusCode.BadRequest;
 
-        var refreshToken = httpContext.Request.Cookies[WEB_CookieName_XRefreshToken];
+        var refreshToken = jwtService.GetRefreshTokenFromHttpRequest(httpContext.Request);
 
-        httpContext.Response.Cookies.Delete(WEB_CookieName_XAccessToken);
-        httpContext.Response.Cookies.Delete(WEB_CookieName_XRefreshToken);
+        jwtService.DeleteAccessTokenFromReponse(httpContext.Response);
+
+        jwtService.DeleteRefreshTokenFromReponse(httpContext.Response);
 
         await signInManager.SignOutAsync();
 
@@ -351,7 +344,7 @@ public class AuthService : IAuthService
             });
         }
 
-        return new List<UserListItemResponseDto>(res);
+        return [.. res];
     }
 
     async Task<List<string>> AllRolesAsync()
@@ -372,7 +365,7 @@ public class AuthService : IAuthService
             return new List<string>();
         }
 
-        return new List<string>(allRoles);
+        return [.. allRoles];
     }
 
     public async Task<DeleteUserResponseDto> DeleteUserAsync(

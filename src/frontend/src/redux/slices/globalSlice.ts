@@ -49,7 +49,7 @@ export const globalSlice = createSlice({
 
     setIsMobile: (state, action: PayloadAction<boolean>) => {
       state.isMobile = action.payload
-    },
+    },    
 
   },
 
@@ -62,7 +62,7 @@ export const {
   setSuccessfulLogin,
   setLoggedOut,
   setTheme,    
-  setIsMobile
+  setIsMobile,  
 
 } = globalSlice.actions;
 

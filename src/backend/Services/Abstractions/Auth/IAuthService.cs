@@ -29,6 +29,11 @@ public interface IAuthService
         CancellationToken cancellationToken);
 
     /// <summary>
+    /// Renew access token if valid refresh token was found
+    /// </summary>
+    Task<RenewAccessTokenResponse> RenewCurrentUserAccessTokenAsync(CancellationToken cancellationToken);
+
+    /// <summary>
     /// Renew refresh token of current user if refresh token still valid.
     /// This is used to extends refresh token duration avoiding closing frontend session.
     /// </summary>

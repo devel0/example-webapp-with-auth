@@ -3,6 +3,6 @@
         <noWarn>1591</noWarn>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>            
     
-        <MSCoreVersion>9.0.3</MSCoreVersion>
+        <MSCoreVersion>8.0.7</MSCoreVersion>
     </PropertyGroup>
 </Project>

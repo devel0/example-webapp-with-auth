@@ -54,12 +54,35 @@ public class AuthController : ControllerBase
                 throw new NotImplementedException($"{nameof(CurrentUserResponseDto)}.{nameof(CurrentUserResponseDto.Status)} == {res.Status}");
         }
     }
+        
+    [HttpPost]
+    public async Task<ActionResult<RenewAccessTokenResponse>> RenewAccessToken()
+    {        
+        var res = await authService.RenewCurrentUserAccessTokenAsync(cancellationToken);        
+
+        switch (res.Status)
+        {
+            case RenewAccessTokenStatus.OK:
+                return res;
+            
+            case RenewAccessTokenStatus.InvalidAuthentication:
+            case RenewAccessTokenStatus.InvalidAccessToken:
+            case RenewAccessTokenStatus.InvalidRefreshToken:
+                return Unauthorized();
+
+            case RenewAccessTokenStatus.InvalidHttpContext:
+                return BadRequest();
+
+            default:
+                throw new NotImplementedException($"{nameof(RenewAccessTokenStatus)} == {res}");
+        }
+    }
 
     /// <summary>
     /// Renew refresh token of current user if refresh token still valid.
     /// This is used to extends refresh token duration avoiding closing frontend session.
     /// </summary>    
-    [HttpGet]
+    [HttpPost]
     public async Task<ActionResult<RenewRefreshTokenResponse>> RenewRefreshToken()
     {
         var res = await authService.RenewCurrentUserRefreshTokenAsync(cancellationToken);

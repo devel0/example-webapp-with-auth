@@ -24,11 +24,12 @@ global using Xunit;
 global using Xunit.Abstractions;
 
 // project
-global using static Test.Toolkit;
-global using static ExampleWebApp.Backend.WebApi.Services.Abstractions.AppConfig.DatabaseConfig.SeedConfig;
+global using static ExampleWebApp.Backend.Test.Constants;
+global using static ExampleWebApp.Backend.Test.Toolkit;
 global using static ExampleWebApp.Backend.WebApi.Constants;
+global using static ExampleWebApp.Backend.WebApi.Services.Abstractions.AppConfig.DatabaseConfig.SeedConfig;
 global using static ExampleWebApp.Backend.WebApi.Toolkit;
-global using ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs;
 global using ExampleWebApp.Backend.WebApi;
 global using ExampleWebApp.Backend.WebApi.Data;
 global using ExampleWebApp.Backend.WebApi.Services.Abstractions;
+global using ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs;

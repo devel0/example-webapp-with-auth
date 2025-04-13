@@ -37,7 +37,7 @@ public static partial class Extensions
                         {
                             var migrationAssembly = Assembly.GetAssembly(typeof(AppDbContext));
                             if (migrationAssembly is null) throw new Exception($"couldn't find migration assembly");
-                            options.MigrationsAssembly(migrationAssembly);
+                            options.MigrationsAssembly(migrationAssembly.FullName);
                         });
                     }
                     break;

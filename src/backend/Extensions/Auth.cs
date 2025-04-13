@@ -145,73 +145,50 @@ public static partial class Extensions
         {
             options.TokenValidationParameters = builder.Configuration.GetTokenVaildationParameters();
 
-            if (options.Events == null) options.Events = new JwtBearerEvents();
-
-            options.Events.OnAuthenticationFailed = async context =>
+            options.Events = new JwtBearerEvents
             {
-                if (context.Exception.GetType() == typeof(SecurityTokenExpiredException) &&
-                    context.HttpContext is not null)
+
+                OnMessageReceived = async context =>
                 {
-                    // access token expired
+                    var jwtService = context.HttpContext.RequestServices.GetRequiredService<IJWTService>();
 
-                    var jwtService = context.HttpContext.RequestServices.GetService<IJWTService>();
-                    var userManager = context.HttpContext.RequestServices.GetService<UserManager<ApplicationUser>>();
-                    var hostEnvironment = context.HttpContext.RequestServices.GetService<IHostEnvironment>();
-                    var logger = context.HttpContext.RequestServices.GetService<ILogger<AuthController>>();
-                    var cancellationToken = context.HttpContext.RequestServices.GetService<CancellationToken>();
+                    if (context.Request.Cookies.ContainsKey(WEB_CookieName_XAccessToken))
+                    {
+                        var accessToken = context.Request.Cookies[WEB_CookieName_XAccessToken];
 
-                    var accessToken = context.HttpContext.Request.Cookies[WEB_CookieName_XAccessToken];
+
+                        var decoded = jwtService.DecodeAccessToken(accessToken);
+                    
+                        if (accessToken is not null && jwtService.IsAccessTokenValid(accessToken))
+                        {
+                            context.Token = accessToken;
+
+                            return;
+                        }
+
+                    }
+                    
+                    var userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
+                    var hostEnvironment = context.HttpContext.RequestServices.GetRequiredService<IHostEnvironment>();
+                    var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<AuthController>>();
+                    var cancellationToken = context.HttpContext.RequestServices.GetRequiredService<CancellationToken>();
+
+                    logger.LogTrace($"no access token provided");
+
                     var refreshToken = context.HttpContext.Request.Cookies[WEB_CookieName_XRefreshToken];
 
-                    if (jwtService is not null && hostEnvironment is not null &&
-                        userManager is not null && logger is not null &&
-                        !string.IsNullOrEmpty(accessToken) && !string.IsNullOrEmpty(refreshToken))
+                    if (!string.IsNullOrEmpty(refreshToken))
                     {
-                        var principal = jwtService.GetPrincipalFromExpiredToken(accessToken);
-                        var username = principal?.GetUserInfoFromClaims().UserName;
+                        var accessTokenNfo = await jwtService.RenewAccessTokenAsync(refreshToken, cancellationToken);
 
-                        if (username is not null &&
-                            jwtService.IsRefreshTokenStillValid(username, refreshToken))
+                        if (accessTokenNfo is not null)
                         {
-                            var user = await userManager.FindByNameAsync(username);
-                            var dtNow = DateTime.UtcNow;
-                            var userIsLockedOut = user is not null && await userManager.IsLockedOutAsync(user);
-                            var userDisabled = user is not null && user.Disabled == true;
-
-                            if (user is not null && !userIsLockedOut && !userDisabled)
-                            {
-                                var res = await jwtService.RenewAccessTokenAsync(accessToken, refreshToken, cancellationToken);
-
-                                if (res is not null)
-                                {
-                                    var opts = new CookieOptions();
-
-                                    context.HttpContext.Response.Cookies.Append(
-                                        WEB_CookieName_XAccessToken,
-                                        res.AccessToken,
-                                        new CookieOptions
-                                        {
-                                            Secure = true,
-                                            HttpOnly = true,
-                                            SameSite = SameSiteMode.Strict,
-                                            Expires = DateTimeOffset.UtcNow + builder.Configuration.GetAppConfig().Auth.Jwt.AccessTokenDuration
-                                        });
-
-                                    context.Principal = res.Principal;
-                                    context.Success();
-                                }
-                            }
+                            jwtService.AddAccessTokenToHttpResponse(context.HttpContext.Response, accessTokenNfo);
+                            context.Token = accessTokenNfo.AccessToken;
                         }
                     }
+
                 }
-            };
-
-            options.Events.OnMessageReceived = context =>
-            {
-                if (context.Request.Cookies.ContainsKey(WEB_CookieName_XAccessToken))
-                    context.Token = context.Request.Cookies[WEB_CookieName_XAccessToken];
-
-                return Task.CompletedTask;
             };
 
         });
