@@ -170,12 +170,14 @@ public static partial class Extensions
                     var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<AuthController>>();
                     var cancellationToken = context.HttpContext.RequestServices.GetRequiredService<CancellationToken>();
 
-                    logger.LogTrace($"no access token provided");
+                    // logger.LogTrace($"no access token provided");
 
                     var refreshToken = context.HttpContext.Request.Cookies[WEB_CookieName_XRefreshToken];
 
                     if (!string.IsNullOrEmpty(refreshToken))
                     {
+                        // renew access token if valid refresh token and not disabled/lockedout related user was found
+                        
                         var accessTokenNfo = await jwtService.RenewAccessTokenAsync(refreshToken, cancellationToken);
 
                         if (accessTokenNfo is not null)
