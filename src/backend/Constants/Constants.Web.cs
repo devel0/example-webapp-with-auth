@@ -9,9 +9,7 @@ public static partial class Constants
 
     public const string WEB_Cookie = "Cookie";
     public const string WEB_CookieName_XAccessToken = "X-Access-Token";    
-    public const string WEB_CookieName_XRefreshToken = "X-Refresh-Token";
-
-    public const string WEB_CookieName_XCSRFToken = "X-CSRF-TOKEN";    
+    public const string WEB_CookieName_XRefreshToken = "X-Refresh-Token";    
 
     public const string WEB_HeadersCollection_SetCookie = "Set-Cookie";
 
