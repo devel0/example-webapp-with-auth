@@ -6,16 +6,16 @@ public class AuthService : IAuthService
     readonly RoleManager<IdentityRole> roleManager;
     readonly SignInManager<ApplicationUser> signInManager;
     readonly IJWTService jwtService;
-    readonly IHttpContextAccessor httpContextAccessor;    
+    readonly IHttpContextAccessor httpContextAccessor;
     readonly ILogger<AuthService> logger;
-    readonly IConfiguration configuration;    
+    readonly IConfiguration configuration;
 
     public AuthService(
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager,
         SignInManager<ApplicationUser> signInManager,
         IJWTService jwtService,
-        IHttpContextAccessor httpContextAccessor,        
+        IHttpContextAccessor httpContextAccessor,
         ILogger<AuthService> logger,
         IConfiguration configuration
         )
@@ -24,9 +24,9 @@ public class AuthService : IAuthService
         this.roleManager = roleManager;
         this.signInManager = signInManager;
         this.jwtService = jwtService;
-        this.httpContextAccessor = httpContextAccessor;        
+        this.httpContextAccessor = httpContextAccessor;
         this.logger = logger;
-        this.configuration = configuration;        
+        this.configuration = configuration;
     }
 
     public AuthOptions AuthOptions()
@@ -151,7 +151,7 @@ public class AuthService : IAuthService
             UserName = userName,
             Email = user.Email!,
             Roles = roles,
-            Permissions = PermissionsFromRoles(roles.ToHashSet()),            
+            Permissions = PermissionsFromRoles(roles.ToHashSet()),
             RefreshTokenExpiration = refreshTokenNfo.Expiration
         };
     }
@@ -259,7 +259,7 @@ public class AuthService : IAuthService
         var quser = httpContext.User;
 
         if (quser is not null)
-        {            
+        {
             var refreshToken = jwtService.GetRefreshTokenFromHttpRequest(httpContext.Request);
             if (refreshToken is null)
                 return new RenewAccessTokenResponse { Status = RenewAccessTokenStatus.InvalidRefreshToken };
@@ -428,6 +428,8 @@ public class AuthService : IAuthService
                 Status = DeleteUserStatus.PermissionsError,
                 Errors = [$"Can't delete user (role:{editExistingUserMaxRole})."]
             };
+
+        await userManager.RemoveFromRolesAsync(userToDelete, await userManager.GetRolesAsync(userToDelete));
 
         var deleteRes = await userManager.DeleteAsync(userToDelete);
         if (!deleteRes.Succeeded)
