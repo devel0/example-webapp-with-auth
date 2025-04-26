@@ -1,6 +1,6 @@
 using ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth;
 
-namespace ExampleWebApp.Backend.Test.Basic;
+namespace ExampleWebApp.Backend.Test.Auth;
 
 public class TestJwt
   : IClassFixture<WebApplicationFactory<Program>>

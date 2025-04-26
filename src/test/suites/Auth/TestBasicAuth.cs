@@ -1,4 +1,4 @@
-namespace ExampleWebApp.Backend.Test.Basic;
+namespace ExampleWebApp.Backend.Test.Auth;
 
 public class TestBasicAuth
   : IClassFixture<WebApplicationFactory<Program>>
