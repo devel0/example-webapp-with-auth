@@ -1,24 +1,19 @@
-import {
-    APP_TITLE, APP_URL_Home, APP_URL_Login, DEFAULT_COLOR_TIPS,
-    DEFAULT_SIZE_1_REM, LOCAL_STORAGE_CURRENT_USER_NFO,
-    LOCAL_STORAGE_REFRESH_TOKEN_EXPIRE
-} from '../constants/general'
-import { Box, Button, Container, CssBaseline, LinearProgress, TextField, Typography } from '@mui/material'
+import { APP_TITLE, APP_URL_Home, APP_URL_Login, DEFAULT_COLOR_TIPS, DEFAULT_SIZE_1_REM } from '../constants/general'
 import { authApi } from '../axios.manager'
 import { AxiosError } from 'axios'
+import { Box, Button, Container, CssBaseline, LinearProgress, TextField, Typography } from '@mui/material'
 import { CurrentUserNfo } from '../types/CurrentUserNfo'
-import { GlobalState } from '../redux/states/GlobalState'
 import { handleApiException, nullOrUndefined, setSnack } from '../utils/utils'
-import { setSuccessfulLogin, setUrlWanted } from '../redux/slices/globalSlice'
-import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
+import { useGlobalPersistService } from '../services/globalPersistService'
+import { useGlobalService } from '../services/globalService'
 import { useNavigate } from 'react-router'
 import { useParams } from 'react-router-dom'
 import AppLogo from '../images/app-icon.svg?react'
 import React, { useEffect, useState } from 'react'
 
 export const LoginPage = () => {
-    const global = useAppSelector<GlobalState>((state) => state.global)
-    const dispatch = useAppDispatch()
+    const globalState = useGlobalService()
+    const globalPersistState = useGlobalPersistService()
     const navigate = useNavigate()
     const params = useParams()
     const [usernameOrEmailField, setUsernameOrEmailField] = useState("")
@@ -28,7 +23,7 @@ export const LoginPage = () => {
 
     useEffect(() => {
         if (params.from && params.from !== ':from') {
-            dispatch(setUrlWanted(params.from))
+            globalState.setUrlWanted(params.from)
         }
         if (params.token && params.token !== ":token") {
             setResetPasswordToken(params.token)
@@ -36,18 +31,19 @@ export const LoginPage = () => {
     }, [params])
 
     useEffect(() => {
-        if (global.currentUserInitialized && global.currentUser) {
-            if (global.urlWanted && global.urlWanted !== APP_URL_Login()) {
-                const urlWanted = global.urlWanted
+        if (globalPersistState.currentUserInitialized && globalPersistState.currentUser != null) {
+            if (globalState.urlWanted != null && globalState.urlWanted !== APP_URL_Login()) {
+                const urlWanted = globalState.urlWanted
 
-                dispatch(setUrlWanted(undefined))
+                globalState.setUrlWanted(null)
+
                 navigate(urlWanted)
             }
             else {
                 navigate(APP_URL_Home)
             }
         }
-    }, [global.currentUser, global.currentUserInitialized])
+    }, [globalPersistState.currentUser, globalPersistState.currentUserInitialized])
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -89,18 +85,10 @@ export const LoginPage = () => {
                         permissions: Array.from(response.data.permissions ?? [])
                     }
 
-                    dispatch(setSuccessfulLogin(currentUser));
-
-                    localStorage.setItem(
-                        LOCAL_STORAGE_CURRENT_USER_NFO,
-                        JSON.stringify(currentUser)
-                    );
+                    globalPersistState.setCurrentUser(currentUser)
 
                     if (response.data.refreshTokenExpiration)
-                        localStorage.setItem(
-                            LOCAL_STORAGE_REFRESH_TOKEN_EXPIRE,
-                            response.data.refreshTokenExpiration
-                        );
+                        globalPersistState.setRefreshTokenExpiration(response.data.refreshTokenExpiration)
                 }
                 else
                     setSnack({

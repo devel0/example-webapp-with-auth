@@ -1,18 +1,15 @@
 import { authApi } from "../axios.manager";
 import { AuthOptions, EditUserRequestDto } from "../../api";
 import { AxiosError } from "axios";
-import {
-    Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Table, TableBody, TableCell,
-    TableRow, TextField, Typography, useTheme
-} from "@mui/material"
+import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Table, TableBody, TableCell, TableRow, TextField, Typography, useTheme } from "@mui/material"
 import { DEFAULT_FONTWEIGHT_600, DEFAULT_SIZE_1_REM, DEFAULT_SIZE_0_5_REM } from "../constants/general"
 import { emailIsValid } from "../utils/email-validator";
 import { from } from "linq-to-typescript";
-import { GlobalState } from "../redux/states/GlobalState"
 import { handleApiException, nullOrUndefined, setSnack } from "../utils/utils";
 import { passwordIsValid } from "../utils/password-validator";
-import { useAppDispatch, useAppSelector } from "../redux/hooks/hooks"
 import { useEffect, useState } from "react";
+import { useGlobalPersistService } from "../services/globalPersistService";
+import { useGlobalService } from "../services/globalService";
 import { usernameIsValid } from "../utils/username-validator";
 import CloseIcon from '@mui/icons-material/Close';
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
@@ -29,9 +26,9 @@ export const EditUserDialog = (props: {
     setUserData: React.Dispatch<React.SetStateAction<EditUserRequestDto>>,
     refreshList: () => void
 }) => {
-    const { open, setOpen, userData, setUserData, refreshList } = props
-    const global = useAppSelector<GlobalState>((state) => state.global)
-    const dispatch = useAppDispatch()
+    const globalState = useGlobalService()
+    const globalPersistState = useGlobalPersistService()
+    const { open, setOpen, userData, setUserData, refreshList } = props    
     const theme = useTheme()
     const [autoValidate, setAutoValidate] = useState(false)
     const [usernameValid, setUsernameValid] = useState<boolean | undefined>(undefined)
@@ -41,7 +38,7 @@ export const EditUserDialog = (props: {
     const [allRoles, setAllRoles] = useState<string[] | undefined>(undefined)
 
     useEffect(() => {
-        if (global.currentUser) {
+        if (globalPersistState.currentUser != null) {
             authApi.apiAuthAuthOptionsGet().then(res => {
                 setAuthOptions(res.data)
             })
@@ -50,7 +47,7 @@ export const EditUserDialog = (props: {
                 setAllRoles(from(res.data).orderBy(w => w).toArray())
             })
         }
-    }, [global.currentUser])
+    }, [globalPersistState.currentUser])
 
     useEffect(() => {
         if (authOptions) {

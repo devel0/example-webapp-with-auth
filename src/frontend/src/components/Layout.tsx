@@ -2,10 +2,9 @@ import { AboutDialog } from '../dialogs/AboutDialog';
 import { APP_URL_Users, DEFAULT_SIZE_0_5_REM } from '../constants/general'
 import { authApi } from '../axios.manager';
 import { Box, LinearProgress } from '@mui/material'
-import { GlobalState } from '../redux/states/GlobalState'
 import { ReactNode, useState } from 'react'
-import { setLoggedOut } from '../redux/slices/globalSlice'
-import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
+import { useGlobalPersistService } from '../services/globalPersistService';
+import { useGlobalService } from '../services/globalService';
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useLoginManager } from '../hooks/useLoginManager';
 import { useMobileDetect } from '../hooks/useMobileDetect';
@@ -17,8 +16,8 @@ type Props = {
 }
 
 const MainLayout = (props: Props) => {
-    const global = useAppSelector<GlobalState>((state) => state.global)
-    const dispatch = useAppDispatch()
+    const globalState = useGlobalService()
+    const globalPersistState = useGlobalPersistService()
     const navigate = useNavigate()
     const location = useLocation()
     const [aboutDialogOpen, setAboutDialogOpen] = useState(false)
@@ -29,7 +28,7 @@ const MainLayout = (props: Props) => {
 
     const menuPages: AppBarItem[] = [
         {
-            hidden: !global.currentUserCanManageUsers,
+            hidden: !globalPersistState.currentUserCanManageUsers(),
             label: 'Users',
             selected: location.pathname === APP_URL_Users,
             url: APP_URL_Users
@@ -43,7 +42,7 @@ const MainLayout = (props: Props) => {
     const menuSettings: AppBarItem[] = [
 
         {
-            label: `${global.currentUser?.userName}`
+            label: `${globalPersistState.currentUser?.userName}`
         },
 
         // {
@@ -57,7 +56,7 @@ const MainLayout = (props: Props) => {
             onClick: async () => {
                 await authApi.apiAuthLogoutGet()
 
-                dispatch(setLoggedOut())
+                globalPersistState.setLogout()
             }
         }
     ]
@@ -69,7 +68,7 @@ const MainLayout = (props: Props) => {
             <ResponsiveAppBar pages={menuPages} settings={menuSettings} />
 
             <Box sx={{ minHeight: DEFAULT_SIZE_0_5_REM }}>
-                {global.generalNetwork && <LinearProgress />}
+                {globalState.generalNetwork && <LinearProgress />}
             </Box>
 
             {props.child}

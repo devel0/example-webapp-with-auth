@@ -1,8 +1,8 @@
 import { APP_LOGO_TEXT, DEFAULT_SIZE_1_REM, DEFAULT_SIZE_0_5_REM, APP_URL_Home } from '../constants/general';
 import { firstLetter, LinkButton } from '../utils/utils';
-import { GlobalState } from '../redux/states/GlobalState';
 import { Link } from "react-router-dom"
-import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks';
+import { useGlobalPersistService } from '../services/globalPersistService';
+import { useGlobalService } from '../services/globalService';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material';
 import * as React from 'react';
@@ -30,10 +30,10 @@ export interface AppBarItem {
 
 function ResponsiveAppBar(props: {
     pages: AppBarItem[],
-    settings: AppBarItem[]    
+    settings: AppBarItem[]
 }) {
-    const global = useAppSelector<GlobalState>((state) => state.global)
-    const dispatch = useAppDispatch()
+    const globalState = useGlobalService()
+    const globalPersistState = useGlobalPersistService()
     const navigate = useNavigate()
     const theme = useTheme()
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
@@ -67,7 +67,7 @@ function ResponsiveAppBar(props: {
                      DESKTOP LOGO                     
                     -----------------------------------------------------------------------
                     */}
-                    {global.isMobile === false && <div
+                    {globalState.isMobile === false && <div
                         onClick={() => navigate(APP_URL_Home)}
                         style={{
                             display: 'flex',
@@ -107,7 +107,7 @@ function ResponsiveAppBar(props: {
                      DESKTOP MENU                     
                     -----------------------------------------------------------------------
                     */}
-                    {global.isMobile === false && <Box sx={{
+                    {globalState.isMobile === false && <Box sx={{
                         flexGrow: 1,
                         display: 'flex'
                     }}>
@@ -137,7 +137,7 @@ function ResponsiveAppBar(props: {
                      MOBILE MENU                     
                     -----------------------------------------------------------------------
                     */}
-                    {global.isMobile && <Box sx={{ flexGrow: 0, display: 'flex', gap: DEFAULT_SIZE_0_5_REM, alignItems: 'center' }}>
+                    {globalState.isMobile && <Box sx={{ flexGrow: 0, display: 'flex', gap: DEFAULT_SIZE_0_5_REM, alignItems: 'center' }}>
                         <IconButton
                             size="large"
                             aria-label="account of current user"
@@ -206,7 +206,7 @@ function ResponsiveAppBar(props: {
                      MOBILE LOGO                     
                     -----------------------------------------------------------------------
                     */}
-                    {global.isMobile && <div
+                    {globalState.isMobile && <div
                         onClick={() => navigate(APP_URL_Home)}
                         style={{
                             display: 'flex',
@@ -239,7 +239,7 @@ function ResponsiveAppBar(props: {
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                                 <Avatar>
-                                    {firstLetter(global.currentUser?.userName, true)}
+                                    {firstLetter(globalPersistState.currentUser?.userName, true)}
                                 </Avatar>
                             </IconButton>
                         </Tooltip>

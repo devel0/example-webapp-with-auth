@@ -1,17 +1,17 @@
 
 import { APP_TITLE, DEFAULT_SIZE_1_REM } from '../constants/general'
+import { authApi, mainApi } from '../axios.manager'
 import { AxiosError } from 'axios'
 import { Box, Button } from '@mui/material'
 import { from } from 'linq-to-typescript'
-import { GlobalState } from '../redux/states/GlobalState'
 import { handleApiException, setSnack } from '../utils/utils'
-import { authApi, mainApi } from '../axios.manager'
-import { useAppDispatch, useAppSelector } from '../redux/hooks/hooks'
 import { useEffect } from 'react'
+import { useGlobalPersistService } from '../services/globalPersistService'
+import { useGlobalService } from '../services/globalService'
 
 export const MainPage = () => {
-    const global = useAppSelector<GlobalState>((state) => state.global)
-    const dispatch = useAppDispatch()
+    const globalState = useGlobalService()
+    const globalPersistState = useGlobalPersistService()    
 
     useEffect(() => {
         document.title = `${APP_TITLE} - Dashboard`
@@ -27,13 +27,13 @@ export const MainPage = () => {
     return (
         <Box m={DEFAULT_SIZE_1_REM}>
             master page<br />
-            current user: {global.currentUser?.userName}<br />
-            roles: {from(global.currentUser?.roles ?? [])}<br />
+            current user: {globalPersistState.currentUser?.userName}<br />
+            roles: {from(globalPersistState.currentUser?.roles ?? [])}<br />
 
             <Button onClick={async () => {
                 try {
                     // await authApi.apiAuthRenewAccessTokenGet();
-                    
+
                     await mainApi.apiMainLongRunningGet()
 
                     setSnack({

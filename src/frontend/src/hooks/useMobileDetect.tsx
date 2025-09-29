@@ -1,12 +1,11 @@
 import { useEventListener } from "usehooks-ts"
-import { useAppSelector, useAppDispatch } from "../redux/hooks/hooks"
-import { setIsMobile } from "../redux/slices/globalSlice"
-import { GlobalState } from "../redux/states/GlobalState"
 import { computeIsMobile } from "../utils/utils"
+import { useGlobalPersistService } from "../services/globalPersistService"
+import { useGlobalService } from "../services/globalService"
 
 export const useMobileDetect = () => {
-    const global = useAppSelector<GlobalState>((state) => state.global)
-    const dispatch = useAppDispatch()
+    const globalState = useGlobalService()
+    const globalPersistState = useGlobalPersistService()
 
-    useEventListener('resize', () => dispatch(setIsMobile(computeIsMobile())))
+    useEventListener('resize', () => globalState.setIsMobile(computeIsMobile()))
 }

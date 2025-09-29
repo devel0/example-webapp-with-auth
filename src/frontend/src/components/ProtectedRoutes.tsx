@@ -1,21 +1,22 @@
 // https://github.com/remix-run/react-router/issues/10637#issuecomment-1802180978
 
 import { APP_URL_Login } from '../constants/general';
-import { GlobalState } from '../redux/states/GlobalState'
 import { Navigate } from 'react-router'
 import { Outlet } from "react-router-dom";
-import { useAppSelector } from '../redux/hooks/hooks'
 import Layout from './Layout';
+import { useGlobalPersistService } from '../services/globalPersistService';
+import { useGlobalService } from '../services/globalService';
 
 const ProtectedRoutes = () => {
-    const global = useAppSelector<GlobalState>((state) => state.global)    
+    const globalState = useGlobalService()
+    const globalPersistState = useGlobalPersistService()
 
     const loginRedirectUrlFrom = () => {
         if (location.pathname !== APP_URL_Login())
             return encodeURIComponent(location.pathname)
     }
 
-    return global.currentUser
+    return (globalPersistState.currentUser != null)
         ?
         <Layout child={<Outlet />} />
         :

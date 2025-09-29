@@ -31,11 +31,7 @@ export const APP_URL_Users =
 
 //------------------------------------------ urls (end)
 
-export const LOCAL_STORAGE_CURRENT_USER_NFO = "currentUserNfo";
-
-export const LOCAL_STORAGE_THEME = "theme";
-
-export const LOCAL_STORAGE_REFRESH_TOKEN_EXPIRE = "refreshTokenExpire";
+export const LOCAL_STORAGE_DATA = "data"
 
 /** invoke RenewRefreshToken api before expiration */
 export const RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC = import.meta.env.DEV ? 10 : 30;

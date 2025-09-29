@@ -58,7 +58,7 @@
 
 - Frontend
   - Typescript react frontend + vite tooling
-  - React redux `GlobalState` for current user
+  - React zustand `GlobalState` for current user
   - Layout with responsive appbar, public and protected pages with react router dom
   - Openapi typescript/axios generate from backend swagger endpoint
   - Login / Logout / Reset lost password through email link
@@ -114,11 +114,8 @@
     │       ├── dialogs
     │       ├── images
     │       ├── pages
-    │       ├── redux
-    │       │   ├── hooks
-    │       │   ├── slices
-    │       │   ├── states
-    │       │   └── stores
+    │       ├── services
+    │       │   └── abstractions
     │       ├── styles
     │       ├── types
     │       └── utils
@@ -763,7 +760,7 @@ npm create vite@latest frontend -- --template react-ts
 cd frontend
 npm i --save-dev @vitejs/plugin-react
 npm i @mui/material @emotion/react @emotion/styled @mui/icons-material
-npm i @reduxjs/toolkit react-redux react-router-dom axios linq-to-typescript usehooks-ts @fontsource/roboto
+npm i zustand react-router-dom axios linq-to-typescript usehooks-ts @fontsource/roboto
 cd ..
 dotnet new sln
 dotnet sln add src/webapi

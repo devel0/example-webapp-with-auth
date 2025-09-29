@@ -1,43 +1,35 @@
-import {
-    APP_URL_Login, LOCAL_STORAGE_CURRENT_USER_NFO, LOCAL_STORAGE_REFRESH_TOKEN_EXPIRE,
-    RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC
-} from "../constants/general"
+import { APP_URL_Login, RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC } from "../constants/general"
 import { authApi } from "../axios.manager"
 import { CurrentUserNfo } from "../types/CurrentUserNfo"
-import { GlobalState } from "../redux/states/GlobalState"
 import { handleApiException } from "../utils/utils"
 import { HttpStatusCode, AxiosError } from "axios"
-import { setSuccessfulLogin, setUrlWanted } from "../redux/slices/globalSlice"
-import { useAppSelector, useAppDispatch } from "../redux/hooks/hooks"
 import { useEffect } from "react"
+import { useGlobalPersistService } from "../services/globalPersistService"
+import { useGlobalService } from "../services/globalService"
 import { useNavigate } from "react-router-dom"
 
-let handlerRegistered = false
-
 export const useLoginManager = () => {
-    const global = useAppSelector<GlobalState>((state) => state.global)
-    const dispatch = useAppDispatch()
+    const globalState = useGlobalService()
+    const globalPersistState = useGlobalPersistService()
     const navigate = useNavigate()
 
     useEffect(() => {
-        if (!handlerRegistered && global.currentUserInitialized) {
-
-            handlerRegistered = true            
+        if (globalPersistState.hydrated) {
 
             const act = () => {
-                const q = localStorage.getItem(LOCAL_STORAGE_REFRESH_TOKEN_EXPIRE);
-                if (q) {
-                    const refreshTokenExpire = new Date(q);                    
+                const q = globalPersistState.refreshTokenExpiration
+                if (q != null) {
+                    const refreshTokenExpire = new Date(q);
 
-                    const renewAt = new Date(refreshTokenExpire.getTime() - RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC * 1e3);
+                    const renewAt = new Date(refreshTokenExpire.getTime() - RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC * 1e3)
                     const now = new Date()
                     if (now.getTime() < renewAt.getTime()) {
                         console.log(`Renew refresh token at ${renewAt}`)
-                        setTimeout(async () => {                            
+                        setTimeout(async () => {
                             try {
-                                const res = await authApi.apiAuthRenewRefreshTokenPost();
+                                const res = await authApi.apiAuthRenewRefreshTokenPost()
                                 if (res.data.refreshTokenNfo?.expiration) {
-                                    localStorage.setItem(LOCAL_STORAGE_REFRESH_TOKEN_EXPIRE, res.data.refreshTokenNfo.expiration);
+                                    globalPersistState.setRefreshTokenExpiration(res.data.refreshTokenNfo.expiration)
                                     act()
                                 }
                             } catch (ex_) {
@@ -51,10 +43,10 @@ export const useLoginManager = () => {
 
             act()
         }
-    }, [global.currentUserInitialized])
+    }, [globalPersistState.hydrated])
 
     useEffect(() => {
-        if (location.pathname !== APP_URL_Login() && (!global.currentUserInitialized || !global.currentUser)) {
+        if (location.pathname !== APP_URL_Login() && (!globalPersistState.currentUserInitialized || globalPersistState.currentUser == null)) {
 
             authApi.apiAuthCurrentUserGet()
                 .then(res => {
@@ -66,10 +58,11 @@ export const useLoginManager = () => {
                             permissions: Array.from(res.data.permissions ?? [])
                         }
 
-                        dispatch(setSuccessfulLogin(currentUser))
+                        globalPersistState.setCurrentUser(currentUser)
                     }
                     else {
-                        dispatch(setUrlWanted(location.pathname))
+                        globalState.setUrlWanted(location.pathname)
+
                         navigate(APP_URL_Login())
                     }
                 })
@@ -78,12 +71,14 @@ export const useLoginManager = () => {
 
                     if (err.response?.status === HttpStatusCode.Unauthorized) {
                         if (document.location.pathname !== APP_URL_Login()) {
-                            dispatch(setUrlWanted(location.pathname))
-                            localStorage.removeItem(LOCAL_STORAGE_CURRENT_USER_NFO)
+                            globalState.setUrlWanted(location.pathname)
+
+                            globalPersistState.setLogout()
+
                             document.location = APP_URL_Login()
                         }
                     }
                 })
         }
-    }, [location.pathname, global.currentUser, global.currentUserInitialized])
+    }, [location.pathname, globalPersistState.currentUser, globalPersistState.currentUserInitialized])
 }

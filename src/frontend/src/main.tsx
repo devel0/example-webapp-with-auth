@@ -1,11 +1,10 @@
 /// <reference types="vite-plugin-svgr/client" />
+
 import './index.css'
 import { APP_TITLE } from './constants/general.ts'
 import { blue, green, orange, red } from '@mui/material/colors'
 import { createRoot } from 'react-dom/client'
 import { MaterialDesignContent, SnackbarProvider } from 'notistack'
-import { Provider } from 'react-redux'
-import { store } from './redux/stores/store.ts'
 import { StrictMode } from 'react'
 import { styled } from '@mui/material'
 import App from './App.tsx'
@@ -29,16 +28,14 @@ const StyledMaterialDesignContent = styled(MaterialDesignContent)(() => ({
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Provider store={store}>
-      <SnackbarProvider Components={{
-        success: StyledMaterialDesignContent,
-        error: StyledMaterialDesignContent,
-        warning: StyledMaterialDesignContent,
-        info: StyledMaterialDesignContent
-      }}>
-        <App />
-      </SnackbarProvider>
-    </Provider>
+    <SnackbarProvider Components={{
+      success: StyledMaterialDesignContent,
+      error: StyledMaterialDesignContent,
+      warning: StyledMaterialDesignContent,
+      info: StyledMaterialDesignContent
+    }}>
+      <App />
+    </SnackbarProvider>
   </StrictMode>,
 )
 // If you want your app to work offline and load faster, you can change

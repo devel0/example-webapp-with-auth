@@ -9,7 +9,7 @@ public static partial class Extensions
     /// from environment variables ( replacing : with __ )
     /// </summary>    
     public static void SetupAppSettings(this IConfigurationBuilder config, string environmentName)
-    {        
+    {
         var appsettingsBase = Path.Combine(
             AppDomain.CurrentDomain.BaseDirectory,
             "appsettings.json");
@@ -31,8 +31,8 @@ public static partial class Extensions
 
             .AddEnvironmentVariables()
 
-            .AddUserSecrets(Assembly.GetExecutingAssembly())
-            ;
+            .AddUserSecrets<AppConfig>()
+            ;                                    
     }
 
 }

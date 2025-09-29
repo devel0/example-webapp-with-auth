@@ -6,14 +6,14 @@ import { ConfirmDialog, ConfirmDialogCloseResult, ConfirmDialogProps } from "../
 import { DataGrid, GridColDef } from "@mui/x-data-grid"
 import { EditUserDialog, NewUserDataSample } from "../dialogs/EditUserDialog"
 import { EditUserRequestDto, UserListItemResponseDto } from "../../api"
-import { GlobalState } from "../redux/states/GlobalState"
 import { handleApiException, setSnack } from "../utils/utils"
-import { useAppDispatch, useAppSelector } from "../redux/hooks/hooks"
 import { useEffect, useState } from "react"
+import { useGlobalPersistService } from "../services/globalPersistService"
+import { useGlobalService } from "../services/globalService"
 
 export const UsersPage = () => {
-    const global = useAppSelector<GlobalState>((state) => state.global)
-    const dispatch = useAppDispatch()
+    const globalState = useGlobalService()
+    const globalPersistState = useGlobalPersistService()
     const [users, setUsers] = useState<UserListItemResponseDto[]>([])
     const [editUserDialogOpen, setEditUserDialogOpen] = useState(false)
     const [selectedUsername, setSelectedUsername] = useState<string | undefined>(undefined)
@@ -84,8 +84,8 @@ export const UsersPage = () => {
                         if (res.data.length > 0) {
                             const user = res.data[0]
                             setUserData({
-                                existingUsername: user.userName!,                                
-                                editEmail: user.email,                                
+                                existingUsername: user.userName!,
+                                editEmail: user.email,
                                 editRoles: user.roles,
                                 editDisabled: user.disabled
                             })

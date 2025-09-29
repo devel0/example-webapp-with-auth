@@ -1,61 +1,66 @@
-import { API_URL, APP_URL_Login, LOCAL_STORAGE_CURRENT_USER_NFO } from "./constants/general"
+import { API_URL, APP_URL_Login } from "./constants/general"
 import { AuthApi, Configuration, MainApi } from "../api"
-import { setGeneralNetwork } from "./redux/slices/globalSlice";
 import { setSnack } from "./utils/utils";
-import { store } from "./redux/stores/store";
+import { useEffect } from "react";
+import { useGlobalPersistService } from "./services/globalPersistService";
+import { useGlobalService } from "./services/globalService";
 import axios, { AxiosError, HttpStatusCode } from "axios";
 
-export const ConfigAxios = () => {
+export const useAxiosConfig = () => {
+  const globalState = useGlobalService()
+  const globalPersistState = useGlobalPersistService()
 
-  axios.defaults.withCredentials = true
+  useEffect(() => {
+    axios.defaults.withCredentials = true
 
-  axios.interceptors.request.use(
-    async (config) => {
-      store.dispatch(setGeneralNetwork(true))
+    axios.interceptors.request.use(
+      async (config) => {
+        globalState.setGeneralNetwork(true)
 
-      return config
-    },
+        return config
+      },
 
-    (error) => {
-      Promise.reject(error)
-    }
-  )
+      (error) => {
+        Promise.reject(error)
+      }
+    )
 
-  axios.interceptors.response.use(
-    (response) => {
-      store.dispatch(setGeneralNetwork(false))
+    axios.interceptors.response.use(
+      (response) => {
+        globalState.setGeneralNetwork(false)      
 
-      return response
-    },
+        return response
+      },
 
-    (error: AxiosError) => {
-      store.dispatch(setGeneralNetwork(false))
+      (error: AxiosError) => {
+        globalState.setGeneralNetwork(false)        
 
-      if (error?.response?.status === HttpStatusCode.Unauthorized) {
-        if (document.location.pathname !== APP_URL_Login()) {
-          localStorage.removeItem(LOCAL_STORAGE_CURRENT_USER_NFO)
-          document.location = APP_URL_Login()
+        if (error?.response?.status === HttpStatusCode.Unauthorized) {
+          if (document.location.pathname !== APP_URL_Login()) {
+            globalPersistState.setLogout()
+            document.location = APP_URL_Login()
+          }
+
+          return
         }
+        else if (error?.response?.status === HttpStatusCode.BadGateway) {
+          setSnack({
+            title: "Network error",
+            msg: ["Backend server unreachable"],
+            type: 'error'
+          })
 
-        return
+          return
+        }
+        // else handleApiException(error)
+
+        return Promise.reject(error);
       }
-      else if (error?.response?.status === HttpStatusCode.BadGateway) {
-        setSnack({
-          title: "Network error",
-          msg: ["Backend server unreachable"],
-          type: 'error'
-        })
+    )
 
-        return
-      }
-      // else handleApiException(error)
-
-      return Promise.reject(error);
-    }
-  )
+  }, [])
 
 }
-
 
 export const authApi = new AuthApi(new Configuration({
   basePath: API_URL()

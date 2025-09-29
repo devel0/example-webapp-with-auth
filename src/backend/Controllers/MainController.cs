@@ -21,10 +21,10 @@ public class MainController : ControllerBase
     }
 
     /// <summary>
-    /// Long running api test.
+    /// Long running api test. ( admin and users allowed )
     /// </summary>    
     [HttpGet]    
-    [Authorize(Roles = ROLE_admin)]
+    [Authorize(Roles = $"{ROLE_admin},{ROLE_normal}")]
     public async Task<ActionResult> LongRunning()
     {
         logger.LogDebug("Started long running op");
@@ -37,7 +37,7 @@ public class MainController : ControllerBase
     }
 
     /// <summary>
-    /// Generate test exception.
+    /// Generate test exception. ( only admin )
     /// </summary>    
     [HttpGet]
     [Authorize(Roles = ROLE_admin)]
