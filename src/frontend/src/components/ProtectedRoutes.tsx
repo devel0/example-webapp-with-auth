@@ -5,18 +5,16 @@ import { Navigate } from 'react-router'
 import { Outlet } from "react-router-dom";
 import Layout from './Layout';
 import { useGlobalPersistService } from '../services/globalPersistService';
-import { useGlobalService } from '../services/globalService';
 
 const ProtectedRoutes = () => {
-    const globalState = useGlobalService()
-    const globalPersistState = useGlobalPersistService()
+    const currentUser = useGlobalPersistService(x => x.currentUser)
 
     const loginRedirectUrlFrom = () => {
         if (location.pathname !== APP_URL_Login())
             return encodeURIComponent(location.pathname)
     }
 
-    return (globalPersistState.currentUser != null)
+    return (currentUser != null)
         ?
         <Layout child={<Outlet />} />
         :

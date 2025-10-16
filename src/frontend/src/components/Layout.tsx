@@ -16,8 +16,9 @@ type Props = {
 }
 
 const MainLayout = (props: Props) => {
-    const globalState = useGlobalService()
+    const generalNetwork = useGlobalService(x => x.generalNetwork)
     const globalPersistState = useGlobalPersistService()
+    
     const navigate = useNavigate()
     const location = useLocation()
     const [aboutDialogOpen, setAboutDialogOpen] = useState(false)
@@ -68,7 +69,7 @@ const MainLayout = (props: Props) => {
             <ResponsiveAppBar pages={menuPages} settings={menuSettings} />
 
             <Box sx={{ minHeight: DEFAULT_SIZE_0_5_REM }}>
-                {globalState.generalNetwork && <LinearProgress />}
+                {generalNetwork && <LinearProgress />}
             </Box>
 
             {props.child}

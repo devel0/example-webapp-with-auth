@@ -11,17 +11,16 @@ import { useGlobalPersistService } from '../services/globalPersistService';
 import { useGlobalService } from '../services/globalService';
 
 export const Colors = {
-  primary: "primary.main",
-  secondary: "secondary.main",
-  error: "error.main",
-  warning: "warning.main",
-  info: "info.main",
-  success: "success.main",
+    primary: "primary.main",
+    secondary: "secondary.main",
+    error: "error.main",
+    warning: "warning.main",
+    info: "info.main",
+    success: "success.main",
 };
 
 export const useThemeFollower = () => {
-    const globalState = useGlobalService()
-    const globalPersistState = useGlobalPersistService()
+    const themePalette = useGlobalPersistService(x => x.themePalette)
 
     const commonThemeOptions: ThemeOptions = {
         typography: {
@@ -79,7 +78,7 @@ export const useThemeFollower = () => {
         },
     };
 
-    const isLightTheme = globalPersistState.themePalette == THEME_LIGHT
+    const isLightTheme = themePalette == THEME_LIGHT
 
     const theme = createTheme(isLightTheme ? lightThemeOptions : darkThemeOptions);
 

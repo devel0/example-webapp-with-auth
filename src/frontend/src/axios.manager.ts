@@ -7,7 +7,8 @@ import { useGlobalService } from "./services/globalService";
 import axios, { AxiosError, HttpStatusCode } from "axios";
 
 export const useAxiosConfig = () => {
-  const globalState = useGlobalService()
+  const setGeneralNetwork = useGlobalService(x => x.setGeneralNetwork)
+  
   const globalPersistState = useGlobalPersistService()
 
   useEffect(() => {
@@ -15,7 +16,7 @@ export const useAxiosConfig = () => {
 
     axios.interceptors.request.use(
       async (config) => {
-        globalState.setGeneralNetwork(true)
+        setGeneralNetwork(true)
 
         return config
       },
@@ -27,13 +28,13 @@ export const useAxiosConfig = () => {
 
     axios.interceptors.response.use(
       (response) => {
-        globalState.setGeneralNetwork(false)      
+        setGeneralNetwork(false)
 
         return response
       },
 
       (error: AxiosError) => {
-        globalState.setGeneralNetwork(false)        
+        setGeneralNetwork(false)
 
         if (error?.response?.status === HttpStatusCode.Unauthorized) {
           if (document.location.pathname !== APP_URL_Login()) {

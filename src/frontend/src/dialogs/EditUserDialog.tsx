@@ -9,7 +9,6 @@ import { handleApiException, nullOrUndefined, setSnack } from "../utils/utils";
 import { passwordIsValid } from "../utils/password-validator";
 import { useEffect, useState } from "react";
 import { useGlobalPersistService } from "../services/globalPersistService";
-import { useGlobalService } from "../services/globalService";
 import { usernameIsValid } from "../utils/username-validator";
 import CloseIcon from '@mui/icons-material/Close';
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
@@ -26,9 +25,9 @@ export const EditUserDialog = (props: {
     setUserData: React.Dispatch<React.SetStateAction<EditUserRequestDto>>,
     refreshList: () => void
 }) => {
-    const globalState = useGlobalService()
-    const globalPersistState = useGlobalPersistService()
-    const { open, setOpen, userData, setUserData, refreshList } = props    
+    const currentUser = useGlobalPersistService(x => x.currentUser)
+    
+    const { open, setOpen, userData, setUserData, refreshList } = props
     const theme = useTheme()
     const [autoValidate, setAutoValidate] = useState(false)
     const [usernameValid, setUsernameValid] = useState<boolean | undefined>(undefined)
@@ -38,7 +37,7 @@ export const EditUserDialog = (props: {
     const [allRoles, setAllRoles] = useState<string[] | undefined>(undefined)
 
     useEffect(() => {
-        if (globalPersistState.currentUser != null) {
+        if (currentUser != null) {
             authApi.apiAuthAuthOptionsGet().then(res => {
                 setAuthOptions(res.data)
             })
@@ -47,7 +46,7 @@ export const EditUserDialog = (props: {
                 setAllRoles(from(res.data).orderBy(w => w).toArray())
             })
         }
-    }, [globalPersistState.currentUser])
+    }, [currentUser])
 
     useEffect(() => {
         if (authOptions) {

@@ -8,12 +8,8 @@ import { EditUserDialog, NewUserDataSample } from "../dialogs/EditUserDialog"
 import { EditUserRequestDto, UserListItemResponseDto } from "../../api"
 import { handleApiException, setSnack } from "../utils/utils"
 import { useEffect, useState } from "react"
-import { useGlobalPersistService } from "../services/globalPersistService"
-import { useGlobalService } from "../services/globalService"
 
-export const UsersPage = () => {
-    const globalState = useGlobalService()
-    const globalPersistState = useGlobalPersistService()
+export const UsersPage = () => {    
     const [users, setUsers] = useState<UserListItemResponseDto[]>([])
     const [editUserDialogOpen, setEditUserDialogOpen] = useState(false)
     const [selectedUsername, setSelectedUsername] = useState<string | undefined>(undefined)

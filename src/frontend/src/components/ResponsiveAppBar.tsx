@@ -32,8 +32,9 @@ function ResponsiveAppBar(props: {
     pages: AppBarItem[],
     settings: AppBarItem[]
 }) {
-    const globalState = useGlobalService()
-    const globalPersistState = useGlobalPersistService()
+    const isMobile = useGlobalService(x => x.isMobile)
+    const currentUser = useGlobalPersistService(x => x.currentUser)
+    
     const navigate = useNavigate()
     const theme = useTheme()
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
@@ -67,7 +68,7 @@ function ResponsiveAppBar(props: {
                      DESKTOP LOGO                     
                     -----------------------------------------------------------------------
                     */}
-                    {globalState.isMobile === false && <div
+                    {isMobile === false && <div
                         onClick={() => navigate(APP_URL_Home)}
                         style={{
                             display: 'flex',
@@ -107,7 +108,7 @@ function ResponsiveAppBar(props: {
                      DESKTOP MENU                     
                     -----------------------------------------------------------------------
                     */}
-                    {globalState.isMobile === false && <Box sx={{
+                    {isMobile === false && <Box sx={{
                         flexGrow: 1,
                         display: 'flex'
                     }}>
@@ -137,7 +138,7 @@ function ResponsiveAppBar(props: {
                      MOBILE MENU                     
                     -----------------------------------------------------------------------
                     */}
-                    {globalState.isMobile && <Box sx={{ flexGrow: 0, display: 'flex', gap: DEFAULT_SIZE_0_5_REM, alignItems: 'center' }}>
+                    {isMobile && <Box sx={{ flexGrow: 0, display: 'flex', gap: DEFAULT_SIZE_0_5_REM, alignItems: 'center' }}>
                         <IconButton
                             size="large"
                             aria-label="account of current user"
@@ -206,7 +207,7 @@ function ResponsiveAppBar(props: {
                      MOBILE LOGO                     
                     -----------------------------------------------------------------------
                     */}
-                    {globalState.isMobile && <div
+                    {isMobile && <div
                         onClick={() => navigate(APP_URL_Home)}
                         style={{
                             display: 'flex',
@@ -239,7 +240,7 @@ function ResponsiveAppBar(props: {
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                                 <Avatar>
-                                    {firstLetter(globalPersistState.currentUser?.userName, true)}
+                                    {firstLetter(currentUser?.userName, true)}
                                 </Avatar>
                             </IconButton>
                         </Tooltip>

@@ -9,15 +9,23 @@ import { useGlobalService } from "../services/globalService"
 import { useNavigate } from "react-router-dom"
 
 export const useLoginManager = () => {
-    const globalState = useGlobalService()
-    const globalPersistState = useGlobalPersistService()
+    const setUrlWanted = useGlobalService(x => x.setUrlWanted)
+
+    const setRefreshTokenExpiration = useGlobalPersistService(x => x.setRefreshTokenExpiration)
+    const setLogout = useGlobalPersistService(x => x.setLogout)
+    const setCurrentUser = useGlobalPersistService(x => x.setCurrentUser)
+    const currentUser = useGlobalPersistService(x => x.currentUser)
+    const currentUserInitialized = useGlobalPersistService(x => x.currentUserInitialized)
+    const hydrated = useGlobalPersistService(x => x.hydrated)
+    const refreshTokenExpiration = useGlobalPersistService(x => x.refreshTokenExpiration)
+    
     const navigate = useNavigate()
 
     useEffect(() => {
-        if (globalPersistState.hydrated) {
+        if (hydrated) {
 
             const act = () => {
-                const q = globalPersistState.refreshTokenExpiration
+                const q = refreshTokenExpiration
                 if (q != null) {
                     const refreshTokenExpire = new Date(q);
 
@@ -29,7 +37,7 @@ export const useLoginManager = () => {
                             try {
                                 const res = await authApi.apiAuthRenewRefreshTokenPost()
                                 if (res.data.refreshTokenNfo?.expiration) {
-                                    globalPersistState.setRefreshTokenExpiration(res.data.refreshTokenNfo.expiration)
+                                    setRefreshTokenExpiration(res.data.refreshTokenNfo.expiration)
                                     act()
                                 }
                             } catch (ex_) {
@@ -43,10 +51,10 @@ export const useLoginManager = () => {
 
             act()
         }
-    }, [globalPersistState.hydrated])
+    }, [hydrated])
 
     useEffect(() => {
-        if (location.pathname !== APP_URL_Login() && (!globalPersistState.currentUserInitialized || globalPersistState.currentUser == null)) {
+        if (location.pathname !== APP_URL_Login() && (!currentUserInitialized || currentUser == null)) {
 
             authApi.apiAuthCurrentUserGet()
                 .then(res => {
@@ -58,10 +66,10 @@ export const useLoginManager = () => {
                             permissions: Array.from(res.data.permissions ?? [])
                         }
 
-                        globalPersistState.setCurrentUser(currentUser)
+                        setCurrentUser(currentUser)
                     }
                     else {
-                        globalState.setUrlWanted(location.pathname)
+                        setUrlWanted(location.pathname)
 
                         navigate(APP_URL_Login())
                     }
@@ -71,14 +79,14 @@ export const useLoginManager = () => {
 
                     if (err.response?.status === HttpStatusCode.Unauthorized) {
                         if (document.location.pathname !== APP_URL_Login()) {
-                            globalState.setUrlWanted(location.pathname)
+                            setUrlWanted(location.pathname)
 
-                            globalPersistState.setLogout()
+                            setLogout()
 
                             document.location = APP_URL_Login()
                         }
                     }
                 })
         }
-    }, [location.pathname, globalPersistState.currentUser, globalPersistState.currentUserInitialized])
+    }, [location.pathname, currentUser, currentUserInitialized])
 }

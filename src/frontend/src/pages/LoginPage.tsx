@@ -12,8 +12,14 @@ import AppLogo from '../images/app-icon.svg?react'
 import React, { useEffect, useState } from 'react'
 
 export const LoginPage = () => {
-    const globalState = useGlobalService()
-    const globalPersistState = useGlobalPersistService()
+    const setUrlWanted = useGlobalService(x => x.setUrlWanted)
+    const urlWanted = useGlobalService(x => x.urlWanted)
+
+    const currentUserInitialized = useGlobalPersistService(x => x.currentUserInitialized)
+    const currentUser = useGlobalPersistService(x => x.currentUser)
+    const setRefreshTokenExpiration = useGlobalPersistService(x => x.setRefreshTokenExpiration)
+    const setCurrentUser = useGlobalPersistService(x => x.setCurrentUser)
+
     const navigate = useNavigate()
     const params = useParams()
     const [usernameOrEmailField, setUsernameOrEmailField] = useState("")
@@ -23,7 +29,7 @@ export const LoginPage = () => {
 
     useEffect(() => {
         if (params.from && params.from !== ':from') {
-            globalState.setUrlWanted(params.from)
+            setUrlWanted(params.from)
         }
         if (params.token && params.token !== ":token") {
             setResetPasswordToken(params.token)
@@ -31,11 +37,9 @@ export const LoginPage = () => {
     }, [params])
 
     useEffect(() => {
-        if (globalPersistState.currentUserInitialized && globalPersistState.currentUser != null) {
-            if (globalState.urlWanted != null && globalState.urlWanted !== APP_URL_Login()) {
-                const urlWanted = globalState.urlWanted
-
-                globalState.setUrlWanted(null)
+        if (currentUserInitialized && currentUser != null) {
+            if (urlWanted != null && urlWanted !== APP_URL_Login()) {
+                setUrlWanted(null)
 
                 navigate(urlWanted)
             }
@@ -43,7 +47,7 @@ export const LoginPage = () => {
                 navigate(APP_URL_Home)
             }
         }
-    }, [globalPersistState.currentUser, globalPersistState.currentUserInitialized])
+    }, [currentUser, currentUserInitialized])
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -85,10 +89,10 @@ export const LoginPage = () => {
                         permissions: Array.from(response.data.permissions ?? [])
                     }
 
-                    globalPersistState.setCurrentUser(currentUser)
+                    setCurrentUser(currentUser)
 
                     if (response.data.refreshTokenExpiration)
-                        globalPersistState.setRefreshTokenExpiration(response.data.refreshTokenExpiration)
+                        setRefreshTokenExpiration(response.data.refreshTokenExpiration)
                 }
                 else
                     setSnack({

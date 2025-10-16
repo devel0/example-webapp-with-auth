@@ -4,8 +4,8 @@ import { useGlobalPersistService } from "../services/globalPersistService"
 import { useGlobalService } from "../services/globalService"
 
 export const useMobileDetect = () => {
-    const globalState = useGlobalService()
-    const globalPersistState = useGlobalPersistService()
+    const setIsMobile = useGlobalService(x => x.setIsMobile)
+    
 
-    useEventListener('resize', () => globalState.setIsMobile(computeIsMobile()))
+    useEventListener('resize', () => setIsMobile(computeIsMobile()))
 }

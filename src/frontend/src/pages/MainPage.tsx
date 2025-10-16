@@ -7,11 +7,9 @@ import { from } from 'linq-to-typescript'
 import { handleApiException, setSnack } from '../utils/utils'
 import { useEffect } from 'react'
 import { useGlobalPersistService } from '../services/globalPersistService'
-import { useGlobalService } from '../services/globalService'
 
 export const MainPage = () => {
-    const globalState = useGlobalService()
-    const globalPersistState = useGlobalPersistService()    
+    const currentUser = useGlobalPersistService(x => x.currentUser)
 
     useEffect(() => {
         document.title = `${APP_TITLE} - Dashboard`
@@ -27,8 +25,8 @@ export const MainPage = () => {
     return (
         <Box m={DEFAULT_SIZE_1_REM}>
             master page<br />
-            current user: {globalPersistState.currentUser?.userName}<br />
-            roles: {from(globalPersistState.currentUser?.roles ?? [])}<br />
+            current user: {currentUser?.userName}<br />
+            roles: {from(currentUser?.roles ?? [])}<br />
 
             <Button onClick={async () => {
                 try {
