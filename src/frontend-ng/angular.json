@@ -12,23 +12,24 @@
       },
       "root": "",
       "sourceRoot": "src",
-      "prefix": "app",
+      "prefix": "app",      
       "architect": {
         "build": {
           "builder": "@angular/build:application",
-          "options": {
-            "browser": "src/main.ts",
+          "options": {            
+            "baseHref": "/app-ng/",                        
+            "browser": "src/main.ts",            
             "polyfills": [
               "zone.js"
-            ],
+            ],                        
             "tsConfig": "tsconfig.app.json",
-            "inlineStyleLanguage": "scss",
+            "inlineStyleLanguage": "scss",            
             "assets": [
               {
                 "glob": "**/*",
                 "input": "public"
               }
-            ],
+            ],            
             "styles": [
               "src/styles.scss"
             ]
@@ -50,8 +51,8 @@
               "outputHashing": "all"
             },
             "development": {
-              "optimization": false,
-              "extractLicenses": false,
+              "optimization": false,              
+              "extractLicenses": false,                            
               "sourceMap": true,
               "fileReplacements": [
                 {
@@ -70,7 +71,8 @@
               "buildTarget": "frontend-ng:build:production"
             },
             "development": {
-              "buildTarget": "frontend-ng:build:development"
+              "buildTarget": "frontend-ng:build:development",
+              "allowedHosts": ["dev-webapp-test.searchathing.local"]
             }
           },
           "defaultConfiguration": "development"

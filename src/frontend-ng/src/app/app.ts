@@ -9,4 +9,9 @@ import { RouterOutlet } from '@angular/router';
 })
 export class App {
   protected readonly title = signal('frontend-ng');
+
+  constructor()
+  {
+    console.log('start')
+  }
 }
