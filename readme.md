@@ -248,7 +248,7 @@ code .
 
 ```sh
 cd ../frontend
-npm i
+pnpm i
 cd ../..
 ```
 
@@ -756,11 +756,11 @@ mkdir -p src/backend
 cd src/backend
 dotnet new webapi -n webapi
 cd ..
-npm create vite@latest frontend -- --template react-ts
+pnpm create vite@latest frontend -- --template react-ts
 cd frontend
-npm i --save-dev @vitejs/plugin-react
-npm i @mui/material @emotion/react @emotion/styled @mui/icons-material
-npm i zustand react-router-dom axios linq-to-typescript usehooks-ts @fontsource/roboto
+pnpm i --save-dev @vitejs/plugin-react
+pnpm i @mui/material @emotion/react @emotion/styled @mui/icons-material
+pnpm i zustand react-router-dom axios linq-to-typescript usehooks-ts @fontsource/roboto
 cd ..
 dotnet new sln
 dotnet sln add src/webapi
