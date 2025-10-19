@@ -79,7 +79,7 @@
             "development": {
               "port": 5100,
               "buildTarget": "frontend:build:development",
-              "allowedHosts": ["dev-webapp-test.searchathing.local"]
+              "allowedHosts": ["dev-webapp-test.searchathing.com"]
             }
           },
           "defaultConfiguration": "development"

@@ -1,8 +1,8 @@
 export const environment = {    
-    /** ie. 'https://webapp-test.searchathing.local' */
+    /** ie. 'https://webapp-test.searchathing.com' */
     basePath: '',
 
-    /** ie. 'https://webapp-test.searchathing.local/app-ng/login' */
+    /** ie. 'https://webapp-test.searchathing.com/app-ng/login' */
     ssoPath: '',
 
     /** sha of the commit at publish ( ie. '6f6f539' ) */
