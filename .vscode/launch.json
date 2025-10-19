@@ -2,19 +2,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            // Use IntelliSense to find out which attributes exist for C# debugging
-            // Use hover for the description of the existing attributes
-            // For further information visit https://github.com/dotnet/vscode-csharp/blob/main/debugger-launchjson.md.
-            "name": ".NET Core Launch (web)",
+            "name": "BACKEND",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceFolder}/src/backend/bin/Debug/net9.0/webapi.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/backend",
             "stopAtEntry": false,
-            // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
             "serverReadyAction": {
                 "action": "openExternally",
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
@@ -27,16 +22,14 @@
             }
         },
         {
-            "name": ".NET Core Attach",
-            "type": "coreclr",
-            "request": "attach"
-        },
-        {
-            "name": "Launch Chrome",
+            "name": "FRONTEND",
             "request": "launch",
             "type": "chrome",
             "url": "https://dev-webapp-test.searchathing.local/app",
-            "webRoot": "${workspaceFolder}/src/frontend"
+            "webRoot": "${workspaceFolder}/src/frontend",
+            "sourceMapPathOverrides": {
+                "*": "${workspaceFolder}/src/frontend/*",
+            }
         }
     ]
 }
