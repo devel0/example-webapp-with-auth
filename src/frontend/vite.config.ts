@@ -5,10 +5,13 @@ import svgr from "vite-plugin-svgr";
 // https://vite.dev/config/
 export default defineConfig({
   base: '/app',
+  build: {
+    outDir: 'dist/frontend/browser',    
+  },
   server: {
     allowedHosts: ['dev-webapp-test.searchathing.local'],
     port: 5100,
-  },
+  },  
   plugins: [
     react(),
     svgr({
