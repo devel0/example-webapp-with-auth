@@ -27,8 +27,8 @@
             "type": "chrome",
             "url": "https://dev-webapp-test.searchathing.local/app",
             "webRoot": "${workspaceFolder}/src/frontend",
-            "sourceMapPathOverrides": {
-                "*": "${workspaceFolder}/src/frontend/*",
+            "sourceMapPathOverrides": {                
+                "*": "${workspaceFolder}/src/frontend/src/*",
             }
         }
     ]
