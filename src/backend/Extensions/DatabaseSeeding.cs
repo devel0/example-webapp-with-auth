@@ -17,7 +17,10 @@ public static partial class Extensions
         var rolemgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var config = webApplication.Configuration;
 
-        var appConfig = config.GetAppConfig();
+        var appConfig = config.GetAppConfig();    
+
+        // adds missing roles to database from ROLES_ALL array source
+        await webApplication.UpgradeRolesAsync();    
 
         foreach (var seedUser in appConfig.Database.Seed.Users)
         {            
@@ -34,9 +37,6 @@ public static partial class Extensions
             var res = await usermgr.CreateAsync(user, seedUser.Password);
             if (!res.Succeeded)
                 throw new Exception($"Unable to create initial user {string.Join(";", res.Errors.Select(w => w.Description))}");
-
-            foreach (var role in seedUser.Roles)
-                await rolemgr.CreateAsync(new IdentityRole(role));
 
             await usermgr.AddToRoleAsync(user, ROLE_admin);
             var confirmEmailToken = await usermgr.GenerateEmailConfirmationTokenAsync(user);
