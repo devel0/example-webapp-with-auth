@@ -22,15 +22,17 @@ export class LocalStorageService {
         this._data = new LocalStorageData()
         this.save()
       }
-      else
+      else {
         this._data = JSON.parse(q) as LocalStorageData
+        if (this._data.colorScheme == null) this._data.colorScheme = 'dark'
+      }
     }
 
     return this._data
   }
 
   /** save current {@link data} to the local storage under {@link LOCAL_STORAGE_KEY_DATA} key */
-  save() {    
+  save() {
     localStorage.setItem(LOCAL_STORAGE_KEY_DATA, JSON.stringify(this._data))
   }
 
