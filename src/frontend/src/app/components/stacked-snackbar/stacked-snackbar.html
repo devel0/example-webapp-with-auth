@@ -3,7 +3,8 @@
     <!-- <div [className]="snack.className"></div> -->
 
     @for (snack of snacks; track snack.message) {
-    <div class="snackbar-item" [class]="snack.className">
+
+    <div [class]="['snackbar-item',snack.className]">
 
         <div class="snackbar-title">
             <mat-icon>
@@ -22,6 +23,7 @@
         }
 
     </div>
+
     }
 
 </div>
