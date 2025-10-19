@@ -1,11 +1,11 @@
 #!/bin/sh
 
-if [ "$APP_SERVERNAME" == "" ]; then
+if [ "$APP_SERVERNAME" = "" ]; then
 	echo "missing APP_SERVERNAME var"
 	exit 10
 fi
 
-if [ "$FRONTEND_SRCDIR" == "" ]; then
+if [ "$FRONTEND_SRCDIR" = "" ]; then
 	echo "missing FRONTEND_SRCDIR var"
 	exit 10
 fi
