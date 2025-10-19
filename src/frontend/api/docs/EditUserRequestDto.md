@@ -12,7 +12,7 @@ Name | Type | Description | Notes
 **editPassword** | **string** | New password or null to leave unchanged. | [optional] [default to undefined]
 **editRoles** | **Array&lt;string&gt;** | Roles to set to the user or null to leave unchanged. | [optional] [default to undefined]
 **editDisabled** | **boolean** | If true the user can\&#39;t login after previous release access token expires. | [optional] [default to undefined]
-**editLockoutEnd** | **string** | Set the end date of lockout.  The user will be unable to login until ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.EditUserRequestDto.EditLockoutEnd.  If ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.EditUserRequestDto.EditLockoutEnd is set in the past the user will be re-enabled immediately. | [optional] [default to undefined]
+**editLockoutEnd** | **string** | Set the end date of lockout. The user will be unable to login until ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.EditUserRequestDto.EditLockoutEnd. If ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.EditUserRequestDto.EditLockoutEnd is set in the past the user will be re-enabled immediately. | [optional] [default to undefined]
 
 ## Example
 

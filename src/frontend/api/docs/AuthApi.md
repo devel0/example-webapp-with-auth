@@ -13,7 +13,7 @@ All URIs are relative to *http://localhost*
 |[**apiAuthLoginPost**](#apiauthloginpost) | **POST** /api/Auth/Login | Login user by given username or email and auth password.|
 |[**apiAuthLogoutGet**](#apiauthlogoutget) | **GET** /api/Auth/Logout | Logout current user.|
 |[**apiAuthRenewAccessTokenPost**](#apiauthrenewaccesstokenpost) | **POST** /api/Auth/RenewAccessToken | |
-|[**apiAuthRenewRefreshTokenPost**](#apiauthrenewrefreshtokenpost) | **POST** /api/Auth/RenewRefreshToken | Renew refresh token of current user if refresh token still valid.  This is used to extends refresh token duration avoiding closing frontend session.|
+|[**apiAuthRenewRefreshTokenPost**](#apiauthrenewrefreshtokenpost) | **POST** /api/Auth/RenewRefreshToken | Renew refresh token of current user if refresh token still valid. This is used to extends refresh token duration avoiding closing frontend session.|
 |[**apiAuthResetLostPasswordGet**](#apiauthresetlostpasswordget) | **GET** /api/Auth/ResetLostPassword | Reset lost password.|
 
 # **apiAuthAuthOptionsGet**

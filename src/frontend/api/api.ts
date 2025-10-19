@@ -152,7 +152,7 @@ export interface EditUserRequestDto {
      */
     'editDisabled'?: boolean | null;
     /**
-     * Set the end date of lockout.  The user will be unable to login until ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.EditUserRequestDto.EditLockoutEnd.  If ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.EditUserRequestDto.EditLockoutEnd is set in the past the user will be re-enabled immediately.
+     * Set the end date of lockout. The user will be unable to login until ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.EditUserRequestDto.EditLockoutEnd. If ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.EditUserRequestDto.EditLockoutEnd is set in the past the user will be re-enabled immediately.
      */
     'editLockoutEnd'?: string | null;
 }
@@ -240,7 +240,7 @@ export interface LoginResponseDto {
      */
     'permissions'?: Set<UserPermission> | null;
     /**
-     * Expiration timestamp for the refresh token. To keep alive auth issue M:ExampleWebApp.Backend.WebApi.AuthController.RenewRefreshToken before   token expire.
+     * Expiration timestamp for the refresh token. To keep alive auth issue M:ExampleWebApp.Backend.WebApi.AuthController.RenewRefreshToken before  token expire.
      */
     'refreshTokenExpiration'?: string;
 }
@@ -803,7 +803,7 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
         },
         /**
          * 
-         * @summary Renew refresh token of current user if refresh token still valid.  This is used to extends refresh token duration avoiding closing frontend session.
+         * @summary Renew refresh token of current user if refresh token still valid. This is used to extends refresh token duration avoiding closing frontend session.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -998,7 +998,7 @@ export const AuthApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Renew refresh token of current user if refresh token still valid.  This is used to extends refresh token duration avoiding closing frontend session.
+         * @summary Renew refresh token of current user if refresh token still valid. This is used to extends refresh token duration avoiding closing frontend session.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1118,7 +1118,7 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
         },
         /**
          * 
-         * @summary Renew refresh token of current user if refresh token still valid.  This is used to extends refresh token duration avoiding closing frontend session.
+         * @summary Renew refresh token of current user if refresh token still valid. This is used to extends refresh token duration avoiding closing frontend session.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -1239,7 +1239,7 @@ export class AuthApi extends BaseAPI {
 
     /**
      * 
-     * @summary Renew refresh token of current user if refresh token still valid.  This is used to extends refresh token duration avoiding closing frontend session.
+     * @summary Renew refresh token of current user if refresh token still valid. This is used to extends refresh token duration avoiding closing frontend session.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */

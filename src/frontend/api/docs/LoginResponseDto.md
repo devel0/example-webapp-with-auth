@@ -12,7 +12,7 @@ Name | Type | Description | Notes
 **roles** | **Array&lt;string&gt;** | User roles. | [optional] [default to undefined]
 **errors** | **Array&lt;string&gt;** |  | [optional] [default to undefined]
 **permissions** | [**Set&lt;UserPermission&gt;**](UserPermission.md) | Permissions related to this user roles. | [optional] [default to undefined]
-**refreshTokenExpiration** | **string** | Expiration timestamp for the refresh token. To keep alive auth issue M:ExampleWebApp.Backend.WebApi.AuthController.RenewRefreshToken before   token expire. | [optional] [default to undefined]
+**refreshTokenExpiration** | **string** | Expiration timestamp for the refresh token. To keep alive auth issue M:ExampleWebApp.Backend.WebApi.AuthController.RenewRefreshToken before  token expire. | [optional] [default to undefined]
 
 ## Example
 
