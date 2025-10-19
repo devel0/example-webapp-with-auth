@@ -10,5 +10,6 @@ chmod -v +x \
     gen-api.sh \
     publish.sh \
     run-frontend.sh \
+	frontend-publish-prepare.sh \
     deploy/scripts/prepare.sh \
     misc/gen-db-dia.sh
