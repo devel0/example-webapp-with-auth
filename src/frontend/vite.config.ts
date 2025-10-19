@@ -9,7 +9,7 @@ export default defineConfig({
     outDir: 'dist/frontend/browser',    
   },
   server: {
-    allowedHosts: ['dev-webapp-test.searchathing.local'],
+    allowedHosts: ['dev-webapp-test.searchathing.com'],
     port: 5100,
   },  
   plugins: [
