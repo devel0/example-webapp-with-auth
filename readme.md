@@ -210,5 +210,5 @@ service mytest-webapp restart
 [4]: ./deploy/service/webapp.service
 [5]: ./deploy/nginx/prod/webapp.conf
 [6]: ./deploy/webapp.env
-[7]: https://github.com/devel0/example-webapp-with-auth/blob/frontend/angular/readme.md
-[8]: https://github.com/devel0/example-webapp-with-auth/blob/frontend/react/readme.md
+[7]: https://github.com/devel0/example-webapp-with-auth/tree/frontend/angular/src/frontend
+[8]: https://github.com/devel0/example-webapp-with-auth/tree/frontend/react/src/frontend
