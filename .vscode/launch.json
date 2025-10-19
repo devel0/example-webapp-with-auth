@@ -20,6 +20,16 @@
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
             }
-        },        
+        },
+        {
+            "name": "FRONTEND",
+            "request": "launch",
+            "type": "chrome",
+            "url": "https://dev-webapp-test.searchathing.com/app",
+            "webRoot": "${workspaceFolder}/src/frontend",            
+            "sourceMapPathOverrides": {                
+                "*": "${workspaceFolder}/src/frontend/*",
+            }
+        }
     ]
 }
