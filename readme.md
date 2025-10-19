@@ -15,7 +15,7 @@
     - appsettings ( autoreload on change )
     - production environment variables
 - Frontend
-  - angular    
+  - [angular][7]
     - openapi typescript/angular api services generated from backend swagger endpoint
     - layout with responsive menu
     - authguard protected pages routes
@@ -23,7 +23,7 @@
     - ( TODO: user manager )
     - light/dark theme
     - snacks    
-  - react    
+  - [react][8]
     - openapi typescript/axios api generated from backend swagger endpoint
     - layout with responsive menu
     - protected pages with react router dom
@@ -210,3 +210,5 @@ service mytest-webapp restart
 [4]: ./deploy/service/webapp.service
 [5]: ./deploy/nginx/prod/webapp.conf
 [6]: ./deploy/webapp.env
+[7]: https://github.com/devel0/example-webapp-with-auth/blob/frontend/angular/readme.md
+[8]: https://github.com/devel0/example-webapp-with-auth/blob/frontend/react/readme.md
