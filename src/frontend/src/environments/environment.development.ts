@@ -1,4 +1,4 @@
-export const environment = {
+export const environment = {    
     basePath: 'https://dev-webapp-test.searchathing.local',
     ssoPath: 'https://dev-webapp-test.searchathing.local/app-ng/login',
     commit: '6f6f539',

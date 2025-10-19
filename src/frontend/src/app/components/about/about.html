@@ -2,7 +2,7 @@
     <h3>About</h3>
     <hr />
     <p style="font-size: large;">{{appName}}</p>
-    @if (!devMode()) {
+    @if (devMode) {
     <p class="devText">Development environment</p>
     }
     @else {

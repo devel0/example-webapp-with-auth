@@ -16,7 +16,7 @@ export class About {
 
   get appName() { return APP_NAME }
 
-  get devMode() { return isDevMode }
+  get devMode() { return isDevMode() }
 
   get gitCommitSha() { return environment.commit }
   get gitCommitDate() { return environment.commitDate }

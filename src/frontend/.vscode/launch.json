@@ -8,7 +8,7 @@
       "type": "chrome",
       // "url": "http://localhost:4200",
       "url": "https://dev-webapp-test.searchathing.local/app-ng",
-      "webRoot": "${workspaceFolder}/src/frontend-ng",
+      "webRoot": "${workspaceFolder}/src/frontend",
       "sourceMaps": true,
       "sourceMapPathOverrides": {
         "*": "${workspaceFolder}/*",

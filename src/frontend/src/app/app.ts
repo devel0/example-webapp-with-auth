@@ -16,7 +16,7 @@ import { AuthService } from './services/auth-service';
   ]
 })
 export class App {
-  protected readonly title = signal('frontend-ng');
+  protected readonly title = signal('frontend');
 
   constructor(
     private readonly authApiService: AuthApiService,

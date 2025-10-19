@@ -7,6 +7,7 @@ import { MainLayout } from "../../components/main-layout/main-layout";
 import { MatButtonModule } from '@angular/material/button';
 import { SnackService } from '../../services/snack-service';
 import { AuthService } from '../../services/auth-service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -70,6 +71,6 @@ export class Home {
       if (error instanceof HttpErrorResponse) {
       }
     }
-  }
+  }  
 
 }
