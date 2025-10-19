@@ -11,8 +11,8 @@ User=user
 Group=user
 SyslogIdentifier=ExampleWebApp
 KillSignal=SIGINT
-EnvironmentFile=/root/secrets/mytest.env
-ExecStart=/srv/app/mytest/bin/backend
+EnvironmentFile=/root/security/mytest.env
+ExecStart=/srv/app/mytest/bin/webapi
 
 [Install]
 WantedBy=multi-user.target

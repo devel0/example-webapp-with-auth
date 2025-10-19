@@ -14,7 +14,8 @@ APP_ID=""
 printHelp() {
     echo "$0 argmuments:"
     echo "  -h <sshhost>        ssh host where to publish ( ie. main-test )"
-    echo "  -sn <servername>    nginx app servername ( ie. mytest.searchathing.local )"
+    echo "  -sn <servername>    nginx app servername ( ie. mytest.searchathing.com )"
+	echo "  -sd <serverdomain>  nginx app serverdomain ( ie. searchathing.com )"
     echo "  -id <appid>         app identifier ( ie. mytest )"    
     echo "  -f                  force overwrite existing"
 }
@@ -40,7 +41,7 @@ while [ "$1" != "" ]; do
     fi
 
     if [ "$1" == "-f" ]; then
-        FORCE="1"
+        FORCE="1"		
         shift
         continue
     fi
@@ -61,6 +62,14 @@ while [ "$1" != "" ]; do
         continue
     fi
 
+	if [ "$1" == "-sd" ]; then
+        shift
+        mandatoryArg "$1"
+        APP_SERVERDOMAIN=$1
+        shift
+        continue
+    fi
+
     if [ "$1" == "-id" ]; then
         shift
         mandatoryArg "$1"
@@ -77,7 +86,7 @@ while [ "$1" != "" ]; do
 
 done
 
-if [ "$APP_SSH_HOST" == "" ] || [ "$APP_SERVERNAME" == "" ] || [ "$APP_ID" == "" ]; then
+if [ "$APP_SSH_HOST" == "" ] || [ "$APP_SERVERNAME" == "" ] || [ "$APP_SERVERDOMAIN" == "" ] || [ "$APP_ID" == "" ]; then
     mandatoryArg
 fi
 
@@ -96,6 +105,25 @@ fi
 header "PROD ENV"
 # ======================================================================
 
+#!/bin/sh
+
+GITCOMMIT="$(git rev-parse --short HEAD)"
+GITCOMMITDATE="$(git show -s --format="%ci" $GITCOMMIT)"
+
+# backend appsettings
+PRODFILE="$BACKEND_SRCDIR"/appsettings.Production.json
+PRODFILE_TMP="$BACKEND_SRCDIR"/appsettings.Production.json.tmp
+cat "$PRODFILE" |
+    jq ".GitCommit |= \"$GITCOMMIT\"" |
+    jq ".GitCommitDate |= \"$GITCOMMITDATE\"" |
+    jq ".AppServerName |= \"$APP_SERVERNAME\"" \
+        >"$PRODFILE_TMP"
+mv -f "$PRODFILE_TMP" "$PRODFILE"
+
+# frontend
+export APP_SERVERNAME="$APP_SERVERNAME"
+export FRONTEND_SRCDIR="$FRONTEND_SRCDIR"
+
 "$exdir"/frontend-publish-prepare.sh
 
 # ======================================================================
@@ -110,7 +138,7 @@ forceargs=""
 
 if [ "$FORCE" == "1" ]; then forceargs="-f"; fi
 
-ssh $APP_SSH_HOST "$REMOTE_DEPLOY/scripts/prepare.sh" -sn "$APP_SERVERNAME" -id "$APP_ID" "$forceargs"
+ssh $APP_SSH_HOST "$REMOTE_DEPLOY/scripts/prepare.sh" -sn "$APP_SERVERNAME" -id "$APP_ID" -sd "$APP_SERVERDOMAIN" "$forceargs"
 excode="$?"
 if [ "$excode" == "10" ]; then
     echo "some prerequisites missing"

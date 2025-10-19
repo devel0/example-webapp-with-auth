@@ -104,9 +104,6 @@ await app.ApplyDatabaseMigrations(cts.Token);
 // seed database admin user and roles
 await app.InitializeDatabaseAsync(cts.Token);
 
-// adds missing roles to database from ROLES_ALL array source
-await app.UpgradeRolesAsync();
-
 // setup mapping for serving spa static files
 app.MapSpaStaticFiles();
 

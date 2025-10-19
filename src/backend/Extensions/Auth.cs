@@ -47,6 +47,8 @@ public static partial class Extensions
     /// </summary>    
     public static async Task UpgradeRolesAsync(this WebApplication webApplication)
     {
+        webApplication.Logger.LogInformation(nameof(UpgradeRolesAsync));
+
         using var scope = webApplication.Services.CreateScope();
         var rolemgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
@@ -56,7 +58,7 @@ public static partial class Extensions
 
         if (rolesToAdd.Count > 0)
         {
-            // webApplication.Logger.LogInformation($"Adding [{string.Join(',', rolesToAdd)}] roles");
+            webApplication.Logger.LogInformation($"Adding [{string.Join(',', rolesToAdd)}] roles");
 
             foreach (var roleToAdd in rolesToAdd)
             {
