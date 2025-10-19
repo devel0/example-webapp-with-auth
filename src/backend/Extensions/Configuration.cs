@@ -47,10 +47,10 @@ public static partial class Extensions
     /// Helper to retrieve configuration from environment or appsettings if found.
     /// From the environment the same config key variable will be searched within colon replaced by underline.
     /// </summary>
-    /// <param name="path">Variable path (ie. <see cref="CONFIG_KEY_DbSchemaSnakeCase"/></param>    
+    /// <param name="path">Variable path (ie. <see cref="CONFIG_KEY_AppConfig_IsUnitTest"/></param>    
     /// <param name="configuration">asp net configuration</param>    
-    public static string GetConfigVar(this IConfiguration configuration, string path) =>
-        configuration.GetConfigVar<string>(path);
+    public static string? GetConfigVar(this IConfiguration configuration, string path) =>
+        configuration.GetConfigVar<string?>(path);
 
     static bool IsReferenceOrNullableType(Type type) =>
         !type.IsValueType || Nullable.GetUnderlyingType(type) != null;
@@ -59,9 +59,9 @@ public static partial class Extensions
     /// Typed helper to retrieve configuration from environment or appsettings if found.
     /// From the environment the same config key variable will be searched within colon replaced by underline.
     /// </summary>
-    /// <param name="path">Variable path (ie. <see cref="CONFIG_KEY_DbSchemaSnakeCase"/></param>    
+    /// <param name="path">Variable path (ie. <see cref="CONFIG_KEY_AppConfig_IsUnitTest"/></param>    
     /// <param name="configuration">asp net configuration</param>    
-    public static T GetConfigVar<T>(this IConfiguration configuration, string path)
+    public static T? GetConfigVar<T>(this IConfiguration configuration, string path)
     {
         var type = typeof(T);
 
@@ -78,7 +78,7 @@ public static partial class Extensions
 
 
     /// <summary>
-    /// retrieve <see cref="Types.AppConfig"/> from configuration
+    /// retrieve <see cref="AppConfig"/> from configuration
     /// </summary>
     public static AppConfig GetAppConfig(this IConfiguration configuration)
     {
@@ -91,7 +91,7 @@ public static partial class Extensions
     }
 
     /// <summary>
-    /// change a value in <see cref="Types.AppConfig"/> reflecting to the configuration section
+    /// change a value in <see cref="AppConfig"/> reflecting to the configuration section
     /// </summary>
     public static void SetValue<P, T>(this AppConfig appConfig,
         IConfiguration configuration, Expression<Func<AppConfig, P>> path, T value) =>

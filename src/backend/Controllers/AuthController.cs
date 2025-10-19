@@ -34,9 +34,9 @@ public class AuthController : ControllerBase
     /// Retrieve current logged in user name, email, roles.
     /// </summary>    
     [HttpGet]
-    public async Task<ActionResult<CurrentUserResponseDto>> CurrentUser()
+    public ActionResult<CurrentUserResponseDto> CurrentUser()
     {
-        var res = await authService.CurrentUserNfoAsync(cancellationToken);
+        var res = authService.CurrentUserNfo();
 
         switch (res.Status)
         {

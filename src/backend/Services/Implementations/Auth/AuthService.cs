@@ -156,7 +156,7 @@ public class AuthService : IAuthService
         };
     }
 
-    public async Task<CurrentUserResponseDto> CurrentUserNfoAsync(CancellationToken cancellationToken)
+    public CurrentUserResponseDto CurrentUserNfo()
     {
         if (httpContextAccessor.HttpContext is null)
             return new CurrentUserResponseDto
@@ -371,7 +371,7 @@ public class AuthService : IAuthService
     public async Task<DeleteUserResponseDto> DeleteUserAsync(
         string usernameToDelete, CancellationToken cancellationToken)
     {
-        var curUserNfo = await CurrentUserNfoAsync(cancellationToken);
+        var curUserNfo = CurrentUserNfo();
         if (curUserNfo.Status != CurrentUserStatus.OK)
             throw new Exception($"can't retrieve current user.");
 
@@ -448,7 +448,7 @@ public class AuthService : IAuthService
     public async Task<EditUserResponseDto> EditUserAsync(
         EditUserRequestDto editUserRequestDto, CancellationToken cancellationToken)
     {
-        var curUserNfo = await CurrentUserNfoAsync(cancellationToken);
+        var curUserNfo = CurrentUserNfo();
         if (curUserNfo.Status != CurrentUserStatus.OK)
             throw new Exception($"can't retrieve current user");
 

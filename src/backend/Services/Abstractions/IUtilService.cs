@@ -8,7 +8,7 @@ public interface IUtilService
     JsonSerializerOptions JavaSerializerSettings { get; }
 
     /// <summary>
-    /// retrieve <see cref="Types.AppConfig"/> object from configuration
+    /// retrieve <see cref="AppConfig"/> object from configuration
     /// </summary>
     AppConfig GetAppConfig();
 

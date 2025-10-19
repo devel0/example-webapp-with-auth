@@ -93,25 +93,28 @@ public interface IJWTService
     /// <summary>
     /// Generate access token for given username, email, claims with duration from now plus <see cref="AccessTokenLifetime"/>.
     /// </summary>    
-    AccessTokenNfo GenerateAccessToken(string username, string email, IList<Claim> claims);    
+    AccessTokenNfo GenerateAccessToken(string username, string email, IList<Claim> claims);
 
     /// <summary>
     /// Create a new refresh token for given username. Then db savechanges will applied.
     /// </summary>
     /// <param name="userName">Username which associate a new refresh token.</param>
-    /// <returns>New valid refresh token associated to the given username.</returns>
+    /// <param name="cancellationToken">cancellation token.</param>    
+    /// <returns>New valid refresh token associated to the given username.</returns>    
     Task<RefreshTokenNfo> GenerateRefreshTokenAsync(string userName, CancellationToken cancellationToken);
 
     /// <summary>
     /// Purges expired refresh tokens.
     /// </summary>
     /// <param name="userName">Username which purge refresh tokens.</param>
+    /// <param name="cancellationToken">cancellation token.</param>    
     Task MaintenanceRefreshTokenAsync(string userName, CancellationToken cancellationToken);
 
     /// <summary>
     /// Generate new valid access token when refresh token still valid and user not disabled or lockedout.    
     /// </summary>    
     /// <param name="refreshToken">Valid Refresh Token.</param>    
+    /// <param name="cancellationToken">cancellation token.</param>    
     /// <returns>Null if current refresh token not valid or user disabled/lockedout.</returns>
     Task<AccessTokenNfo?> RenewAccessTokenAsync(string refreshToken, CancellationToken cancellationToken);
 

@@ -22,11 +22,9 @@ public interface IAuthService
 
     /// <summary>
     /// Retrieve current logged in user name, email, roles.
-    /// </summary>    
-    /// <param name="cancellationToken">Cancellation token.</param>    
+    /// </summary>        
     /// <returns>Logged in user info or null if not authenticated.</returns>                
-    Task<CurrentUserResponseDto> CurrentUserNfoAsync(
-        CancellationToken cancellationToken);
+    CurrentUserResponseDto CurrentUserNfo();
 
     /// <summary>
     /// Renew access token if valid refresh token was found
@@ -74,8 +72,7 @@ public interface IAuthService
     /// Privileges are managed by the authenticated user roles ( <see cref="ROLE_admin"/>, <see cref="ROLE_advanced"/>, <see cref="ROLE_normal"/>    ).
     /// </summary>
     /// <param name="editUserRequestDto">Edit user request data.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>
+    /// <param name="cancellationToken">Cancellation token.</param>    
     Task<EditUserResponseDto> EditUserAsync(
         EditUserRequestDto editUserRequestDto, CancellationToken cancellationToken);
 

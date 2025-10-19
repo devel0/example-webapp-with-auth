@@ -104,6 +104,7 @@ public static partial class Extensions
     /// <summary>
     /// Get JWT token validation parameters from given options and current configuration.    
     /// </summary>    
+    /// <param name="configuration">configuration service</param>
     /// <param name="validateIssuer">Will validate issuer (default: true).</param>
     /// <param name="validateAudience">Will validate audience (default: true).</param>
     /// <param name="validateLifetime">Will validate access token lifetime (default: true).</param>    
@@ -154,8 +155,8 @@ public static partial class Extensions
 
                     if (context.Request.Cookies.ContainsKey(WEB_CookieName_XAccessToken))
                     {
-                        var accessToken = context.Request.Cookies[WEB_CookieName_XAccessToken];                                                
-                    
+                        var accessToken = context.Request.Cookies[WEB_CookieName_XAccessToken];
+
                         if (accessToken is not null && jwtService.IsAccessTokenValid(accessToken))
                         {
                             context.Token = accessToken;
@@ -164,7 +165,7 @@ public static partial class Extensions
                         }
 
                     }
-                    
+
                     var userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
                     var hostEnvironment = context.HttpContext.RequestServices.GetRequiredService<IHostEnvironment>();
                     var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<AuthController>>();
@@ -177,7 +178,7 @@ public static partial class Extensions
                     if (!string.IsNullOrEmpty(refreshToken))
                     {
                         // renew access token if valid refresh token and not disabled/lockedout related user was found
-                        
+
                         var accessTokenNfo = await jwtService.RenewAccessTokenAsync(refreshToken, cancellationToken);
 
                         if (accessTokenNfo is not null)
