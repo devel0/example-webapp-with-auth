@@ -1,0 +1,77 @@
+<div>
+    <!-- https://fonts.google.com/icons -->
+
+    <mat-toolbar>
+        <div class="app-icon">
+            <img height="100%" src="app-icon.svg" />
+        </div>
+
+        @if (this.isMobile) {
+        <button matIconButton [matMenuTriggerFor]="mobileMenu">
+            <mat-icon>menu</mat-icon>
+        </button>
+        <mat-menu #mobileMenu>
+            @for (menuItem of this.menuService.menuItems; track $index) {
+            <button mat-menu-item (click)="menuItem.action?.()">
+                @if (menuItem.icon) {
+                <mat-icon>{{menuItem.icon}}</mat-icon>
+                }
+                <span>{{menuItem.name}}</span>
+            </button>
+            }
+        </mat-menu>
+        }
+
+        @if (!this.isMobile) {
+        <span class="app-title">My App</span>
+
+        @for (menuItem of this.menuService.menuItems; track $index) {
+        <button matButton (click)="menuItem.action?.()">
+            @if (menuItem.icon) {
+            <mat-icon>{{menuItem.icon}}</mat-icon>
+            }
+            <span>{{menuItem.name}}</span>
+        </button>
+        }
+
+        }
+
+        <span class="example-spacer"></span>
+
+        @if (currentTheme === 'dark') {
+        <button (click)="themeService.toggleTheme()" matIconButton>
+            <mat-icon>light_mode</mat-icon>
+        </button>
+        }
+        @else {
+        <button (click)="themeService.toggleTheme()" matIconButton>
+            <mat-icon>dark_mode</mat-icon>
+        </button>
+        }
+
+        <button matIconButton [matMenuTriggerFor]="userMenu">
+            <mat-icon>account_circle</mat-icon>
+        </button>
+        <mat-menu #userMenu>
+            <button mat-menu-item>
+                {{userName}}
+            </button>
+            <button (click)="authService.logout()" mat-menu-item>
+                <mat-icon>logout</mat-icon>
+                Logout
+            </button>
+        </mat-menu>
+
+    </mat-toolbar>
+
+    @if (working) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+
+</div>
+
+<div class="content">
+    <ng-content />
+</div>
+
+<app-stacked-snackbar [snacks]="snackService.snacks" />

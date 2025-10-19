@@ -1,0 +1,27 @@
+<div class="snackbar-stack">
+
+    <!-- <div [className]="snack.className"></div> -->
+
+    @for (snack of snacks; track snack.message) {
+    <div class="snackbar-item" [class]="snack.className">
+
+        <div class="snackbar-title">
+            <mat-icon>
+                {{snack.matIcon}}
+            </mat-icon>
+
+            <span>
+                {{snack.title}}
+            </span>
+        </div>
+
+        @if (snack.message) {
+        <span>
+            {{snack.message}}
+        </span>
+        }
+
+    </div>
+    }
+
+</div>

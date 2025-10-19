@@ -1,0 +1,24 @@
+.content {
+    margin: 1rem;
+    line-height: 1rem;
+}
+
+:host-context(body.dark-theme) {
+    .devText {
+        color: yellow;
+    }
+
+    .prodText {
+        color: rgb(0, 200, 0);
+    }
+}
+
+:host-context(body.light-theme) {
+    .devText {
+        color: rgb(224, 138, 0);
+    }
+
+    .prodText {
+        color: green;
+    }
+}

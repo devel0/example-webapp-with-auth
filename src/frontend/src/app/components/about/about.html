@@ -1,0 +1,14 @@
+<div class="content">
+    <h3>About</h3>
+    <hr />
+    <p style="font-size: large;">{{appName}}</p>
+    @if (!devMode()) {
+    <p class="devText">Development environment</p>
+    }
+    @else {
+    <p class="prodText">Production environment</p>
+    }
+    <p>Git commit sha: {{gitCommitSha}} </p>
+    <p>Git commit date: {{gitCommitDate}} </p>
+
+</div>

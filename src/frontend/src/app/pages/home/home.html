@@ -1,0 +1,31 @@
+<app-main-layout>
+
+    <br />
+    <span>
+        master page
+    </span>
+
+    <br />
+    <span>
+        current user: {{this.authService.currentUser?.userName}}
+    </span>
+
+    <br />
+    <span>
+        roles: {{this.authService.currentUser?.roles}}
+    </span>
+
+    <br />
+    <button
+        (click)="doLongRunningOp()"
+        matButton>
+        long running op
+    </button>
+
+    <button
+        (click)="doTestException()"
+        matButton>
+        test exception
+    </button>
+
+</app-main-layout>
