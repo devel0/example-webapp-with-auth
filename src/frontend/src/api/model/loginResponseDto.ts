@@ -34,7 +34,7 @@ export interface LoginResponseDto {
      */
     permissions?: Set<UserPermission> | null;
     /**
-     * Expiration timestamp for the refresh token. To keep alive auth issue M:ExampleWebApp.Backend.WebApi.AuthController.RenewRefreshToken before   token expire.
+     * Expiration timestamp for the refresh token. To keep alive auth issue M:ExampleWebApp.Backend.WebApi.AuthController.RenewRefreshToken before  token expire.
      */
     refreshTokenExpiration?: string;
 }

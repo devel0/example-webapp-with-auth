@@ -38,7 +38,7 @@ export interface EditUserRequestDto {
      */
     editDisabled?: boolean | null;
     /**
-     * Set the end date of lockout.  The user will be unable to login until ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.EditUserRequestDto.EditLockoutEnd.  If ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.EditUserRequestDto.EditLockoutEnd is set in the past the user will be re-enabled immediately.
+     * Set the end date of lockout. The user will be unable to login until ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.EditUserRequestDto.EditLockoutEnd. If ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.EditUserRequestDto.EditLockoutEnd is set in the past the user will be re-enabled immediately.
      */
     editLockoutEnd?: string | null;
 }
