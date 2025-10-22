@@ -8,7 +8,7 @@ import { from } from "linq-to-typescript";
 import { handleApiException, nullOrUndefined, setSnack } from "../utils/utils";
 import { passwordIsValid } from "../utils/password-validator";
 import { useEffect, useState } from "react";
-import { useGlobalPersistService } from "../services/globalPersistService";
+import { useGlobalPersistService } from "../services/global-persist/Service";
 import { usernameIsValid } from "../utils/username-validator";
 import CloseIcon from '@mui/icons-material/Close';
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';

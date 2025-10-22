@@ -7,8 +7,7 @@ import { setCssVars } from '../styles/CssVars';
 import { THEME_DARK, THEME_LIGHT, light_bg_paper } from "../constants/general";
 import { ThemeOptions, createTheme } from "@mui/material";
 import { TypographyOptions } from "@mui/material/styles/createTypography";
-import { useGlobalPersistService } from '../services/globalPersistService';
-import { useGlobalService } from '../services/globalService';
+import { useGlobalPersistService } from '../services/global-persist/Service';
 
 export const Colors = {
     primary: "primary.main",

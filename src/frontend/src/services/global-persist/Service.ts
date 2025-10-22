@@ -1,15 +1,27 @@
 import { create } from "zustand"
-import { GlobalState } from "./abstractions/GlobalState"
-import { GlobalPersistState, GlobalPersistStateInitial } from "./abstractions/GlobalPersistState"
 import { createJSONStorage, persist } from "zustand/middleware"
-import { UserPermission } from "../../api"
-import { useGlobalService } from "./globalService"
-import { LOCAL_STORAGE_DATA } from "../constants/general"
+import { IGlobalPersistActions } from "./IActions"
+import { IGlobalPersistData } from "./IData"
+import { LOCAL_STORAGE_DATA, THEME_INITIAL } from "../../constants/general"
+import { UserPermission } from "../../../api"
 
-export const useGlobalPersistService = create<GlobalPersistState>()(
+export type IGlobalPersistService = IGlobalPersistData & IGlobalPersistActions
+
+const InitialData: IGlobalPersistData = {
+    hydrated: false,
+
+    currentUser: null,
+    currentUserInitialized: false,
+
+    themePalette: THEME_INITIAL,
+
+    refreshTokenExpiration: null
+}
+
+export const useGlobalPersistService = create<IGlobalPersistService>()(
     persist(
         (set, get) => ({
-            ...GlobalPersistStateInitial,
+            ...InitialData,
 
             setHydrated() {
                 set(state => ({ hydrated: true }))
@@ -37,6 +49,7 @@ export const useGlobalPersistService = create<GlobalPersistState>()(
             currentUserCanManageUsers() {
                 return get().currentUser?.permissions.indexOf(UserPermission.CreateNormalUser) !== -1
             }
+
         }),
 
         {

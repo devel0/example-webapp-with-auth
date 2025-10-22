@@ -1,6 +1,6 @@
 import { IconButton, Tooltip } from '@mui/material'
 import { THEME_DARK, THEME_LIGHT } from '../constants/general';
-import { useGlobalPersistService } from '../services/globalPersistService';
+import { useGlobalPersistService } from '../services/global-persist/Service';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import NightlightIcon from '@mui/icons-material/Nightlight';
 

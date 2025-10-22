@@ -2,8 +2,8 @@ import { API_URL, APP_URL_Login } from "./constants/general"
 import { AuthApi, Configuration, MainApi } from "../api"
 import { setSnack } from "./utils/utils";
 import { useEffect } from "react";
-import { useGlobalPersistService } from "./services/globalPersistService";
-import { useGlobalService } from "./services/globalService";
+import { useGlobalPersistService } from "./services/global-persist/Service";
+import { useGlobalService } from "./services/global/Service";
 import axios, { AxiosError, HttpStatusCode } from "axios";
 
 export const useAxiosConfig = () => {

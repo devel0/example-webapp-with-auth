@@ -3,8 +3,8 @@ import { APP_URL_Users, DEFAULT_SIZE_0_5_REM } from '../constants/general'
 import { authApi } from '../axios.manager';
 import { Box, LinearProgress } from '@mui/material'
 import { ReactNode, useState } from 'react'
-import { useGlobalPersistService } from '../services/globalPersistService';
-import { useGlobalService } from '../services/globalService';
+import { useGlobalPersistService } from '../services/global-persist/Service';
+import { useGlobalService } from '../services/global/Service';
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useLoginManager } from '../hooks/useLoginManager';
 import { useMobileDetect } from '../hooks/useMobileDetect';

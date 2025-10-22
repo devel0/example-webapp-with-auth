@@ -4,8 +4,8 @@ import { CurrentUserNfo } from "../types/CurrentUserNfo"
 import { handleApiException } from "../utils/utils"
 import { HttpStatusCode, AxiosError } from "axios"
 import { useEffect } from "react"
-import { useGlobalPersistService } from "../services/globalPersistService"
-import { useGlobalService } from "../services/globalService"
+import { useGlobalPersistService } from "../services/global-persist/Service"
+import { useGlobalService } from "../services/global/Service"
 import { useNavigate } from "react-router-dom"
 
 export const useLoginManager = () => {

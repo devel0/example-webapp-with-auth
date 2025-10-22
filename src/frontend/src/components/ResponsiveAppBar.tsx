@@ -1,8 +1,8 @@
 import { APP_LOGO_TEXT, DEFAULT_SIZE_1_REM, DEFAULT_SIZE_0_5_REM, APP_URL_Home } from '../constants/general';
 import { firstLetter, LinkButton } from '../utils/utils';
 import { Link } from "react-router-dom"
-import { useGlobalPersistService } from '../services/globalPersistService';
-import { useGlobalService } from '../services/globalService';
+import { useGlobalPersistService } from '../services/global-persist/Service';
+import { useGlobalService } from '../services/global/Service';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material';
 import * as React from 'react';

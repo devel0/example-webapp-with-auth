@@ -3,8 +3,8 @@
 import { APP_URL_Login } from '../constants/general';
 import { Navigate } from 'react-router'
 import { Outlet } from "react-router-dom";
+import { useGlobalPersistService } from '../services/global-persist/Service';
 import Layout from './Layout';
-import { useGlobalPersistService } from '../services/globalPersistService';
 
 const ProtectedRoutes = () => {
     const currentUser = useGlobalPersistService(x => x.currentUser)
