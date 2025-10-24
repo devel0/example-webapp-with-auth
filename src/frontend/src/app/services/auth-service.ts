@@ -5,7 +5,6 @@ import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse, HttpStatusCode, HttpUrlEncodingCodec } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC } from '../constants/general';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root'
@@ -14,9 +13,9 @@ export class AuthService {
   private currentUserInitialized = false
 
   constructor(
-    private localStorageService: LocalStorageService,
-    private authApiService: AuthApiService,
-    private router: Router
+    private readonly localStorageService: LocalStorageService,
+    private readonly authApiService: AuthApiService,
+    private readonly router: Router,    
   ) {
 
   }
@@ -69,7 +68,7 @@ export class AuthService {
       }
     }
     catch (error) {
-      if (error instanceof HttpErrorResponse) {
+      if (error instanceof HttpErrorResponse) {      
       }
     }
 
