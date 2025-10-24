@@ -8,12 +8,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { APP_NAME } from '../../constants/general';
 import { SnackService } from '../../services/snack-service';
+import { StackedSnackbar } from "../../components/stacked-snackbar/stacked-snackbar";
 
 @Component({
   selector: 'app-login',
   imports: [
-    MatFormFieldModule, MatInputModule, MatCardModule, MatButtonModule, FormsModule
-  ],
+    MatFormFieldModule, MatInputModule, MatCardModule, MatButtonModule, FormsModule,
+    StackedSnackbar
+],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
@@ -23,7 +25,7 @@ export class Login {
     private readonly authService: AuthService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
-    private readonly snackService: SnackService
+    public readonly snackService: SnackService
   ) {
   }
 
