@@ -6,7 +6,7 @@
             <img height="100%" src="app-icon.svg" />
         </div>
 
-        @if (this.isMobile) {
+        @if (globalService.isMobile) {
         <button matIconButton [matMenuTriggerFor]="mobileMenu">
             <mat-icon>menu</mat-icon>
         </button>
@@ -22,7 +22,7 @@
         </mat-menu>
         }
 
-        @if (!this.isMobile) {
+        @if (!globalService.isMobile) {
         <span class="app-title">My App</span>
 
         @for (menuItem of this.menuService.menuItems; track $index) {
@@ -64,7 +64,7 @@
 
     </mat-toolbar>
 
-    @if (working) {
+    @if (globalService.generalNetwork != 0) {
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
     }
 

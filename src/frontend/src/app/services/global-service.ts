@@ -7,28 +7,19 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class GlobalService {
 
-  private generalNetwork = new BehaviorSubject(0)
-  generalNetwork$ = this.generalNetwork.asObservable()
+  private _generalNetwork = 0
+  get generalNetwork() { return this._generalNetwork }
 
-  private isMobile = new BehaviorSubject(false)
-  isMobile$ = this.isMobile.asObservable()
+  private _isMobile = false
+  get isMobile() { return this._isMobile }
+  set isMobile(x: boolean) { this._isMobile = x }
 
   private networkError = new BehaviorSubject<HttpErrorResponse | null>(null)
   networkError$ = this.networkError.asObservable()
+  incGeneralNetwork() { this._generalNetwork++ }
+  decGeneralNetwork() { this._generalNetwork-- }
 
   constructor() {
-  }
-
-  setIsMobile(value: boolean) {
-    this.isMobile.next(value)
-  }
-
-  incGeneralNetwork() {
-    this.generalNetwork.next(this.generalNetwork.value + 1)
-  }
-
-  decGeneralNetwork() {
-    this.generalNetwork.next(this.generalNetwork.value - 1)
   }
 
   gotNetworkError(gotError: HttpErrorResponse) {

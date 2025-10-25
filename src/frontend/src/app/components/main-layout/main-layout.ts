@@ -26,14 +26,9 @@ import { MenuService } from '../../services/menu-service';
 })
 export class MainLayout {
 
-  private workingSub!: Subscription
-  working: boolean = false
-
   private breakpointObserverSub!: Subscription
 
   private networkErrorSub!: Subscription
-
-  isMobile = false
 
   constructor(
     public readonly snackService: SnackService,
@@ -47,23 +42,17 @@ export class MainLayout {
   }
 
   ngOnInit() {
-    this.workingSub = this.globalService.generalNetwork$.subscribe(x => {
-      this.working = x != 0
-    })
-
     this.networkErrorSub = this.globalService.networkError$.subscribe(x => {
       if (x != null)
         this.snackService.showError("network err", `${x?.statusText}`)
     })
 
     this.breakpointObserverSub = this.breakpointObserver.observe(['(max-width: 768px)']).subscribe(result => {
-      this.isMobile = result.matches
-      this.globalService.setIsMobile(this.isMobile)
+      this.globalService.isMobile = result.matches
     });
   }
 
   ngOnDestroy() {
-    this.workingSub.unsubscribe()
     this.networkErrorSub.unsubscribe()
     this.breakpointObserverSub.unsubscribe()
   }

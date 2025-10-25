@@ -20,33 +20,20 @@ import { environment } from '../../../environments/environment';
 })
 export class Home {
 
-  private workingSub!: Subscription
   working: boolean = false
-
-  private isMobileSub!: Subscription
-  isMobile: boolean = false
 
   constructor(
     private readonly mainApiService: MainApiService,
     private readonly snackService: SnackService,
-    private readonly globalService: GlobalService,
+    public readonly globalService: GlobalService,
     public readonly authService: AuthService
   ) {
   }
 
   ngOnInit() {
-    this.workingSub = this.globalService.generalNetwork$.subscribe(x => {
-      this.working = x != 0
-    })
-
-    this.isMobileSub = this.globalService.isMobile$.subscribe(x => {
-      this.isMobile = x
-    })
   }
 
   ngOnDestroy() {
-    this.workingSub.unsubscribe()
-    this.isMobileSub.unsubscribe()
   }
 
   async doLongRunningOp() {
