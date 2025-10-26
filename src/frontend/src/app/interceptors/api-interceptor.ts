@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpResponse, HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { finalize, Observable, tap } from 'rxjs';
 import { GlobalService } from '../services/global-service';
 import { SnackService } from '../services/snack-service';
@@ -31,8 +31,20 @@ export class ApiInterceptor implements HttpInterceptor {
         error: (error: any) => {
           if (error instanceof HttpErrorResponse) {
             statusCode = error.status;
-            gotError = error
-            this.snackService.showError(`Network error`, `${error.statusText}`)
+            if (error.status == HttpStatusCode.InternalServerError) {
+              if (error.error?.title != null) {
+                const title = error.error.title
+                const message = error.error.detail
+
+                this.snackService.showError(title, message)
+              }
+              else
+                this.snackService.showError(error.statusText)
+            }
+            else {
+              gotError = error
+              this.snackService.showError(`Network error`, `${error.statusText}`)
+            }
           }
         }
       }),
