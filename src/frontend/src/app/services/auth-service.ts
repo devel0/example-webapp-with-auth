@@ -36,6 +36,7 @@ export class AuthService {
     }
     catch (error) {
       if (error instanceof HttpErrorResponse) {
+        console.error(error)
       }
     }
 
@@ -69,6 +70,7 @@ export class AuthService {
     }
     catch (error) {
       if (error instanceof HttpErrorResponse) {      
+        console.error(error)
       }
     }
 
@@ -93,19 +95,13 @@ export class AuthService {
                 this.localStorageService.data.currentUser.refreshTokenExpiration = res.refreshTokenNfo.expiration
                 this.localStorageService.save()
 
-                // const snackBar = inject(MatSnackBar)
-                // snackBar.open('some')
-
                 act()
               }
             }
             catch (error) {
               if (error instanceof HttpErrorResponse) {
-                if (error.status === HttpStatusCode.Unauthorized) {
-
-                  // TODO: snack
-                  console.log(error)
-                  // handleApiException(ex, "Renew refresh token failed")
+                if (error.status === HttpStatusCode.Unauthorized) {                  
+                  console.error(error)                  
                 }
               }
             }
