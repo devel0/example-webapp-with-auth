@@ -8,3 +8,4 @@ export const LOCAL_STORAGE_KEY_DATA = "data"
 /** invoke RenewRefreshToken api before expiration */
 export const RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC = isDevMode() ? 10 : 30;
 
+export const ROUTEPATH_LOGIN = "login"

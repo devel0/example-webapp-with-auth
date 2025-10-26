@@ -13,7 +13,7 @@ import { environment } from '../../../environments/environment';
   selector: 'app-home',
   imports: [
     MainLayout,
-    MatButtonModule
+    MatButtonModule,    
   ],
   templateUrl: './home.html',
   styleUrl: './home.scss',

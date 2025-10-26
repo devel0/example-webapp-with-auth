@@ -3,13 +3,16 @@ import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpResponse, Htt
 import { finalize, Observable, tap } from 'rxjs';
 import { GlobalService } from '../services/global-service';
 import { SnackService } from '../services/snack-service';
+import { PlatformLocation } from '@angular/common';
+import { ROUTEPATH_LOGIN } from '../constants/general';
 
 @Injectable()
 export class ApiInterceptor implements HttpInterceptor {
 
   constructor(
     private readonly globalService: GlobalService,
-    private readonly snackService: SnackService
+    private readonly snackService: SnackService,    
+    private readonly platformLocation: PlatformLocation
   ) {
 
   }
@@ -30,20 +33,24 @@ export class ApiInterceptor implements HttpInterceptor {
         },
         error: (error: any) => {
           if (error instanceof HttpErrorResponse) {
-            statusCode = error.status;
-            if (error.status == HttpStatusCode.InternalServerError) {
-              if (error.error?.title != null) {
-                const title = error.error.title
-                const message = error.error.detail
+            // avoid to intercept and show api error if in login page
+            const baseHref = this.platformLocation.getBaseHrefFromDOM()            
+            if (document.location.pathname != `${baseHref}${ROUTEPATH_LOGIN}` && error.status != HttpStatusCode.Unauthorized) {
+              statusCode = error.status;
+              if (error.status == HttpStatusCode.InternalServerError) {
+                if (error.error?.title != null) {
+                  const title = error.error.title
+                  const message = error.error.detail
 
-                this.snackService.showError(title, message)
+                  this.snackService.showError(title, message)
+                }
+                else
+                  this.snackService.showError(error.statusText)
               }
-              else
-                this.snackService.showError(error.statusText)
-            }
-            else {
-              gotError = error
-              this.snackService.showError(`Network error`, `${error.statusText}`)
+              else {
+                gotError = error
+                this.snackService.showError(`Network error`, `${error.statusText}`)
+              }
             }
           }
         }
