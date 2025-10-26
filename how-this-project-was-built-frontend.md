@@ -9,8 +9,8 @@ ng new frontend
 cd frontend
 ng add @angular/material
 ng generate environments
-ng g c components/main-layout
-ng g guard auth --functional=false
-ng g interceptor interceptors/api --functional=false
-ng g s services/global-service
+ng g c --skip-tests components/main-layout
+ng g guard auth --skip-tests --functional=false
+ng g interceptor interceptors/api --skip-tests --functional=false
+ng g s --skip-tests services/global-service
 ```
