@@ -15,9 +15,25 @@ public partial class AppDbContext : IdentityDbContext<ApplicationUser>
 
     public required DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
 
+    public required DbSet<FakeData> FakeDatas { get; set; }
+
+    void ConfigureDbFunctions(ModelBuilder builder)
+    {
+         {
+            var method = typeof(DbFun).GetMethod(nameof(DbFun.GuidString));
+            if (method is not null)
+                builder
+                    .HasDbFunction(method)
+                    .HasName(DBFN_GUID_STRING)
+                    .HasParameter("guid").HasStoreType("uuid");
+        }
+    }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
+        ConfigureDbFunctions(builder);
 
         // TODO: x database config
         var useSnakeCaseMode = configuration.GetAppConfig().Database.SchemaSnakeCase;

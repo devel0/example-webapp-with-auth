@@ -47,6 +47,10 @@ global using Serilog.Templates.Themes;
 global using Swashbuckle.AspNetCore.Annotations;
 global using Swashbuckle.AspNetCore.SwaggerGen;
 global using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
+global using Bogus;
+global using System.Linq;
+global using System.Linq.Dynamic.Core;
+global using System.Linq.Dynamic.Core.CustomTypeProviders;
 
 // project
 global using static ExampleWebApp.Backend.WebApi.Constants;
@@ -58,5 +62,8 @@ global using ExampleWebApp.Backend.WebApi.Services.Abstractions;
 global using ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth;
 global using ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.Data;
 global using ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs;
+global using ExampleWebApp.Backend.WebApi.Services.Abstractions.DTOs;
 global using ExampleWebApp.Backend.WebApi.Services.Auth;
 global using ExampleWebApp.Backend.WebApi.Types;
+global using ExampleWebApp.Backend.WebApi.Services.Abstractions.Fake;
+global using ExampleWebApp.Backend.WebApi.Services.Abstractions.Data;

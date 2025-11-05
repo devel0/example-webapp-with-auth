@@ -1,6 +1,6 @@
 namespace ExampleWebApp.Backend.WebApi;
 
-public static class Toolkit
+public static partial class Toolkit
 {
 
     /// <summary>

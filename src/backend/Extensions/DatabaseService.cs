@@ -87,6 +87,27 @@ public static partial class Extensions
             if (appliedMigrations.Count == 0 && pendingMigrations.Count == 0)
                 throw new Exception("no initial migration found");
 
+            //
+            // create functions
+            //
+            {                
+                #region GuidString
+                {                    
+                    var sql =
+                        $"""
+                            create or replace function "{DBFN_GUID_STRING}"(field uuid)
+                            returns text as
+                            $$
+                            select field::text
+                            $$
+                            language sql
+                            """;
+
+                    await db.Database.ExecuteSqlRawAsync(sql, cancellationToken);
+                }
+                #endregion
+            }
+
             if (pendingMigrations.Count > 0)
             {
                 app.Logger.LogInformation("database migrations");
@@ -101,6 +122,8 @@ public static partial class Extensions
                     await migrator.MigrateAsync(migration, cancellationToken);
                 }
             }
+
+
         }
     }
 

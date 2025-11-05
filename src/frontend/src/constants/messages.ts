@@ -1,0 +1,1 @@
+export const MSG_ERROR_LOAD = 'Error while loading data'
