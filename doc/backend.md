@@ -1,4 +1,6 @@
-# how this project was built ( backend )
+# backend
+
+## how this project was built
 
 ```sh
 mkdir example-webapp-with-auth
