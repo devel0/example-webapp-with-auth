@@ -1,5 +1,5 @@
 import { AboutDialog } from '../dialogs/AboutDialog';
-import { APP_URL_Users, DEFAULT_SIZE_0_5_REM } from '../constants/general'
+import { APP_URL_FakeDatas, APP_URL_Users, DEFAULT_SIZE_0_5_REM } from '../constants/general'
 import { authApi } from '../axios.manager';
 import { Box, LinearProgress } from '@mui/material'
 import { ReactNode, useState } from 'react'
@@ -18,7 +18,7 @@ type Props = {
 const MainLayout = (props: Props) => {
     const generalNetwork = useGlobalService(x => x.generalNetwork)
     const globalPersistState = useGlobalPersistService()
-    
+
     const navigate = useNavigate()
     const location = useLocation()
     const [aboutDialogOpen, setAboutDialogOpen] = useState(false)
@@ -28,6 +28,11 @@ const MainLayout = (props: Props) => {
     useMobileDetect()
 
     const menuPages: AppBarItem[] = [
+        {
+            label: 'Fakedatas',
+            selected: location.pathname === APP_URL_FakeDatas,
+            url: APP_URL_FakeDatas
+        },
         {
             hidden: !globalPersistState.currentUserCanManageUsers(),
             label: 'Users',

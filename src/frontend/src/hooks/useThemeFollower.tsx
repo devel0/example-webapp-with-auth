@@ -2,8 +2,8 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
+
 import { orange } from "@mui/material/colors";
-import { setCssVars } from '../styles/CssVars';
 import { THEME_DARK, THEME_LIGHT, light_bg_paper } from "../constants/general";
 import { ThemeOptions, createTheme } from "@mui/material";
 import { TypographyOptions } from "@mui/material/styles/createTypography";
@@ -79,9 +79,14 @@ export const useThemeFollower = () => {
 
     const isLightTheme = themePalette == THEME_LIGHT
 
-    const theme = createTheme(isLightTheme ? lightThemeOptions : darkThemeOptions);
+    const theme = createTheme(isLightTheme ? lightThemeOptions : darkThemeOptions);    
 
-    setCssVars(isLightTheme);
+    document.documentElement.classList.remove('theme-light', 'theme-dark')
+
+    if (isLightTheme)
+        document.documentElement.classList.add('theme-light')
+    else
+        document.documentElement.classList.add('theme-dark')
 
     return theme
 }

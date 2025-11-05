@@ -18,6 +18,7 @@ import ThemeChooser from './ThemeChooser';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
+import { useEffect } from 'react';
 
 export interface AppBarItem {
     hidden?: boolean,
@@ -34,12 +35,14 @@ function ResponsiveAppBar(props: {
 }) {
     const isMobile = useGlobalService(x => x.isMobile)
     const currentUser = useGlobalPersistService(x => x.currentUser)
-    
+    const appBarRef = React.useRef<HTMLDivElement>(null)
+
     const navigate = useNavigate()
     const theme = useTheme()
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const { pages, settings } = props
+    const setAppBarHeight = useGlobalService(x => x.setAppBarHeight)
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -56,8 +59,14 @@ function ResponsiveAppBar(props: {
         setAnchorElUser(null);
     };
 
+    useEffect(() => {
+        if (appBarRef.current) {
+            setAppBarHeight(appBarRef.current.clientHeight)
+        }
+    }, [appBarRef])
+
     return (
-        <AppBar position="sticky" sx={{}}>
+        <AppBar ref={appBarRef} position="sticky" sx={{}}>
             <Box sx={{
                 ml: DEFAULT_SIZE_1_REM,
                 mr: DEFAULT_SIZE_1_REM

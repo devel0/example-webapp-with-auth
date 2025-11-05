@@ -12,6 +12,12 @@ export default defineConfig({
     allowedHosts: ['dev-webapp-test.searchathing.com'],
     port: 5100,
   },  
+  css: {
+    preprocessorOptions: {
+      scss: {        
+      }
+    }
+  },
   plugins: [
     react(),
     svgr({

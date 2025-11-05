@@ -1,5 +1,5 @@
 import { API_URL, APP_URL_Login } from "./constants/general"
-import { AuthApi, Configuration, MainApi } from "../api"
+import { AuthApi, Configuration, FakeDataApi, MainApi } from "../api"
 import { setSnack } from "./utils/utils";
 import { useEffect } from "react";
 import { useGlobalPersistService } from "./services/global-persist/Service";
@@ -10,7 +10,7 @@ import { matchPath } from "react-router";
 
 export const useAxiosConfig = () => {
   const setGeneralNetwork = useGlobalService(x => x.setGeneralNetwork)
-  
+
   const globalPersistState = useGlobalPersistService()
 
   useEffect(() => {
@@ -71,5 +71,9 @@ export const authApi = new AuthApi(new Configuration({
 }))
 
 export const mainApi = new MainApi(new Configuration({
+  basePath: API_URL()
+}))
+
+export const fakeDataApi = new FakeDataApi(new Configuration({
   basePath: API_URL()
 }))

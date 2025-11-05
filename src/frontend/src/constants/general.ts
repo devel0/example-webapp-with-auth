@@ -26,6 +26,9 @@ export const APP_URL_Home =
 export const APP_URL_Login = (from?: string, token?: string) => generateUrl(
     `${APP_URL_BASE}/login/:from/:token`, { from, token })
 
+export const APP_URL_FakeDatas =
+    `${APP_URL_BASE}/fake-datas`
+
 export const APP_URL_Users =
     `${APP_URL_BASE}/users`
 
@@ -40,10 +43,6 @@ export const RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC = import.meta.env.DEV ? 10 : 
 // GUI
 //------------------------------------------------------------------
 
-export const CSS_VAR_TOOLBAR_TEXT_COLOR = "--toolbar-text-color";
-export const CSS_VAR_APP_BUTTON_FG = "--app-button-fg";
-export const CSS_VAR_APP_BUTTON_BG = "--app-button-bg";
-export const CSS_VAR_APP_CONTROL_BG = "--app-control-bg";
 export const light_bg_paper = "#c0c0c0";
 
 export const THEME_DARK = "dark";

@@ -16,6 +16,11 @@ docs/DeleteUserStatus.md
 docs/EditUserRequestDto.md
 docs/EditUserResponseDto.md
 docs/EditUserStatus.md
+docs/FakeData.md
+docs/FakeDataApi.md
+docs/FakeDataGenericItemWithOrig.md
+docs/GenericSort.md
+docs/GetGenericRequest.md
 docs/LoginRequestDto.md
 docs/LoginResponseDto.md
 docs/LoginStatus.md
@@ -26,6 +31,8 @@ docs/RenewAccessTokenResponse.md
 docs/RenewAccessTokenStatus.md
 docs/RenewRefreshTokenResponse.md
 docs/RenewRefreshTokenStatus.md
+docs/SortDirection.md
+docs/SortModelItem.md
 docs/UserListItemResponseDto.md
 docs/UserPermission.md
 docs/UsernameAuthOptions.md

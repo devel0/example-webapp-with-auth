@@ -1,6 +1,6 @@
 /// <reference types="vite-plugin-svgr/client" />
 
-import './index.css'
+import './index.scss'
 import { APP_TITLE } from './constants/general.ts'
 import { blue, green, orange, red } from '@mui/material/colors'
 import { createRoot } from 'react-dom/client'
@@ -27,7 +27,7 @@ const StyledMaterialDesignContent = styled(MaterialDesignContent)(() => ({
 }));
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+  // <StrictMode>
     <SnackbarProvider Components={{
       success: StyledMaterialDesignContent,
       error: StyledMaterialDesignContent,
@@ -36,7 +36,7 @@ createRoot(document.getElementById('root')!).render(
     }}>
       <App />
     </SnackbarProvider>
-  </StrictMode>,
+  // </StrictMode>,
 )
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

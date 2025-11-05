@@ -11,7 +11,7 @@ import { useParams } from 'react-router-dom'
 import AppLogo from '../images/app-icon.svg?react'
 import React, { useEffect, useState } from 'react'
 
-export const LoginPage = () => {
+export const LoginPage = () => {    
     const currentUserInitialized = useGlobalPersistService(x => x.currentUserInitialized)
     const currentUser = useGlobalPersistService(x => x.currentUser)
     const setRefreshTokenExpiration = useGlobalPersistService(x => x.setRefreshTokenExpiration)
@@ -24,7 +24,7 @@ export const LoginPage = () => {
     const [resetPasswordToken, setResetPasswordToken] = useState<string | undefined>(undefined)
     const [sendingPasswordResetProgress, setSendingPasswordResetProgress] = useState(false)
 
-    useEffect(() => {
+    useEffect(() => {        
         if (params.token && params.token !== ":token") {
             setResetPasswordToken(params.token)
         }

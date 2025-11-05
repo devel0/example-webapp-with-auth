@@ -203,6 +203,40 @@ export const EditUserStatus = {
 export type EditUserStatus = typeof EditUserStatus[keyof typeof EditUserStatus];
 
 
+export interface FakeData {
+    'id'?: string;
+    'firstName'?: string | null;
+    'lastName'?: string | null;
+    'email'?: string | null;
+    'phone'?: string | null;
+    'groupNumber'?: number;
+    'dateOfBirth'?: string;
+}
+export interface FakeDataGenericItemWithOrig {
+    'origItem'?: FakeData;
+    'updatedItem': FakeData;
+}
+export interface GenericSort {
+    'columns'?: Array<SortModelItem> | null;
+}
+/**
+ * get requeste
+ */
+export interface GetGenericRequest {
+    /**
+     * paged from
+     */
+    'offset'?: number;
+    /**
+     * paged size (-1 disabled)
+     */
+    'count'?: number;
+    /**
+     * ef core dynamic filter
+     */
+    'dynFilter'?: string | null;
+    'sort'?: GenericSort;
+}
 /**
  * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.LoginRequestDto) api request data.
  */
@@ -360,6 +394,30 @@ export const RenewRefreshTokenStatus = {
 } as const;
 
 export type RenewRefreshTokenStatus = typeof RenewRefreshTokenStatus[keyof typeof RenewRefreshTokenStatus];
+
+
+/**
+ *   Ascending  Descending
+ */
+
+export const SortDirection = {
+    /**
+    * 
+    */
+    Ascending: 'Ascending',
+    /**
+    * 
+    */
+    Descending: 'Descending'
+} as const;
+
+export type SortDirection = typeof SortDirection[keyof typeof SortDirection];
+
+
+export interface SortModelItem {
+    'columnName'?: string | null;
+    'direction'?: SortDirection;
+}
 
 
 /**
@@ -1258,6 +1316,313 @@ export class AuthApi extends BaseAPI {
      */
     public apiAuthResetLostPasswordGet(email?: string, token?: string, resetPassword?: string, options?: RawAxiosRequestConfig) {
         return AuthApiFp(this.configuration).apiAuthResetLostPasswordGet(email, token, resetPassword, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * FakeDataApi - axios parameter creator
+ */
+export const FakeDataApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary delete record by id
+         * @param {string} [id] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiFakeDataDeleteFakeDataDelete: async (id?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/FakeData/DeleteFakeData`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (id !== undefined) {
+                localVarQueryParameter['id'] = id;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary get record by id
+         * @param {string} [id] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiFakeDataGetFakeDataByIdPost: async (id?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/FakeData/GetFakeDataById`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (id !== undefined) {
+                localVarQueryParameter['id'] = id;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary get items with optional filtering, sorting
+         * @param {GetGenericRequest} [getGenericRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiFakeDataGetFakeDatasPost: async (getGenericRequest?: GetGenericRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/FakeData/GetFakeDatas`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(getGenericRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary update given record
+         * @param {FakeDataGenericItemWithOrig} [fakeDataGenericItemWithOrig] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiFakeDataUpdateFakeDataPost: async (fakeDataGenericItemWithOrig?: FakeDataGenericItemWithOrig, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/FakeData/UpdateFakeData`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(fakeDataGenericItemWithOrig, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * FakeDataApi - functional programming interface
+ */
+export const FakeDataApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = FakeDataApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary delete record by id
+         * @param {string} [id] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiFakeDataDeleteFakeDataDelete(id?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiFakeDataDeleteFakeDataDelete(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FakeDataApi.apiFakeDataDeleteFakeDataDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary get record by id
+         * @param {string} [id] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiFakeDataGetFakeDataByIdPost(id?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FakeData>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiFakeDataGetFakeDataByIdPost(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FakeDataApi.apiFakeDataGetFakeDataByIdPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary get items with optional filtering, sorting
+         * @param {GetGenericRequest} [getGenericRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiFakeDataGetFakeDatasPost(getGenericRequest?: GetGenericRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FakeData>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiFakeDataGetFakeDatasPost(getGenericRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FakeDataApi.apiFakeDataGetFakeDatasPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary update given record
+         * @param {FakeDataGenericItemWithOrig} [fakeDataGenericItemWithOrig] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiFakeDataUpdateFakeDataPost(fakeDataGenericItemWithOrig?: FakeDataGenericItemWithOrig, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FakeData>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiFakeDataUpdateFakeDataPost(fakeDataGenericItemWithOrig, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FakeDataApi.apiFakeDataUpdateFakeDataPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * FakeDataApi - factory interface
+ */
+export const FakeDataApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = FakeDataApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary delete record by id
+         * @param {string} [id] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiFakeDataDeleteFakeDataDelete(id?: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.apiFakeDataDeleteFakeDataDelete(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary get record by id
+         * @param {string} [id] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiFakeDataGetFakeDataByIdPost(id?: string, options?: RawAxiosRequestConfig): AxiosPromise<FakeData> {
+            return localVarFp.apiFakeDataGetFakeDataByIdPost(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary get items with optional filtering, sorting
+         * @param {GetGenericRequest} [getGenericRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiFakeDataGetFakeDatasPost(getGenericRequest?: GetGenericRequest, options?: RawAxiosRequestConfig): AxiosPromise<Array<FakeData>> {
+            return localVarFp.apiFakeDataGetFakeDatasPost(getGenericRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary update given record
+         * @param {FakeDataGenericItemWithOrig} [fakeDataGenericItemWithOrig] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiFakeDataUpdateFakeDataPost(fakeDataGenericItemWithOrig?: FakeDataGenericItemWithOrig, options?: RawAxiosRequestConfig): AxiosPromise<FakeData> {
+            return localVarFp.apiFakeDataUpdateFakeDataPost(fakeDataGenericItemWithOrig, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * FakeDataApi - object-oriented interface
+ */
+export class FakeDataApi extends BaseAPI {
+    /**
+     * 
+     * @summary delete record by id
+     * @param {string} [id] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiFakeDataDeleteFakeDataDelete(id?: string, options?: RawAxiosRequestConfig) {
+        return FakeDataApiFp(this.configuration).apiFakeDataDeleteFakeDataDelete(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary get record by id
+     * @param {string} [id] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiFakeDataGetFakeDataByIdPost(id?: string, options?: RawAxiosRequestConfig) {
+        return FakeDataApiFp(this.configuration).apiFakeDataGetFakeDataByIdPost(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary get items with optional filtering, sorting
+     * @param {GetGenericRequest} [getGenericRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiFakeDataGetFakeDatasPost(getGenericRequest?: GetGenericRequest, options?: RawAxiosRequestConfig) {
+        return FakeDataApiFp(this.configuration).apiFakeDataGetFakeDatasPost(getGenericRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary update given record
+     * @param {FakeDataGenericItemWithOrig} [fakeDataGenericItemWithOrig] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiFakeDataUpdateFakeDataPost(fakeDataGenericItemWithOrig?: FakeDataGenericItemWithOrig, options?: RawAxiosRequestConfig) {
+        return FakeDataApiFp(this.configuration).apiFakeDataUpdateFakeDataPost(fakeDataGenericItemWithOrig, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

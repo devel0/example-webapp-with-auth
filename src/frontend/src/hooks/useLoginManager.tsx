@@ -17,7 +17,7 @@ export const useLoginManager = () => {
     const currentUserInitialized = useGlobalPersistService(x => x.currentUserInitialized)
     const hydrated = useGlobalPersistService(x => x.hydrated)
     const refreshTokenExpiration = useGlobalPersistService(x => x.refreshTokenExpiration)
-    
+
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -67,7 +67,7 @@ export const useLoginManager = () => {
 
                         setCurrentUser(currentUser)
                     }
-                    else {
+                    else {                        
                         navigate(APP_URL_Login(loginRedirectUrlFrom()))
                     }
                 })
@@ -75,7 +75,7 @@ export const useLoginManager = () => {
                     const err = _err as AxiosError
 
                     if (err.response?.status === HttpStatusCode.Unauthorized) {
-                        if (document.location.pathname !== APP_URL_Login()) {
+                        if (document.location.pathname !== APP_URL_Login()) {                            
                             setLogout()
 
                             document.location = APP_URL_Login()
