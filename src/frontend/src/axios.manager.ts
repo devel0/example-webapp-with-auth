@@ -5,6 +5,8 @@ import { useEffect } from "react";
 import { useGlobalPersistService } from "./services/global-persist/Service";
 import { useGlobalService } from "./services/global/Service";
 import axios, { AxiosError, HttpStatusCode } from "axios";
+import { loginRedirectUrlFrom } from "./components/ProtectedRoutes";
+import { matchPath } from "react-router";
 
 export const useAxiosConfig = () => {
   const setGeneralNetwork = useGlobalService(x => x.setGeneralNetwork)
@@ -39,7 +41,8 @@ export const useAxiosConfig = () => {
         if (error?.response?.status === HttpStatusCode.Unauthorized) {
           if (document.location.pathname !== APP_URL_Login()) {
             globalPersistState.setLogout()
-            document.location = APP_URL_Login()
+            if (!matchPath({ path: APP_URL_Login() }, document.location.pathname))
+              document.location = APP_URL_Login(loginRedirectUrlFrom())
           }
 
           return

@@ -7,10 +7,9 @@ import { useEffect } from "react"
 import { useGlobalPersistService } from "../services/global-persist/Service"
 import { useGlobalService } from "../services/global/Service"
 import { useNavigate } from "react-router-dom"
+import { loginRedirectUrlFrom } from "../components/ProtectedRoutes"
 
 export const useLoginManager = () => {
-    const setUrlWanted = useGlobalService(x => x.setUrlWanted)
-
     const setRefreshTokenExpiration = useGlobalPersistService(x => x.setRefreshTokenExpiration)
     const setLogout = useGlobalPersistService(x => x.setLogout)
     const setCurrentUser = useGlobalPersistService(x => x.setCurrentUser)
@@ -69,9 +68,7 @@ export const useLoginManager = () => {
                         setCurrentUser(currentUser)
                     }
                     else {
-                        setUrlWanted(location.pathname)
-
-                        navigate(APP_URL_Login())
+                        navigate(APP_URL_Login(loginRedirectUrlFrom()))
                     }
                 })
                 .catch(_err => {
@@ -79,8 +76,6 @@ export const useLoginManager = () => {
 
                     if (err.response?.status === HttpStatusCode.Unauthorized) {
                         if (document.location.pathname !== APP_URL_Login()) {
-                            setUrlWanted(location.pathname)
-
                             setLogout()
 
                             document.location = APP_URL_Login()

@@ -1,6 +1,5 @@
 export interface IGlobalData {
-    urlWanted: string | null,
-    generalNetwork: boolean,
+    generalNetwork: boolean
     isMobile: boolean
 }
 

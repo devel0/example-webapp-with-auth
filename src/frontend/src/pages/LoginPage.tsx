@@ -12,9 +12,6 @@ import AppLogo from '../images/app-icon.svg?react'
 import React, { useEffect, useState } from 'react'
 
 export const LoginPage = () => {
-    const setUrlWanted = useGlobalService(x => x.setUrlWanted)
-    const urlWanted = useGlobalService(x => x.urlWanted)
-
     const currentUserInitialized = useGlobalPersistService(x => x.currentUserInitialized)
     const currentUser = useGlobalPersistService(x => x.currentUser)
     const setRefreshTokenExpiration = useGlobalPersistService(x => x.setRefreshTokenExpiration)
@@ -28,9 +25,6 @@ export const LoginPage = () => {
     const [sendingPasswordResetProgress, setSendingPasswordResetProgress] = useState(false)
 
     useEffect(() => {
-        if (params.from && params.from !== ':from') {
-            setUrlWanted(params.from)
-        }
         if (params.token && params.token !== ":token") {
             setResetPasswordToken(params.token)
         }
@@ -38,16 +32,14 @@ export const LoginPage = () => {
 
     useEffect(() => {
         if (currentUserInitialized && currentUser != null) {
-            if (urlWanted != null && urlWanted !== APP_URL_Login()) {
-                setUrlWanted(null)
-
-                navigate(urlWanted)
+            if (params.from && params.from !== ':from' && params.from !== APP_URL_Login()) {                
+                navigate(params.from)
             }
             else {
                 navigate(APP_URL_Home)
             }
         }
-    }, [currentUser, currentUserInitialized])
+    }, [params, currentUser, currentUserInitialized])
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()

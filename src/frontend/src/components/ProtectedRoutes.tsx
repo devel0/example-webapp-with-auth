@@ -6,13 +6,13 @@ import { Outlet } from "react-router-dom";
 import { useGlobalPersistService } from '../services/global-persist/Service';
 import Layout from './Layout';
 
+export const loginRedirectUrlFrom = () => {
+    if (location.pathname !== APP_URL_Login())
+        return encodeURIComponent(location.pathname)
+}
+
 const ProtectedRoutes = () => {
     const currentUser = useGlobalPersistService(x => x.currentUser)
-
-    const loginRedirectUrlFrom = () => {
-        if (location.pathname !== APP_URL_Login())
-            return encodeURIComponent(location.pathname)
-    }
 
     return (currentUser != null)
         ?
