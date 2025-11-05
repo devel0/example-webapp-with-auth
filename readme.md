@@ -21,15 +21,17 @@
     - authguard protected pages routes
     - login / logout ( TODO: reset lost password through email link )
     - ( TODO: user manager )
-    - light/dark theme
+    - ( TODO: datagrid pagination with server side sort/filter )
+    - light/dark theme scss styles
     - snacks    
   - [react][8]
     - openapi typescript/axios api generated from backend swagger endpoint
     - layout with responsive menu
     - protected pages with react router dom
     - zustand global services
+    - datagrid pagination with server side sort/filter
     - login / logout / reset lost password through email link
-    - light/dark theme
+    - light/dark theme scss styles
     - snacks    
 
 ## quickstart
@@ -199,6 +201,10 @@ to restart backend service
 service mytest-webapp restart
 ```
 
+## openapi generator
+
+use provided script [gen-api.sh][9] to generate frontend api from the backend swagger openapi ; this script will detect if angular or react frontend and retrieve corresponding hostname information from environment or vite depending
+
 ## how this project was built
 
 - [backend](./how-this-project-was-built-backend.md)
@@ -212,3 +218,4 @@ service mytest-webapp restart
 [6]: ./deploy/webapp.env
 [7]: https://github.com/devel0/example-webapp-with-auth/tree/frontend/angular/src/frontend
 [8]: https://github.com/devel0/example-webapp-with-auth/tree/frontend/react/src/frontend
+[9]: ./gen-api.sh
