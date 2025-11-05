@@ -8,7 +8,7 @@
   - webapi with roles authorization
 - Developer friendly
   - breakpoints works for c# backend and typescript angular/react frontend from the same vscode session
-- Backend
+- [Backend][12]
   - c# asp net core
   - configuration
     - development `user-secrets`
@@ -207,7 +207,7 @@ use provided script [gen-api.sh][9] to generate frontend api from the backend sw
 
 ## developer documentation
 
-- [backend](./doc/backend.md)
+- [backend][12]
 - frontend
   - [angular][10]
   - [react][11]
@@ -221,3 +221,4 @@ use provided script [gen-api.sh][9] to generate frontend api from the backend sw
 [9]: ./gen-api.sh
 [10]: https://github.com/devel0/example-webapp-with-auth/tree/frontend/angular/doc/frontend.md
 [11]: https://github.com/devel0/example-webapp-with-auth/tree/frontend/react/doc/frontend.md
+[12]: ./doc/backend.md
