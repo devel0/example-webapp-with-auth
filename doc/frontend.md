@@ -1,5 +1,7 @@
 # frontend
 
+[source code](../src/frontend)
+
 ## how this project was built ( frontend )
 
 ```sh
@@ -12,3 +14,7 @@ pnpm i @mui/material @emotion/react @emotion/styled @mui/icons-material
 pnpm i zustand react-router-dom axios linq-to-typescript usehooks-ts @fontsource/roboto
 cd ..
 ```
+
+## vscode extensions
+
+- `viijay-kr.react-ts-css` ( for scss styles intellisense )
