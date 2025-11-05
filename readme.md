@@ -21,15 +21,17 @@
     - authguard protected pages routes
     - login / logout ( TODO: reset lost password through email link )
     - ( TODO: user manager )
-    - light/dark theme
+    - ( TODO: datagrid pagination with server side sort/filter )
+    - light/dark theme scss styles
     - snacks    
   - [react][8]
     - openapi typescript/axios api generated from backend swagger endpoint
     - layout with responsive menu
     - protected pages with react router dom
     - zustand global services
+    - datagrid pagination with server side sort/filter
     - login / logout / reset lost password through email link
-    - light/dark theme
+    - light/dark theme scss styles
     - snacks    
 
 ## quickstart
