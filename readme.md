@@ -15,21 +15,23 @@
     - appsettings ( autoreload on change )
     - production environment variables
 - Frontend
-  - [angular][7]
+  - [angular][10]
     - openapi typescript/angular api services generated from backend swagger endpoint
     - layout with responsive menu
     - authguard protected pages routes
     - login / logout ( TODO: reset lost password through email link )
     - ( TODO: user manager )
-    - light/dark theme
+    - ( TODO: datagrid pagination with server side sort/filter )
+    - light/dark theme scss styles
     - snacks    
-  - [react][8]
+  - [react][11]
     - openapi typescript/axios api generated from backend swagger endpoint
     - layout with responsive menu
     - protected pages with react router dom
     - zustand global services
+    - datagrid pagination with server side sort/filter
     - login / logout / reset lost password through email link
-    - light/dark theme
+    - light/dark theme scss styles
     - snacks    
 
 ## quickstart
@@ -199,10 +201,16 @@ to restart backend service
 service mytest-webapp restart
 ```
 
-## how this project was built
+## openapi generator
 
-- [backend](./how-this-project-was-built-backend.md)
-- [frontend](./how-this-project-was-built-frontend.md)
+use provided script [gen-api.sh][9] to generate frontend api from the backend swagger openapi ; this script will detect if angular or react frontend and retrieve corresponding hostname information from environment or vite depending
+
+## developer documentation
+
+- [backend](./doc/backend.md)
+- frontend
+  - [angular][10]
+  - [react][11]
 
 [1]: https://github.com/devel0/knowledge/blob/cf1f477a4ccf898d7299dab4daa71ebcf049172f/doc/self-signed-cert.md
 [2]: https://github.com/devel0/knowledge/blob/cf1f477a4ccf898d7299dab4daa71ebcf049172f/doc/letsencrypt-acme-dns.md
@@ -210,5 +218,6 @@ service mytest-webapp restart
 [4]: ./deploy/service/webapp.service
 [5]: ./deploy/nginx/prod/webapp.conf
 [6]: ./deploy/webapp.env
-[7]: https://github.com/devel0/example-webapp-with-auth/tree/frontend/angular/src/frontend
-[8]: https://github.com/devel0/example-webapp-with-auth/tree/frontend/react/src/frontend
+[9]: ./gen-api.sh
+[10]: https://github.com/devel0/example-webapp-with-auth/tree/frontend/angular/doc/frontend.md
+[11]: https://github.com/devel0/example-webapp-with-auth/tree/frontend/react/doc/frontend.md
