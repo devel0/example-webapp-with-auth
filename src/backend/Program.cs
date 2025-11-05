@@ -1,3 +1,5 @@
+using ExampleWebApp.Backend.WebApi.Services.Fake;
+
 var cts = new CancellationTokenSource();
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,6 +35,7 @@ builder.Services.AddScoped(typeof(CancellationToken), sp => cts.Token);
 builder.Services.AddScoped<IJWTService, JWTService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUtilService, UtilService>();
+builder.Services.AddScoped<IFakeService, FakeService>();
 
 // setup default roles admin, user, advanced
 builder.Services.SetupRoles();
