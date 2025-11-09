@@ -224,7 +224,7 @@ export const FakeDataPage = () => {
                     filterTextBox                    
                     onInit={dgApi => {
                         console.log(`dg INIT`)
-                        dgApi.setColumnSortDirectionByFieldName(fnTDATA('firstName'), 'Ascending')
+                        // dgApi.setColumnSortDirectionByFieldName(fnTDATA('firstName'), 'Ascending')
                     }}                    
                     columns={columns}
                     columnsState={columnsState}
