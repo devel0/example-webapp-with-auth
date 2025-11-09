@@ -1,6 +1,7 @@
 import { APP_LOGO_TEXT, DEFAULT_SIZE_1_REM, DEFAULT_SIZE_0_5_REM, APP_URL_Home } from '../constants/general';
 import { firstLetter, LinkButton } from '../utils/utils';
 import { Link } from "react-router-dom"
+import { useEffect } from 'react';
 import { useGlobalPersistService } from '../services/global-persist/Service';
 import { useGlobalService } from '../services/global/Service';
 import { useNavigate } from 'react-router-dom';
@@ -10,15 +11,17 @@ import AppBar from '@mui/material/AppBar';
 import AppLogo from '../images/app-icon.svg?react'
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
+import CloudOffIcon from '@mui/icons-material/CloudOff';
+import CloudQueueIcon from '@mui/icons-material/CloudQueue';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import styles from './ResponsiveAppBar.module.scss'
 import ThemeChooser from './ThemeChooser';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { useEffect } from 'react';
 
 export interface AppBarItem {
     hidden?: boolean,
@@ -36,6 +39,7 @@ function ResponsiveAppBar(props: {
     const isMobile = useGlobalService(x => x.isMobile)
     const currentUser = useGlobalPersistService(x => x.currentUser)
     const appBarRef = React.useRef<HTMLDivElement>(null)
+    const connected = useGlobalService(x => x.wsConnected)
 
     const navigate = useNavigate()
     const theme = useTheme()
@@ -243,7 +247,12 @@ function ResponsiveAppBar(props: {
                      USER MENU
                     -----------------------------------------------------------------------
                     */}
-                    <Box sx={{ flexGrow: 0 }}>
+                    <Box className={styles['user-menu']}>
+
+                        {connected && <CloudQueueIcon />}
+
+                        {!connected && <CloudOffIcon />}
+
                         <ThemeChooser />
 
                         <Tooltip title="Open settings">

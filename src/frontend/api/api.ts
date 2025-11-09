@@ -27,6 +27,29 @@ export interface AccessTokenNfo {
     'accessToken'?: string | null;
     'expiration'?: string;
 }
+/**
+ *   Ping  Pong
+ */
+
+export const AliveWSMessageType = {
+    /**
+    * 
+    */
+    Ping: 'Ping',
+    /**
+    * 
+    */
+    Pong: 'Pong'
+} as const;
+
+export type AliveWSMessageType = typeof AliveWSMessageType[keyof typeof AliveWSMessageType];
+
+
+export interface AliveWSProtocol {
+    'messageType'?: AliveWSMessageType;
+}
+
+
 export interface AuthOptions {
     'username': UsernameAuthOptions;
     'password': PasswordAuthOptions;
@@ -573,6 +596,18 @@ export type UserPermission = typeof UserPermission[keyof typeof UserPermission];
 export interface UsernameAuthOptions {
     'allowedUserNameCharacters': string;
 }
+export interface WSPing {
+    'messageType'?: AliveWSMessageType;
+    'msg'?: string | null;
+}
+
+
+export interface WSPong {
+    'messageType'?: AliveWSMessageType;
+    'msg'?: string | null;
+}
+
+
 
 /**
  * AuthApi - axios parameter creator
@@ -1709,6 +1744,35 @@ export const MainApiAxiosParamCreator = function (configuration?: Configuration)
     return {
         /**
          * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiMainAliveWebSocketGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/Main/AliveWebSocket`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Long running api test. ( admin and users allowed )
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1778,6 +1842,17 @@ export const MainApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiMainAliveWebSocketGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiMainAliveWebSocketGet(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['MainApi.apiMainAliveWebSocketGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @summary Long running api test. ( admin and users allowed )
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1811,6 +1886,14 @@ export const MainApiFactory = function (configuration?: Configuration, basePath?
     return {
         /**
          * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiMainAliveWebSocketGet(options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.apiMainAliveWebSocketGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Long running api test. ( admin and users allowed )
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1834,6 +1917,15 @@ export const MainApiFactory = function (configuration?: Configuration, basePath?
  * MainApi - object-oriented interface
  */
 export class MainApi extends BaseAPI {
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiMainAliveWebSocketGet(options?: RawAxiosRequestConfig) {
+        return MainApiFp(this.configuration).apiMainAliveWebSocketGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @summary Long running api test. ( admin and users allowed )

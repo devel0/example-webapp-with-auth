@@ -5,17 +5,17 @@ import { IGlobalData } from "./IData"
 
 export type IGlobalService = IGlobalData & IGlobalActions
 
-const InitialData: IGlobalData = {    
+const InitialData: IGlobalData = {
     generalNetwork: false,
     isMobile: computeIsMobile(),
-    appBarHeight: null    
+    appBarHeight: null
 }
 
 export const useGlobalService = create<IGlobalService>(set => {
-    
+
     return ({
         ...InitialData,
-        
+
         setGeneralNetwork: (generalNetwork) => {
             set(state => ({ generalNetwork }))
         },
@@ -27,6 +27,10 @@ export const useGlobalService = create<IGlobalService>(set => {
         setAppBarHeight: (appBarHeight) => {
             set(state => ({ appBarHeight }))
         },
+
+        setWsConnected: (wsConnected) => {
+            set(state => ({ wsConnected }))
+        }
 
     })
 })

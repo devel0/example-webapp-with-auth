@@ -8,6 +8,14 @@ import { PaletteMode } from "@mui/material";
 
 export const API_URL = () => `https://${import.meta.env.VITE_SERVERNAME}`
 
+export const WSS_URL = () => `wss://${import.meta.env.VITE_SERVERNAME}/api/Main/AliveWebSocket`
+
+/** interval between each ping to state ws alive */
+export const WS_PING_MS = 10000
+
+/** expected interval max between ping and pong */
+export const WS_PONG_EXPECTED_MS = 2000
+
 //------------------------------------------------------------------
 // APP
 //------------------------------------------------------------------

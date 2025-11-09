@@ -6,6 +6,8 @@ base.ts
 common.ts
 configuration.ts
 docs/AccessTokenNfo.md
+docs/AliveWSMessageType.md
+docs/AliveWSProtocol.md
 docs/AuthApi.md
 docs/AuthOptions.md
 docs/CountGenericRequest.md
@@ -37,5 +39,7 @@ docs/SortModelItem.md
 docs/UserListItemResponseDto.md
 docs/UserPermission.md
 docs/UsernameAuthOptions.md
+docs/WSPing.md
+docs/WSPong.md
 git_push.sh
 index.ts

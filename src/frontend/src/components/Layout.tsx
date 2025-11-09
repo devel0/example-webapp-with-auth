@@ -10,6 +10,7 @@ import { useLoginManager } from '../hooks/useLoginManager';
 import { useMobileDetect } from '../hooks/useMobileDetect';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ResponsiveAppBar, { AppBarItem } from './ResponsiveAppBar'
+import { useAlive } from '../hooks/useAlive';
 
 type Props = {
     child: ReactNode
@@ -24,6 +25,8 @@ const MainLayout = (props: Props) => {
     const [aboutDialogOpen, setAboutDialogOpen] = useState(false)
 
     useLoginManager()
+
+    useAlive()
 
     useMobileDetect()
 
