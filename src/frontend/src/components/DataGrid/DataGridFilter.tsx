@@ -2,7 +2,7 @@ import { DataGridColumn, DataGridColumnState, FieldKind } from "./DataGridTypes"
 import { DateField } from "@mui/x-date-pickers"
 import { Dayjs } from 'dayjs';
 import { emptyString } from "../../utils/utils";
-import { IconButton, InputAdornment, MenuItem, Select, TextField } from "@mui/material"
+import { IconButton, InputAdornment, InputProps, MenuItem, Select, TextField } from "@mui/material"
 import { useEffect, useState } from "react"
 import BackspaceOutlinedIcon from '@mui/icons-material/BackspaceOutlined';
 import styles from './DataGridFilter.module.scss'
@@ -61,6 +61,18 @@ export function DataGridFilter<T>(props: {
         }
     }, [compareOp, numberFrom])
 
+    const clearFilterProp = (clearAction: () => void): Partial<InputProps> => {
+        return {
+            endAdornment: filterActive && (
+                <InputAdornment position="end">
+                    <IconButton onClick={() => clearAction()} edge="end">
+                        <BackspaceOutlinedIcon />
+                    </IconButton>
+                </InputAdornment>
+            ),
+        }
+    }
+
     if (col.fieldKind === FieldKind.dateTimeOffset) {
         return <div style={{ display: 'flex', flexDirection: 'row', gap: '1rem' }}>
             <div>
@@ -81,7 +93,8 @@ export function DataGridFilter<T>(props: {
             </div>
 
             <DateField
-                fullWidth
+                fullWidth                           
+                // className={filterActive ? styles['filter'] : undefined}
                 size="small"
                 value={dtFrom}
                 onChange={x => setDtFrom(x)}
@@ -110,6 +123,10 @@ export function DataGridFilter<T>(props: {
 
             <TextField
                 fullWidth
+                className={filterActive ? styles['filter'] : undefined}
+                InputProps={clearFilterProp(() => {
+                    setNumberFrom(null)
+                })}
                 size="small"
                 type="number"
                 value={numberFrom ?? ''}
@@ -128,18 +145,10 @@ export function DataGridFilter<T>(props: {
             fullWidth
             size='small'
             className={filterActive ? styles['filter'] : undefined}
-            InputProps={{
-                endAdornment: filterActive && (
-                    <InputAdornment position="end">
-                        <IconButton onClick={() => {
-                            columnsState[colIdx].filter = null
-                            setColumnsState([...columnsState])
-                        }} edge="end">
-                            <BackspaceOutlinedIcon />
-                        </IconButton>
-                    </InputAdornment>
-                ),
-            }}
+            InputProps={clearFilterProp(() => {
+                columnsState[colIdx].filter = null
+                setColumnsState([...columnsState])
+            })}
             value={columnsState[colIdx].filter ?? ''}
             onChange={x => {
                 columnsState[colIdx].filter = x.target.value
