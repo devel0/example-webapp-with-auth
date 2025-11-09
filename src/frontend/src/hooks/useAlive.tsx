@@ -11,7 +11,7 @@ export const useAlive = () => {
     const setWsConnected = useGlobalService(x => x.setWsConnected)
 
     useInterval(() => {
-        pingMsg.current = `${new Date().valueOf()}`        
+        pingMsg.current = `${new Date().valueOf()}`
 
         ws.sendMessage(JSON.stringify({
             messageType: 'Ping',
@@ -21,7 +21,7 @@ export const useAlive = () => {
         console.log(`sent ping ${pingMsg.current}`)
 
         setTimeout(() => {
-            console.log(`check ping ${pingMsg.current} equals ${pongMsg.current}`)
+            // console.log(`check ping ${pingMsg.current} equals ${pongMsg.current}`)
             setWsConnected(pingMsg.current === pongMsg.current
             )
         }, WS_PONG_EXPECTED_MS)
@@ -39,17 +39,17 @@ export const useAlive = () => {
         },
 
         onMessage: (e) => {
-            console.log(`ws mex ${e.data}`)
+            // console.log(`ws mex ${e.data}`)
 
             const proto: AliveWSProtocol = JSON.parse(e.data)
             if (proto.messageType === 'Pong') {
                 const pong: WSPong = JSON.parse(e.data)
-                
+
                 pongMsg.current = pong.msg ?? ''
 
-                console.log(`RX pong ${pongMsg.current}`)
+                // console.log(`RX pong ${pongMsg.current}`)
 
-                // setWsConnected(pingMsg === qPong)
+                setWsConnected(pingMsg.current === pongMsg.current)
             }
         },
 
