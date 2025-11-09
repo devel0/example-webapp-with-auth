@@ -1,4 +1,5 @@
 using EFCore.BulkExtensions;
+using webapi.Migrations;
 
 namespace ExampleWebApp.Backend.WebApi.Services.Fake;
 
@@ -52,12 +53,29 @@ public class FakeService : IFakeService
                             return dto.ToOffset(TimeSpan.Zero);
                         });
 
+
+                    var migration = new fakerdataindexes();
+
+                    var sqlGenerator = dbContext.GetService<IMigrationsSqlGenerator>();
+
+                    // remove indexes
+                    var commands = sqlGenerator.Generate(migration.DownOperations);
+
+                    foreach (var cmd in commands)                    
+                        dbContext.Database.ExecuteSqlRaw(cmd.CommandText);                    
+
                     for (var s = 0; s < BULK_SLICE_CNT; ++s)
                     {
                         var slice = userFaker.Generate(BULK_SLICE);
 
                         await dbContext.BulkInsertAsync(slice, cancellationToken: cancellationToken);
                     }
+
+                    // get indexes back
+                    commands = sqlGenerator.Generate(migration.UpOperations);
+
+                    foreach (var cmd in commands)                    
+                        dbContext.Database.ExecuteSqlRaw(cmd.CommandText);                    
                 }
 
                 fakeInitialized = true;
