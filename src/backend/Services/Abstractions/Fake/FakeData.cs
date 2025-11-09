@@ -1,8 +1,15 @@
 namespace ExampleWebApp.Backend.WebApi.Services.Abstractions.Fake;
 
+[@Index(nameof(FirstName))]
+[@Index(nameof(LastName))]
+[@Index(nameof(Email))]
+[@Index(nameof(Phone))]
+[@Index(nameof(GroupNumber))]
+[@Index(nameof(DateOfBirth))]
 public class FakeData
 {
 
+    [Key]
     public Guid Id { get; set; }
 
     public string FirstName { get; set; }
