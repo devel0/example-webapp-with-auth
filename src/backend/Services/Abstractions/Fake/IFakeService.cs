@@ -4,6 +4,11 @@ public interface IFakeService
 {
 
     /// <summary>
+    /// count items with given optiona filtering
+    /// </summary>
+    public Task<int> CountAsync(string? dynFilter, CancellationToken cancellationToken);
+
+    /// <summary>
     /// get items with optional filtering, sorting
     /// </summary>     
     public Task<List<FakeData>> GetViewAsync(
