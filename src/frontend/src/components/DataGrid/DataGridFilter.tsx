@@ -6,6 +6,7 @@ import { IconButton, InputAdornment, InputProps, MenuItem, Select, TextField } f
 import { useEffect, useState } from "react"
 import BackspaceOutlinedIcon from '@mui/icons-material/BackspaceOutlined';
 import styles from './DataGridFilter.module.scss'
+import { useDebounceValue } from "usehooks-ts";
 
 enum DateOp {
     lessThan = "<",
@@ -16,6 +17,7 @@ enum DateOp {
 }
 
 export function DataGridFilter<T>(props: {
+    debounceMs?: number,
     col: DataGridColumn<T>,
     colIdx: number,
     columnsState: DataGridColumnState[],
@@ -25,7 +27,15 @@ export function DataGridFilter<T>(props: {
     const [dtFrom, setDtFrom] = useState<Dayjs | null>(null);
     const [compareOp, setCompareOp] = useState<DateOp>(DateOp.Equals)
     const [numberFrom, setNumberFrom] = useState<number | null>(null)
-    const [filterActive, setFilterActive] = useState(false)//!emptyString(props.columnFilter))
+    const [filterActive, setFilterActive] = useState(false)
+    const [text, setText] = useState<string | null>(null)
+
+    const [debounceFilter, setDebounceFilter] = useDebounceValue<string | null>(null, 500)
+
+    useEffect(() => {        
+        columnsState[colIdx].filter = debounceFilter
+        setColumnsState([...columnsState])
+    }, [debounceFilter])
 
     useEffect(() => {
         setFilterActive(!emptyString(columnsState[colIdx].filter))
@@ -38,8 +48,7 @@ export function DataGridFilter<T>(props: {
         }
         else {
             try {
-                columnsState[colIdx].filter = `${compareOp} "${dtFrom?.toISOString()}"`
-                setColumnsState([...columnsState])
+                setDebounceFilter(`${compareOp} "${dtFrom?.toISOString()}"`)
             } catch (err) {
                 console.error(err)
             }
@@ -53,7 +62,7 @@ export function DataGridFilter<T>(props: {
         }
         else {
             try {
-                columnsState[colIdx].filter = `${compareOp} ${numberFrom}`
+                setDebounceFilter(`${compareOp} ${numberFrom}`)                
                 setColumnsState([...columnsState])
             } catch (err) {
                 console.error(err)
@@ -93,7 +102,7 @@ export function DataGridFilter<T>(props: {
             </div>
 
             <DateField
-                fullWidth                           
+                fullWidth
                 // className={filterActive ? styles['filter'] : undefined}
                 size="small"
                 value={dtFrom}
@@ -146,13 +155,14 @@ export function DataGridFilter<T>(props: {
             size='small'
             className={filterActive ? styles['filter'] : undefined}
             InputProps={clearFilterProp(() => {
+                setText('')
                 columnsState[colIdx].filter = null
                 setColumnsState([...columnsState])
-            })}
-            value={columnsState[colIdx].filter ?? ''}
+            })}            
+            value={text}
             onChange={x => {
-                columnsState[colIdx].filter = x.target.value
-                setColumnsState([...columnsState])
+                setText(x.target.value)
+                setDebounceFilter(x.target.value)
             }}
         />
     </div>

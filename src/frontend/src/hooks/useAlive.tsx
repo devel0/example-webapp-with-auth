@@ -18,7 +18,7 @@ export const useAlive = () => {
             msg: pingMsg.current
         } as WSPing))
 
-        console.log(`sent ping ${pingMsg.current}`)
+        // console.log(`sent ping ${pingMsg.current}`)
 
         setTimeout(() => {
             // console.log(`check ping ${pingMsg.current} equals ${pongMsg.current}`)
