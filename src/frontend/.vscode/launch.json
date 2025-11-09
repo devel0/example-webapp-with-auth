@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "FRONTEND",
+            "request": "launch",
+            "type": "chrome",
+            "url": "https://dev-webapp-test.searchathing.com/app",
+            "webRoot": "${workspaceFolder}",
+        }
+    ]
+}
