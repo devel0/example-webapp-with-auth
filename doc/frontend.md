@@ -25,6 +25,7 @@
 - [create paged datagrid](../src/frontend/src/pages/FakeDataPage.tsx)
   - [define columns][11]
   - [pagination rows loader][12]
+  - [count rows loader][19]
   - [datagrid component][13]
 
 - [scss theme global variables][14]
@@ -76,11 +77,11 @@ cd ..
 
 [10]: https://github.com/devel0/example-webapp-with-auth/blob/3489ad0f978d257654d47feadeb0b203b6584aef/src/frontend/src/pages/FakeDataPage.tsx#L137
 
-[11]: https://github.com/devel0/example-webapp-with-auth/blob/3489ad0f978d257654d47feadeb0b203b6584aef/src/frontend/src/pages/FakeDataPage.tsx#L34-L76
+[11]: https://github.com/devel0/example-webapp-with-auth/blob/ab75aabfbce1763ac0c86887d4dc6a94dca828c8/src/frontend/src/pages/FakeDataPage.tsx#L19-L68
 
-[12]: https://github.com/devel0/example-webapp-with-auth/blob/3489ad0f978d257654d47feadeb0b203b6584aef/src/frontend/src/pages/FakeDataPage.tsx#L78-L145
+[12]: https://github.com/devel0/example-webapp-with-auth/blob/ab75aabfbce1763ac0c86887d4dc6a94dca828c8/src/frontend/src/pages/FakeDataPage.tsx#L87-L160
 
-[13]: https://github.com/devel0/example-webapp-with-auth/blob/3489ad0f978d257654d47feadeb0b203b6584aef/src/frontend/src/pages/FakeDataPage.tsx#L179-L192
+[13]: https://github.com/devel0/example-webapp-with-auth/blob/ab75aabfbce1763ac0c86887d4dc6a94dca828c8/src/frontend/src/pages/FakeDataPage.tsx#L196-L247
 
 [14]: https://github.com/devel0/example-webapp-with-auth/blob/3489ad0f978d257654d47feadeb0b203b6584aef/src/frontend/src/index.scss#L13-L31
 
@@ -91,3 +92,6 @@ cd ..
 [17]: https://github.com/devel0/example-webapp-with-auth/blob/3489ad0f978d257654d47feadeb0b203b6584aef/src/frontend/src/pages/LoginPage.tsx#L11
 
 [18]: https://github.com/devel0/example-webapp-with-auth/blob/3489ad0f978d257654d47feadeb0b203b6584aef/src/frontend/src/pages/LoginPage.tsx#L113
+
+[19]: https://github.com/devel0/example-webapp-with-auth/blob/ab75aabfbce1763ac0c86887d4dc6a94dca828c8/src/frontend/src/pages/FakeDataPage.tsx#L162-L180
+
