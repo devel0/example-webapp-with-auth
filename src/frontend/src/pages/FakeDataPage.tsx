@@ -40,7 +40,8 @@ const columns: DataGridColumn<TDATA>[] = [
     {
         header: 'LastName',
         fieldName: fnTDATA('lastName'),
-        getData: x => x.lastName
+        getData: x => x.lastName,      
+        filterCaseSensitive: false          
     },
     {
         header: 'Email',
@@ -123,7 +124,7 @@ export const FakeDataPage = () => {
                                 return {
                                     key: x.col.fieldName,
                                     value: x.colState.filter,
-                                    filterCaseSensitive: x.colState.filterCaseSensitive,
+                                    filterCaseSensitive: x.col.filterCaseSensitive,
                                     kind: x.col.fieldKind,
                                     preProcessField: x.col.dbFunFilterPreprocess
                                 } as ColumnFilterNfo<FakeData>
@@ -220,7 +221,7 @@ export const FakeDataPage = () => {
 
                 <DataGrid
                     ref={dgApiRef}
-                    filterTextBox
+                    filterTextBox                    
                     onInit={dgApi => {
                         console.log(`dg INIT`)
                         dgApi.setColumnSortDirectionByFieldName(fnTDATA('firstName'), 'Ascending')

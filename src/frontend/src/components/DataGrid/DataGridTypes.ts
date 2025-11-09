@@ -20,6 +20,7 @@ export interface DataGridColumn<T> extends IDataGridColumn {
     collapsed?: boolean
     fieldName?: string
     fieldKind?: FieldKind
+    filterCaseSensitive?: boolean
     dbFunFilterPreprocess?: string
     getData: (x: T) => any
 }
@@ -31,9 +32,7 @@ export interface DataGridColumnState {
     /** (date valueof) of sort change ( used to prioritize a sort vs other when multi ) */
     sortTimestamp: number | null
 
-    filter: string | null
-
-    filterCaseSensitive?: boolean
+    filter: string | null    
 
     customWidth?: number
 

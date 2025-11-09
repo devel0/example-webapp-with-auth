@@ -64,7 +64,7 @@ export function buildGenericDynFilter<T>(props: {
                     else
                         filter = `${fieldName}`
 
-                    if (columnFilter.filterCaseSensitive === true) {
+                    if (columnFilter.filterCaseSensitive !== true) {
                         filter += ".ToLower()"
                         searchTerm = searchTerm.toLowerCase()
                     }
