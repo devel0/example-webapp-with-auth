@@ -1,5 +1,5 @@
 import styles from './FakeDataPage.module.scss'
-import { useEffect, useMemo, useRef, useState } from "react"
+import { RefObject, useEffect, useMemo, useRef, useState } from "react"
 import { APP_TITLE } from "../constants/general"
 import { Box, Button, setRef } from "@mui/material"
 import { fakeDataApi } from "../axios.manager"
@@ -9,33 +9,41 @@ import { MSG_ERROR_LOAD } from "../constants/messages"
 import { FakeData, GenericSort, SortModelItem } from "../../api"
 import { useGlobalService } from '../services/global/Service'
 import { DataGrid } from '../components/DataGrid/DataGrid'
-import { useWindowSize } from 'usehooks-ts'
+import { useResizeObserver, useWindowSize } from 'usehooks-ts'
 import { DataGridApi, DataGridColumn, DataGridColumnState, FieldKind } from '../components/DataGrid/DataGridTypes'
 import { from } from 'linq-to-typescript'
 import { buildGenericDynFilter, ColumnFilterNfo } from '../components/DataGrid/DataGridDynFilter'
+import { DataGridPager, DataGridPagerApi } from '../components/DataGrid/DataGridPager'
 
 export const FakeDataPage = () => {
     type TDATA = FakeData
+
+    const [columnsState, setColumnsState] = useState<DataGridColumnState<TDATA>[] | null>(null)
+    const [pageData, setPageData] = useState<TDATA[]>([])
+    const [refTop, setRefTop] = useState<number | null>(null)    
+    const appBarHeight = useGlobalService(x => x.appBarHeight)
+    const dgApiRef = useRef<DataGridApi<TDATA> | null>(null)
+    const dgPagerApiRef = useRef<DataGridPagerApi | null>(null)
+    const divRef = useRef<HTMLDivElement>(null)
+    const fnTDATA = pathBuilder<TDATA>()
+
     const [page, setPage] = useState(0)
     const [pageSize, setPageSize] = useState(25)
-    const [pageData, setPageData] = useState<TDATA[]>([])
-    const appBarHeight = useGlobalService(x => x.appBarHeight)
-    const divRef = useRef<HTMLDivElement>(null)
-    const [refTop, setRefTop] = useState<number | null>(null)
-    // const [dgApi, setdgApi] = useState<DataGridApi<TDATA> | null>(null)
-    const [columnsState, setColumnsState] = useState<DataGridColumnState<TDATA>[] | null>(null)
-    const fnTDATA = pathBuilder<TDATA>()
-    const dgApiRef = useRef<DataGridApi<TDATA> | null>(null)
+    const [total, setTotal] = useState<number | null>(null)
+    const [dynFilter, setDynFilter] = useState<string | null>(null)
 
     useEffect(() => {
         document.title = `${APP_TITLE} - FakeData`
     }, [])
 
+    //
+    // DEFINE DATAGRID COLUMNS
+    //    
     const columns: DataGridColumn<TDATA>[] = [
         {
             header: 'Id',
             fieldName: fnTDATA('id'),
-            flexWidth: 2,
+            flexWidth: 1,
             // width: 350,
             getData: x => x.id,
             dbFunFilterPreprocess: 'DbFun.GuidString'
@@ -69,18 +77,23 @@ export const FakeDataPage = () => {
         },
         {
             header: 'Birth date',
+            flexWidth: 2,
             fieldName: fnTDATA('dateOfBirth'),
             fieldKind: FieldKind.dateTimeOffset,
             getData: x => new Date(x.dateOfBirth ?? '').toISOString()
         },
     ]
 
+    //
+    // DEFINE PAGED/SORT/FILTER BACKEND LOADER
+    //
     useEffect(() => {
         const load = async () => {
             console.log('load server data')
+
             try {
                 let sort: GenericSort | undefined = undefined
-                let dynFilter: string | null = null
+                let dynFilterTmp: string | null = null
 
                 if (columnsState != null) {
                     const qSort = from(columnsState)
@@ -106,7 +119,7 @@ export const FakeDataPage = () => {
                         .toArray()
                     if (qFilter.length > 0) {
                         // const columnFilters : ColumnFilterKeyValue[] =[]
-                        dynFilter = buildGenericDynFilter({
+                        dynFilterTmp = buildGenericDynFilter({
                             columnFilters: qFilter.map(x => {
                                 return {
                                     key: x.col.fieldName,
@@ -120,14 +133,16 @@ export const FakeDataPage = () => {
                     }
                 }
 
-                if (dynFilter != null)
-                    console.log(`dynFilter = ${dynFilter}`)
+                if (dynFilterTmp != null)
+                    console.log(`dynFilter = ${dynFilterTmp}`)
+
+                setDynFilter(dynFilterTmp)
 
                 const q = await fakeDataApi.apiFakeDataGetFakeDatasPost({
                     count: pageSize,
                     offset: page * pageSize,
                     sort,
-                    dynFilter
+                    dynFilter: dynFilterTmp
                 })
 
                 if (q.status === HttpStatusCode.Ok) {
@@ -141,31 +156,53 @@ export const FakeDataPage = () => {
 
         load()
     }, [
-        page, pageSize, columnsState
+        page, pageSize,
+        columnsState
     ])
+
+    //
+    // DEFINE COUNTER BACKEND LOADER
+    //
+    useEffect(() => {
+        const load = async () => {
+            try {
+                const q = await fakeDataApi.apiFakeDataCountFakeDatasPost({
+                    dynFilter
+                })
+                if (q.status === HttpStatusCode.Ok)
+                    setTotal(q.data)
+            } catch (_ex) {
+                const ex = _ex as AxiosError
+                handleApiException(ex, MSG_ERROR_LOAD)
+            }
+        }
+
+        load()
+    }, [dynFilter])
+
+    // DUMMY DIVREF TO COMPUTE TABLE FIXED HEIGHT
+    const divRefSize = useResizeObserver({
+        ref: divRef as RefObject<HTMLDivElement>,
+        box: 'border-box'
+    })
 
     useEffect(() => {
         if (divRef.current) {
             // console.log(`divRef offsetTop: ${divRef.current.offsetTop}`)
             setRefTop(divRef.current.offsetTop)
         }
-    }, [divRef])
+    }, [divRef.current, divRefSize.width, divRefSize.height])    
 
     const windowSize = useWindowSize()
 
     return <Box style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 
-        <Box style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-            <span>
-                page: {page}
-            </span>
-            <button onClick={() => setPage(Math.max(0, page - 1))}>
-                prev
-            </button>
-            <button onClick={() => setPage(page + 1)}>
-                next
-            </button>
-        </Box>
+        {total != null && <DataGridPager
+            ref={dgPagerApiRef}
+            page={page} setPage={setPage}
+            pageSize={pageSize}
+            total={total}
+        />}
 
         <div ref={divRef} />
 
@@ -176,8 +213,7 @@ export const FakeDataPage = () => {
 
             <div className={styles['table-demo-div']}>
 
-                <DataGrid
-                    // onApi={x => setdgApi(x)}
+                <DataGrid                    
                     ref={dgApiRef}
                     filterTextBox
                     onInit={dgApi => {

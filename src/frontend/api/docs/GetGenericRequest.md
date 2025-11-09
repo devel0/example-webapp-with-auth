@@ -1,6 +1,6 @@
 # GetGenericRequest
 
-get requeste
+get request
 
 ## Properties
 

@@ -8,6 +8,7 @@ configuration.ts
 docs/AccessTokenNfo.md
 docs/AuthApi.md
 docs/AuthOptions.md
+docs/CountGenericRequest.md
 docs/CurrentUserResponseDto.md
 docs/CurrentUserStatus.md
 docs/DeleteUserRequestDto.md

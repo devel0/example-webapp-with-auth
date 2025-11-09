@@ -63,7 +63,7 @@ function DataGridInner<T>(
     const tableSize = useResizeObserver({
         ref: mainDivRef as RefObject<HTMLDivElement>,
         box: 'border-box'
-    })
+    })    
 
     const setColumnWidth = (colIdx: number, width: number) => {
         if (columnsState == null) return

@@ -32,6 +32,12 @@ export interface AuthOptions {
     'password': PasswordAuthOptions;
 }
 /**
+ * count request
+ */
+export interface CountGenericRequest {
+    'dynFilter'?: string | null;
+}
+/**
  * M:ExampleWebApp.Backend.WebApi.AuthController.CurrentUser api response data.
  */
 export interface CurrentUserResponseDto {
@@ -220,7 +226,7 @@ export interface GenericSort {
     'columns'?: Array<SortModelItem> | null;
 }
 /**
- * get requeste
+ * get request
  */
 export interface GetGenericRequest {
     /**
@@ -1328,6 +1334,40 @@ export const FakeDataApiAxiosParamCreator = function (configuration?: Configurat
     return {
         /**
          * 
+         * @summary count items with optional filtering
+         * @param {CountGenericRequest} [countGenericRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiFakeDataCountFakeDatasPost: async (countGenericRequest?: CountGenericRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/FakeData/CountFakeDatas`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(countGenericRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary delete record by id
          * @param {string} [id] 
          * @param {*} [options] Override http request option.
@@ -1475,6 +1515,19 @@ export const FakeDataApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @summary count items with optional filtering
+         * @param {CountGenericRequest} [countGenericRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiFakeDataCountFakeDatasPost(countGenericRequest?: CountGenericRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<number>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiFakeDataCountFakeDatasPost(countGenericRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FakeDataApi.apiFakeDataCountFakeDatasPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @summary delete record by id
          * @param {string} [id] 
          * @param {*} [options] Override http request option.
@@ -1536,6 +1589,16 @@ export const FakeDataApiFactory = function (configuration?: Configuration, baseP
     return {
         /**
          * 
+         * @summary count items with optional filtering
+         * @param {CountGenericRequest} [countGenericRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiFakeDataCountFakeDatasPost(countGenericRequest?: CountGenericRequest, options?: RawAxiosRequestConfig): AxiosPromise<number> {
+            return localVarFp.apiFakeDataCountFakeDatasPost(countGenericRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary delete record by id
          * @param {string} [id] 
          * @param {*} [options] Override http request option.
@@ -1581,6 +1644,17 @@ export const FakeDataApiFactory = function (configuration?: Configuration, baseP
  * FakeDataApi - object-oriented interface
  */
 export class FakeDataApi extends BaseAPI {
+    /**
+     * 
+     * @summary count items with optional filtering
+     * @param {CountGenericRequest} [countGenericRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiFakeDataCountFakeDatasPost(countGenericRequest?: CountGenericRequest, options?: RawAxiosRequestConfig) {
+        return FakeDataApiFp(this.configuration).apiFakeDataCountFakeDatasPost(countGenericRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @summary delete record by id
