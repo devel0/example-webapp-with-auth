@@ -18,6 +18,7 @@
   - [angular][10]
     - openapi typescript/angular api services generated from backend swagger endpoint
     - layout with responsive menu
+    - TODO: websocket alive check
     - authguard protected pages routes
     - login / logout ( TODO: reset lost password through email link )
     - ( TODO: user manager )
@@ -27,6 +28,7 @@
   - [react][11]
     - openapi typescript/axios api generated from backend swagger endpoint
     - layout with responsive menu
+    - websocket alive check
     - protected pages with react router dom
     - zustand global services
     - datagrid pagination with server side sort/filter
