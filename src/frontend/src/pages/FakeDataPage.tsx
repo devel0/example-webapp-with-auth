@@ -89,7 +89,7 @@ export const FakeDataPage = () => {
     //
     useEffect(() => {
         const load = async () => {
-            console.log('load server data')
+            // console.log(' load serverdata')
 
             try {
                 let sort: GenericSort | undefined = undefined

@@ -131,7 +131,7 @@ function DataGridInner<T>(
         if (tableSize.width != null) {
 
             if (columnsState != null) {
-                console.log(`onInit`)
+                // console.log(`onInit`)
                 if (refInit === false && props.onInit != null) {
                     setRefInit(true)
                     props.onInit(dgApi)
