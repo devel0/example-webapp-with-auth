@@ -28,20 +28,19 @@ public class GenericSort
 
 }
 
-
-public record GetGenericRequest<F, S>(int Offset, int Count, F? Filter, S? Sort);
-
-public record GetGenericRequest<F>(int Offset, int Count, F? Filter, GenericSort? Sort);
-
 /// <summary>
-/// get requeste
+/// get request
 /// </summary>
 /// <param name="Offset">paged from</param>
 /// <param name="Count">paged size (-1 disabled)</param>
 /// <param name="DynFilter">ef core dynamic filter</param>
 /// <param name="Sort"></param>
-/// <returns></returns>
 public record GetGenericRequest(int Offset, int Count, string? DynFilter, GenericSort? Sort);
+
+/// <summary>
+/// count request
+/// </summary>
+public record CountGenericRequest(string? dynFilter);
 
 //[SwaggerSchema(Required = [])] // makes all properties as optional
 public class GenericItemWithOrig<T>

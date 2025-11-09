@@ -21,6 +21,14 @@ public class FakeDataController : ControllerBase
     }
 
     /// <summary>
+    /// count items with optional filtering
+    /// </summary>        
+    [HttpPost]
+    [Authorize(Roles = ROLE_admin)]
+    public async Task<ActionResult<int>> CountFakeDatas(CountGenericRequest req) =>
+        await fakeService.CountAsync(req.dynFilter, cancellationToken);        
+
+    /// <summary>
     /// get items with optional filtering, sorting
     /// </summary>        
     [HttpPost]
