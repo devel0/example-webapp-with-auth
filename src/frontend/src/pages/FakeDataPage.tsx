@@ -1,20 +1,20 @@
-import styles from './FakeDataPage.module.scss'
-import { RefObject, useEffect, useMemo, useRef, useState } from "react"
 import { APP_TITLE } from "../constants/general"
-import { Box, Button, setRef } from "@mui/material"
-import { fakeDataApi } from "../axios.manager"
 import { AxiosError, HttpStatusCode } from "axios"
-import { getScrollbarWidth, handleApiException, pathBuilder } from "../utils/utils"
-import { MSG_ERROR_LOAD } from "../constants/messages"
-import { FakeData, GenericSort, SortModelItem } from "../../api"
-import { useGlobalService } from '../services/global/Service'
-import { DataGrid, DataGridApi } from '../components/DataGrid/DataGrid'
-import { useResizeObserver, useWindowSize } from 'usehooks-ts'
-import { DataGridColumn, DataGridColumnState, FieldKind } from '../components/DataGrid/DataGridTypes'
-import { from } from 'linq-to-typescript'
+import { Box, Button } from "@mui/material"
 import { buildGenericDynFilter, ColumnFilterNfo } from '../components/DataGrid/DataGridDynFilter'
-import { DataGridPager } from '../components/DataGrid/DataGridPager'
+import { DataGrid, DataGridApi } from '../components/DataGrid/DataGrid'
+import { DataGridColumn, DataGridColumnState, FieldKind } from '../components/DataGrid/DataGridTypes'
 import { DataGridColumns } from '../components/DataGrid/DataGridColumns'
+import { DataGridPager } from '../components/DataGrid/DataGridPager'
+import { FakeData, GenericSort, SortModelItem } from "../../api"
+import { fakeDataApi } from "../axios.manager"
+import { from } from 'linq-to-typescript'
+import { handleApiException, pathBuilder } from "../utils/utils"
+import { MSG_ERROR_LOAD } from "../constants/messages"
+import { RefObject, useEffect, useRef, useState } from "react"
+import { useGlobalService } from '../services/global/Service'
+import { useResizeObserver, useWindowSize } from 'usehooks-ts'
+import styles from './FakeDataPage.module.scss'
 
 type TDATA = FakeData
 const fnTDATA = pathBuilder<TDATA>()
@@ -117,8 +117,7 @@ export const FakeDataPage = () => {
                         .select((colState, colIdx) => { return { colIdx, col: columns[colIdx], colState, } })
                         .where(r => r.colState.filter != null)
                         .toArray()
-                    if (qFilter.length > 0) {
-                        // const columnFilters : ColumnFilterKeyValue[] =[]
+                    if (qFilter.length > 0) {                        
                         dynFilterTmp = buildGenericDynFilter({
                             columnFilters: qFilter.map(x => {
                                 return {
@@ -187,8 +186,7 @@ export const FakeDataPage = () => {
     })
 
     useEffect(() => {
-        if (divRef.current) {
-            // console.log(`divRef offsetTop: ${divRef.current.offsetTop}`)
+        if (divRef.current) {            
             setRefTop(divRef.current.offsetTop)
         }
     }, [divRef.current, divRefSize.width, divRefSize.height])
@@ -226,10 +224,7 @@ export const FakeDataPage = () => {
                     onInit={dgApi => {
                         console.log(`dg INIT`)
                         dgApi.setColumnSortDirectionByFieldName(fnTDATA('firstName'), 'Ascending')
-                    }}
-                    // onColumnStateChanged={() => {
-                    //     setColumnsState(dgApiRef.current?.getColumnsState() ?? null)
-                    // }}
+                    }}                    
                     columns={columns}
                     columnsState={columnsState}
                     setColumnsState={x => setColumnsState(x)}
