@@ -1,15 +1,18 @@
 // system
 global using JsonSerializerOptions = System.Text.Json.JsonSerializerOptions;
 global using static System.Net.Mime.MediaTypeNames;
+global using System.Collections.Concurrent;
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
 global using System.IdentityModel.Tokens.Jwt;
 global using System.IO.Compression;
 global using System.Linq.Expressions;
 global using System.Net;
+global using System.Net.WebSockets;
 global using System.Reflection;
 global using System.Security.Claims;
 global using System.Security.Cryptography;
+global using System.Text;
 global using System.Text.Json;
 global using System.Text.Json.Serialization;
 global using System.Web;
