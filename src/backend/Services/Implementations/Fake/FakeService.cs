@@ -1,3 +1,6 @@
+using EFCore.BulkExtensions;
+using webapi.Migrations;
+
 namespace ExampleWebApp.Backend.WebApi.Services.Fake;
 
 public class FakeService : IFakeService
@@ -28,11 +31,12 @@ public class FakeService : IFakeService
             {
                 if (!await dbContext.FakeDatas.AnyAsync(cancellationToken))
                 {
-                    var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+                    var BULK_SLICE = 10_000;
+                    var BULK_SLICE_CNT = 1_000;
 
-                    var CNT = 10000;
+                    var CNT = BULK_SLICE * BULK_SLICE_CNT;
 
-                    logger.LogInformation($"initializing {CNT} fake data db");
+                    logger.LogInformation($"initializing {CNT} fake data db ( bulk slice {BULK_SLICE} )");
 
                     var userFaker = new Faker<FakeData>()
                         .RuleFor(u => u.Id, f => Guid.NewGuid())
@@ -49,13 +53,29 @@ public class FakeService : IFakeService
                             return dto.ToOffset(TimeSpan.Zero);
                         });
 
-                    dbContext.FakeDatas.AddRange(userFaker.Generate(CNT));
 
-                    await dbContext.SaveChangesAsync(cancellationToken);
+                    var migration = new fakerdataindexes();
 
-                    await transaction.CommitAsync(cancellationToken);
+                    var sqlGenerator = dbContext.GetService<IMigrationsSqlGenerator>();
 
-                    logger.LogInformation($"saved data");
+                    // remove indexes
+                    var commands = sqlGenerator.Generate(migration.DownOperations);
+
+                    foreach (var cmd in commands)                    
+                        dbContext.Database.ExecuteSqlRaw(cmd.CommandText);                    
+
+                    for (var s = 0; s < BULK_SLICE_CNT; ++s)
+                    {
+                        var slice = userFaker.Generate(BULK_SLICE);
+
+                        await dbContext.BulkInsertAsync(slice, cancellationToken: cancellationToken);
+                    }
+
+                    // get indexes back
+                    commands = sqlGenerator.Generate(migration.UpOperations);
+
+                    foreach (var cmd in commands)                    
+                        dbContext.Database.ExecuteSqlRaw(cmd.CommandText);                    
                 }
 
                 fakeInitialized = true;
@@ -65,6 +85,17 @@ public class FakeService : IFakeService
         {
             semFake.Release();
         }
+    }
+
+    public async Task<int> CountAsync(string? dynFilter, CancellationToken cancellationToken)
+    {
+        await FakerInit(cancellationToken);
+
+        var q = dbContext.FakeDatas.AsQueryable();
+
+        q = q.ApplySortAndFilter(sort: null, dynFilter);
+
+        return await q.CountAsync(cancellationToken);
     }
 
     public async Task<List<FakeData>> GetViewAsync(
