@@ -1,29 +1,8 @@
 import { SortDirection } from "../../../api"
 
-/** datagrid properties */
-export interface DataGridProps<T> {
-    columns: DataGridColumn<T>[]
-    pageData: T[]
-    onInit?: (dgApi: DataGridApi<T>) => void
-    onColumnStateChanged?: (colIdx: number, col: DataGridColumn<T>, colState: DataGridColumnState<T>) => void
-    /** if true a textbox for column filtering will included below the column header */
-    filterTextBox?: boolean
-}
-
-/** datagrid api ref imperative methods */
-export interface DataGridApi<T> {
-    getColumnsState: () => DataGridColumnState<T>[] | null
-    setColumnsState: (columnsState: DataGridColumnState<T>[]) => void
-    /** set column width px rearranging others */
-    setColumnWidth: (colIdx: number, width: number) => void
-    setColumnSortDirection: (colIdx: number, sortDirection: SortDirection | null) => void
-    setColumnSortDirectionByFieldName: (fn: string, sortDirection: SortDirection | null) => void
-    setColumnFilter: (colIdx: number, filter: string | null) => void
-}
-
-
 /** generic supertype of column props */
 export interface IDataGridColumn {
+    header?: string
     flexWidth?: number
     width?: number
 }
@@ -46,7 +25,7 @@ export interface DataGridColumn<T> extends IDataGridColumn {
 }
 
 /** dynamic state of column */
-export interface DataGridColumnState<T> {
+export interface DataGridColumnState {
     sortDirection: SortDirection | null,
 
     /** (date valueof) of sort change ( used to prioritize a sort vs other when multi ) */

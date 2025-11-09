@@ -1,10 +1,10 @@
-import { FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from "@mui/material"
-import BackspaceOutlinedIcon from '@mui/icons-material/BackspaceOutlined';
 import { DataGridColumn, DataGridColumnState, FieldKind } from "./DataGridTypes"
-import { DateField, DatePicker } from "@mui/x-date-pickers"
-import { useEffect, useId, useState } from "react"
+import { DateField } from "@mui/x-date-pickers"
 import { Dayjs } from 'dayjs';
 import { emptyString } from "../../utils/utils";
+import { IconButton, InputAdornment, MenuItem, Select, TextField } from "@mui/material"
+import { useEffect, useState } from "react"
+import BackspaceOutlinedIcon from '@mui/icons-material/BackspaceOutlined';
 import styles from './DataGridFilter.module.scss'
 
 enum DateOp {
@@ -18,26 +18,28 @@ enum DateOp {
 export function DataGridFilter<T>(props: {
     col: DataGridColumn<T>,
     colIdx: number,
-    columnsState: DataGridColumnState<T>[],
-    columnFilter: string | null,
-    setColumnFilter: (colIdx: number, filter: string | null) => void
+    columnsState: DataGridColumnState[],
+    setColumnsState: (x: DataGridColumnState[]) => void
 }) {
-    const { col, colIdx, columnsState, setColumnFilter } = props
+    const { col, colIdx, columnsState, setColumnsState } = props
     const [dtFrom, setDtFrom] = useState<Dayjs | null>(null);
     const [compareOp, setCompareOp] = useState<DateOp>(DateOp.Equals)
     const [numberFrom, setNumberFrom] = useState<number | null>(null)
-    const [filterActive, setFilterActive] = useState(!emptyString(props.columnFilter))
+    const [filterActive, setFilterActive] = useState(false)//!emptyString(props.columnFilter))
 
     useEffect(() => {
-        setFilterActive(!emptyString(props.columnFilter))
-    }, [props.columnFilter])
+        setFilterActive(!emptyString(columnsState[colIdx].filter))
+    }, [colIdx, columnsState])
 
     useEffect(() => {
-        if (dtFrom == null)
-            setColumnFilter(colIdx, null)
+        if (dtFrom == null) {
+            columnsState[colIdx].filter = null
+            setColumnsState([...columnsState])
+        }
         else {
             try {
-                setColumnFilter(colIdx, `${compareOp} "${dtFrom?.toISOString()}"`)
+                columnsState[colIdx].filter = `${compareOp} "${dtFrom?.toISOString()}"`
+                setColumnsState([...columnsState])
             } catch (err) {
                 console.error(err)
             }
@@ -45,11 +47,14 @@ export function DataGridFilter<T>(props: {
     }, [compareOp, dtFrom])
 
     useEffect(() => {
-        if (numberFrom == null)
-            setColumnFilter(colIdx, null)
+        if (numberFrom == null) {
+            columnsState[colIdx].filter = null
+            setColumnsState([...columnsState])
+        }
         else {
             try {
-                setColumnFilter(colIdx, `${compareOp} ${numberFrom}`)
+                columnsState[colIdx].filter = `${compareOp} ${numberFrom}`
+                setColumnsState([...columnsState])
             } catch (err) {
                 console.error(err)
             }
@@ -126,14 +131,20 @@ export function DataGridFilter<T>(props: {
             InputProps={{
                 endAdornment: filterActive && (
                     <InputAdornment position="end">
-                        <IconButton onClick={() => { setColumnFilter(colIdx, null) }} edge="end">
+                        <IconButton onClick={() => {
+                            columnsState[colIdx].filter = null
+                            setColumnsState([...columnsState])
+                        }} edge="end">
                             <BackspaceOutlinedIcon />
                         </IconButton>
                     </InputAdornment>
                 ),
             }}
             value={columnsState[colIdx].filter ?? ''}
-            onChange={x => { setColumnFilter(colIdx, x.target.value) }}
+            onChange={x => {
+                columnsState[colIdx].filter = x.target.value
+                setColumnsState([...columnsState])
+            }}
         />
     </div>
 }

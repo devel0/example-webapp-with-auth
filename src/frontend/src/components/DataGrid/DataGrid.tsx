@@ -1,30 +1,46 @@
-import styles from './DataGrid.module.scss'
-import { DataGridApi, DataGridColumn, DataGridColumnState, DataGridProps } from './DataGridTypes'
+import { DataGridColumn, DataGridColumnState } from './DataGridTypes'
+import { DataGridColumnWidthHandler } from './DataGridColumnWidthHandler';
+import { DataGridFilter } from './DataGridFilter';
 import { forwardRef, RefObject, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { from } from 'linq-to-typescript';
 import { SortDirection } from '../../../api';
+import { useResizeObserver } from 'usehooks-ts';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
-import { TextField } from '@mui/material';
-import { DataGridFilter } from './DataGridFilter';
-import { DataGridColumnWidthHandler } from './DataGridColumnWidthHandler';
-import { useResizeObserver } from 'usehooks-ts';
+import styles from './DataGrid.module.scss'
 
 // https://oida.dev/typescript-react-generic-forward-refs/
 
-// Redecalare forwardRef
+// Redeclare forwardRef
 declare module "react" {
     function forwardRef<T, P = {}>(
         render: (props: P, ref: React.Ref<T>) => React.ReactNode | null
     ): (props: P & React.RefAttributes<T>) => React.ReactNode | null;
 }
 
+/** datagrid properties */
+interface DataGridProps<T> {
+    columns: DataGridColumn<T>[]
+    columnsState: DataGridColumnState[] | null
+    setColumnsState: (x: DataGridColumnState[]) => void
+    pageData: T[]
+    onInit?: (dgApi: DataGridApi<T>) => void
+    /** if true a textbox for column filtering will included below the column header */
+    filterTextBox?: boolean
+}
+
+/** datagrid api ref imperative methods */
+export interface DataGridApi<T> {
+    setColumnWidth: (colIdx: number, width: number) => void    
+    setColumnSortDirection: (colIdx: number, sortDirection: SortDirection | null) => void
+    setColumnSortDirectionByFieldName: (fn: string, sortDirection: SortDirection | null) => void    
+}
+
 function DataGridInner<T>(
     props: DataGridProps<T>,
     ref: React.ForwardedRef<DataGridApi<T>>) {
 
-    const { pageData, columns } = props
-    const [columnsState, setColumnsState] = useState<DataGridColumnState<T>[] | null>(null)
+    const { pageData, columns, columnsState, setColumnsState } = props
     const [refInit, setRefInit] = useState(false)
     const tableRef = useRef<HTMLTableElement>(null)
     const mainDivRef = useRef<HTMLDivElement>(null)
@@ -46,19 +62,7 @@ function DataGridInner<T>(
         const colIdx = getColumnIdxByFieldName(fn)
         if (colIdx !== -1)
             setColumnSortDirection(colIdx, sortDirection)
-    }
-
-    const setColumnFilter = (colIdx: number, filter: string | null) => {
-        if (columnsState == null) return
-
-        const colState = columnsState[colIdx]
-        const col = columns[colIdx]
-
-        columnsState[colIdx].filter = filter
-
-        setColumnsState([...columnsState])
-        props.onColumnStateChanged?.(colIdx, col, colState)
-    }
+    } 
 
     const tableSize = useResizeObserver({
         ref: mainDivRef as RefObject<HTMLDivElement>,
@@ -86,18 +90,15 @@ function DataGridInner<T>(
             columnsState[idx].customWidth! += Math.ceil(widthRest / visibleAfterThis)
         }
 
-        console.log(`set sum width ${s}`)
+        // console.log(`set sum width ${s}`)
 
         setColumnsState([...columnsState])
-    }
+    } 
 
     const dgApi: DataGridApi<T> = {
-        getColumnsState,
-        setColumnsState,
-        setColumnWidth,
+        setColumnWidth,        
         setColumnSortDirection,
-        setColumnSortDirectionByFieldName,
-        setColumnFilter
+        setColumnSortDirectionByFieldName,        
     }
 
     useImperativeHandle(ref, () => dgApi, [props])
@@ -123,7 +124,6 @@ function DataGridInner<T>(
         colState.sortTimestamp = new Date().valueOf()
 
         setColumnsState([...columnsState])
-        props.onColumnStateChanged?.(colIdx, col, colState)
     }
 
     // onInit
@@ -131,6 +131,7 @@ function DataGridInner<T>(
         if (tableSize.width != null) {
 
             if (columnsState != null) {
+                console.log(`onInit`)
                 if (refInit === false && props.onInit != null) {
                     setRefInit(true)
                     props.onInit(dgApi)
@@ -171,11 +172,11 @@ function DataGridInner<T>(
                         return {
                             customWidth: colWidth,
                             collapsed: col.collapsed
-                        } as DataGridColumnState<T>
+                        } as DataGridColumnState
                 })
                 .toArray()
 
-            setColumnsState(newColumnsState)
+            setColumnsState([...newColumnsState])
         }
 
     }, [
@@ -185,6 +186,7 @@ function DataGridInner<T>(
 
     // update column widths when table width changes
     useEffect(() => {
+
         if (columnsState != null && tableSize.width != null) {
             // console.log(`tableSize: ${tableSize.width} x ${tableSize.height}`)
             let columnsFlexWidth: (number | null)[] = []
@@ -211,10 +213,8 @@ function DataGridInner<T>(
 
                 if (colFlexWidth != null) {
                     columnState.customWidth = Math.ceil(tableSize.width * colFlexWidth) - 8
-                }
-
-                // console.log(`column state [${colIdx}] : flex:${colFlexWidth} => width:${columnState.customWidth}`)
-            }
+                }                
+            }            
 
             setColumnsState([...columnsState])
         }
@@ -235,45 +235,49 @@ function DataGridInner<T>(
                 <thead className={styles['data-grid-thead']}>
                     <tr className={styles['data-grid-thead-tr']}>
                         {/* TABLE COLUMN HEADERS */}
-                        {props.columns.map((col, colIdx) =>
-                            <td
-                                className={styles['data-grid-th']}
-                                key={`col-${colIdx}`}
-                                width={`${columnsState[colIdx].customWidth}px`}
-                            >
-                                <div>
-                                    <div
-                                        onClick={(e) => { toggleColumnSort(colIdx, e.shiftKey) }}
-                                        style={{ display: 'flex', flexDirection: 'row' }}
-                                    >
-                                        <b>{col.header}</b>
-                                        <span style={{ flexGrow: 1 }} />
+                        {from(props.columns)
+                            .select((col, colIdx) => { return { col, colIdx } })
+                            .where(x => columnsState[x.colIdx].collapsed !== true)
+                            .toArray()
+                            .map((item, itemIdx) =>
+                                <td
+                                    className={styles['data-grid-th']}
+                                    key={`colItem-${itemIdx}`}
+                                    width={`${columnsState[item.colIdx].customWidth}px`}
+                                >
+                                    <div>
+                                        <div
+                                            onClick={(e) => { toggleColumnSort(item.colIdx, e.shiftKey) }}
+                                            style={{ display: 'flex', flexDirection: 'row' }}
+                                        >
+                                            <b>{item.col.header}</b>
+                                            <span style={{ flexGrow: 1 }} />
 
-                                        {columnsState[colIdx].sortDirection != null &&
-                                            columnsState[colIdx].sortDirection === 'Ascending' &&
-                                            <ArrowDropUpIcon className={styles['data-grid-sort']} />}
+                                            {columnsState[item.colIdx].sortDirection != null &&
+                                                columnsState[item.colIdx].sortDirection === 'Ascending' &&
+                                                <ArrowDropUpIcon className={styles['data-grid-sort']} />}
 
-                                        {columnsState[colIdx].sortDirection != null &&
-                                            columnsState[colIdx].sortDirection === 'Descending' &&
-                                            <ArrowDropDownIcon className={styles['data-grid-sort']} />}
+                                            {columnsState[item.colIdx].sortDirection != null &&
+                                                columnsState[item.colIdx].sortDirection === 'Descending' &&
+                                                <ArrowDropDownIcon className={styles['data-grid-sort']} />}
+                                        </div>
+
+                                        {props.filterTextBox === true && <DataGridFilter
+                                            col={item.col}
+                                            colIdx={item.colIdx}
+                                            columnsState={columnsState}
+                                            setColumnsState={x => setColumnsState(x)}                                            
+                                        />}
+
                                     </div>
 
-                                    {props.filterTextBox === true && <DataGridFilter
-                                        col={col}
-                                        colIdx={colIdx}
-                                        columnsState={columnsState}
-                                        columnFilter={columnsState[colIdx].filter}
-                                        setColumnFilter={setColumnFilter}
-                                    />}
-
-                                </div>
-
-                                <DataGridColumnWidthHandler
-                                    onColumnWidthChange={deltaWidth => {
-                                        setColumnWidth(colIdx, (columnsState[colIdx].customWidth ?? 0) + deltaWidth)
-                                    }}
-                                />
-                            </td>)}
+                                    <DataGridColumnWidthHandler
+                                        onColumnWidthChange={deltaWidth => {
+                                            setColumnWidth(item.colIdx, (columnsState[item.colIdx].customWidth ?? 0) + deltaWidth)
+                                        }}
+                                    />
+                                </td>
+                            )}
                     </tr>
                 </thead>
 
@@ -283,22 +287,24 @@ function DataGridInner<T>(
                         className={styles['data-grid-tr']}
                         key={`row-${rowIdx}`}
                     >
-                        {props.columns.map((col, colIdx) =>
-                            <td
-                                className={styles['data-grid-td']}
-                                key={`body-td-${colIdx}`}
-                                width={`${columnsState[colIdx].customWidth}px`}
-                            >
-                                {col.getData(row)}
-                            </td>)}
+                        {from(props.columns)
+                            .select((col, colIdx) => { return { col, colIdx } })
+                            .where(x => columnsState[x.colIdx].collapsed !== true)
+                            .toArray()
+                            .map((item, itemIdx) =>
+                                <td
+                                    className={styles['data-grid-td']}
+                                    key={`body-td-${itemIdx}`}
+                                    width={`${columnsState[item.colIdx].customWidth}px`}
+                                >
+                                    {item.col.getData(row)}
+                                </td>)}
                     </tr>)}
                 </tbody>
 
             </>}
 
         </table>
-
-
 
     </div>
 }

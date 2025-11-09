@@ -1,5 +1,5 @@
 import { Box } from "@mui/material"
-import { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState } from "react"
+import { ReactNode, useEffect, useState } from "react"
 import BackSvg from '../../images/back.svg?react'
 import FirstSvg from '../../images/first.svg?react'
 import ForwardSvg from '../../images/forward.svg?react'
@@ -17,24 +17,18 @@ interface DataGridPagerProps {
     pageSize: number,
 
     /** total number of rows */
-    total: number
+    total: number,
+
+    customBefore?: ReactNode,
+
+    customAfter?: ReactNode,
 }
 
-export interface DataGridPagerApi {
-}
-
-function DataGridPagerInner(
-    props: DataGridPagerProps,
-    ref: ForwardedRef<DataGridPagerApi>
-) {
+export const DataGridPager = (
+    props: DataGridPagerProps
+) => {
     const { page, pageSize, setPage, total } = props
     const [totalPages, setTotalPages] = useState<number | null>(null)
-
-    const dgApi: DataGridPagerApi = {
-
-    }
-
-    useImperativeHandle(ref, () => dgApi, [props])
 
     useEffect(() => {
         setTotalPages(Math.ceil(total / pageSize))
@@ -44,10 +38,15 @@ function DataGridPagerInner(
 
     useEffect(() => {
         if (totalPages != null && page > totalPages - 1)
-            setPage(totalPages - 1)
+            setPage(Math.max(0, totalPages - 1))
     }, [totalPages])
 
-    return totalPages != null && <Box style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+    return totalPages != null && <Box
+        className={styles['toolbar']}
+        style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}
+    >
+        {props.customBefore}
+
         <button onClick={() => setPage(0)}>
             <FirstSvg />
         </button>
@@ -69,7 +68,7 @@ function DataGridPagerInner(
                 ( {total} total rows )
             </span>
         </div>
+
+        {props.customAfter}
     </Box>
 }
-
-export const DataGridPager = forwardRef(DataGridPagerInner)

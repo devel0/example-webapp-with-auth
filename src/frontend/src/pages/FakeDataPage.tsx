@@ -8,81 +8,81 @@ import { getScrollbarWidth, handleApiException, pathBuilder } from "../utils/uti
 import { MSG_ERROR_LOAD } from "../constants/messages"
 import { FakeData, GenericSort, SortModelItem } from "../../api"
 import { useGlobalService } from '../services/global/Service'
-import { DataGrid } from '../components/DataGrid/DataGrid'
+import { DataGrid, DataGridApi } from '../components/DataGrid/DataGrid'
 import { useResizeObserver, useWindowSize } from 'usehooks-ts'
-import { DataGridApi, DataGridColumn, DataGridColumnState, FieldKind } from '../components/DataGrid/DataGridTypes'
+import { DataGridColumn, DataGridColumnState, FieldKind } from '../components/DataGrid/DataGridTypes'
 import { from } from 'linq-to-typescript'
 import { buildGenericDynFilter, ColumnFilterNfo } from '../components/DataGrid/DataGridDynFilter'
-import { DataGridPager, DataGridPagerApi } from '../components/DataGrid/DataGridPager'
+import { DataGridPager } from '../components/DataGrid/DataGridPager'
+import { DataGridColumns } from '../components/DataGrid/DataGridColumns'
+
+type TDATA = FakeData
+const fnTDATA = pathBuilder<TDATA>()
+
+//
+// DEFINE DATAGRID COLUMNS
+//    
+const columns: DataGridColumn<TDATA>[] = [
+    {
+        header: 'Id',
+        fieldName: fnTDATA('id'),
+        flexWidth: 1,
+        // width: 350,
+        getData: x => x.id,
+        dbFunFilterPreprocess: 'DbFun.GuidString'
+    },
+    {
+        header: 'FirstName',
+        fieldName: fnTDATA('firstName'),
+        getData: x => x.firstName,
+        // initialSortDirection: 'Ascending'
+    },
+    {
+        header: 'LastName',
+        fieldName: fnTDATA('lastName'),
+        getData: x => x.lastName
+    },
+    {
+        header: 'Email',
+        fieldName: fnTDATA('email'),
+        getData: x => x.email
+    },
+    {
+        header: 'Phone',
+        fieldName: fnTDATA('phone'),
+        getData: x => x.phone
+    },
+    {
+        header: 'Group',
+        fieldName: fnTDATA('groupNumber'),
+        fieldKind: FieldKind.numeric,
+        getData: x => x.groupNumber,
+    },
+    {
+        header: 'Birth date',
+        flexWidth: 2,
+        fieldName: fnTDATA('dateOfBirth'),
+        fieldKind: FieldKind.dateTimeOffset,
+        getData: x => new Date(x.dateOfBirth ?? '').toISOString()
+    },
+]
 
 export const FakeDataPage = () => {
-    type TDATA = FakeData
-
-    const [columnsState, setColumnsState] = useState<DataGridColumnState<TDATA>[] | null>(null)
+    const [columnsChooserOpen, setColumnsChooserOpen] = useState(false)
+    const [columnsState, setColumnsState] = useState<DataGridColumnState[] | null>(null)
+    const [dynFilter, setDynFilter] = useState<string | null>(null)
+    const [page, setPage] = useState(0)
     const [pageData, setPageData] = useState<TDATA[]>([])
-    const [refTop, setRefTop] = useState<number | null>(null)    
+    const [pageSize, setPageSize] = useState(25)
+    const [refTop, setRefTop] = useState<number | null>(null)
+    const [total, setTotal] = useState<number | null>(null)
     const appBarHeight = useGlobalService(x => x.appBarHeight)
     const dgApiRef = useRef<DataGridApi<TDATA> | null>(null)
-    const dgPagerApiRef = useRef<DataGridPagerApi | null>(null)
     const divRef = useRef<HTMLDivElement>(null)
-    const fnTDATA = pathBuilder<TDATA>()
-
-    const [page, setPage] = useState(0)
-    const [pageSize, setPageSize] = useState(25)
-    const [total, setTotal] = useState<number | null>(null)
-    const [dynFilter, setDynFilter] = useState<string | null>(null)
 
     useEffect(() => {
         document.title = `${APP_TITLE} - FakeData`
     }, [])
-
-    //
-    // DEFINE DATAGRID COLUMNS
-    //    
-    const columns: DataGridColumn<TDATA>[] = [
-        {
-            header: 'Id',
-            fieldName: fnTDATA('id'),
-            flexWidth: 1,
-            // width: 350,
-            getData: x => x.id,
-            dbFunFilterPreprocess: 'DbFun.GuidString'
-        },
-        {
-            header: 'FirstName',
-            fieldName: fnTDATA('firstName'),
-            getData: x => x.firstName,
-            // initialSortDirection: 'Ascending'
-        },
-        {
-            header: 'LastName',
-            fieldName: fnTDATA('lastName'),
-            getData: x => x.lastName
-        },
-        {
-            header: 'Email',
-            fieldName: fnTDATA('email'),
-            getData: x => x.email
-        },
-        {
-            header: 'Phone',
-            fieldName: fnTDATA('phone'),
-            getData: x => x.phone
-        },
-        {
-            header: 'Group',
-            fieldName: fnTDATA('groupNumber'),
-            fieldKind: FieldKind.numeric,
-            getData: x => x.groupNumber,
-        },
-        {
-            header: 'Birth date',
-            flexWidth: 2,
-            fieldName: fnTDATA('dateOfBirth'),
-            fieldKind: FieldKind.dateTimeOffset,
-            getData: x => new Date(x.dateOfBirth ?? '').toISOString()
-        },
-    ]
 
     //
     // DEFINE PAGED/SORT/FILTER BACKEND LOADER
@@ -191,14 +191,21 @@ export const FakeDataPage = () => {
             // console.log(`divRef offsetTop: ${divRef.current.offsetTop}`)
             setRefTop(divRef.current.offsetTop)
         }
-    }, [divRef.current, divRefSize.width, divRefSize.height])    
+    }, [divRef.current, divRefSize.width, divRefSize.height])
 
     const windowSize = useWindowSize()
 
     return <Box style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 
         {total != null && <DataGridPager
-            ref={dgPagerApiRef}
+            customBefore={
+                <Button
+                    variant='outlined'
+                    onClick={() => setColumnsChooserOpen(true)}
+                >
+                    Columns
+                </Button>
+            }
             page={page} setPage={setPage}
             pageSize={pageSize}
             total={total}
@@ -213,22 +220,34 @@ export const FakeDataPage = () => {
 
             <div className={styles['table-demo-div']}>
 
-                <DataGrid                    
+                <DataGrid
                     ref={dgApiRef}
                     filterTextBox
                     onInit={dgApi => {
                         console.log(`dg INIT`)
                         dgApi.setColumnSortDirectionByFieldName(fnTDATA('firstName'), 'Ascending')
                     }}
-                    onColumnStateChanged={() => {
-                        setColumnsState(dgApiRef.current?.getColumnsState() ?? null)
-                    }}
+                    // onColumnStateChanged={() => {
+                    //     setColumnsState(dgApiRef.current?.getColumnsState() ?? null)
+                    // }}
                     columns={columns}
+                    columnsState={columnsState}
+                    setColumnsState={x => setColumnsState(x)}
                     pageData={pageData}
                 />
 
             </div>
         </Box>}
 
+        {columnsState != null && columnsChooserOpen && <DataGridColumns
+            open={columnsChooserOpen}
+            setOpen={x => setColumnsChooserOpen(x)}
+            columns={columns}
+            columnsState={columnsState}
+            setColumnVisibility={(colIdx, collapsed) => {
+                columnsState[colIdx].collapsed = collapsed
+                setColumnsState([...columnsState])
+            }}
+        />}
     </Box>
 }
