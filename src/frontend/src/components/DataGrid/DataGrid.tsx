@@ -63,7 +63,7 @@ function DataGridInner<T>(
     const tableSize = useResizeObserver({
         ref: mainDivRef as RefObject<HTMLDivElement>,
         box: 'border-box'
-    })    
+    })
 
     const setColumnWidth = (colIdx: number, width: number) => {
         if (columnsState == null) return
@@ -146,7 +146,7 @@ function DataGridInner<T>(
     // table init
     useEffect(() => {
 
-        if (tableSize.width != null) {            
+        if (tableSize.width != null) {
             const tableWidth = tableSize.width
             const fixedWidth = from(columns).sum(w => w.width ?? 0)
             const flexSum = from(columns).where(w => w.width == null).sum(w => w.flexWidth ?? 1)
@@ -180,7 +180,7 @@ function DataGridInner<T>(
 
     }, [
         tableSize.width,
-        columns,        
+        columns,
     ])
 
     // update column widths when table width changes
@@ -251,11 +251,11 @@ function DataGridInner<T>(
 
                                         {columnsState[colIdx].sortDirection != null &&
                                             columnsState[colIdx].sortDirection === 'Ascending' &&
-                                            <ArrowDropUpIcon />}
+                                            <ArrowDropUpIcon className={styles['data-grid-sort']} />}
 
                                         {columnsState[colIdx].sortDirection != null &&
                                             columnsState[colIdx].sortDirection === 'Descending' &&
-                                            <ArrowDropDownIcon />}
+                                            <ArrowDropDownIcon className={styles['data-grid-sort']} />}
                                     </div>
 
                                     {props.filterTextBox === true && <DataGridFilter
