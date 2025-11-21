@@ -16,6 +16,11 @@ global using System.Text;
 global using System.Text.Json;
 global using System.Text.Json.Serialization;
 global using System.Web;
+global using System.Diagnostics;
+global using System.Linq;
+global using System.Linq.Dynamic.Core;
+global using System.Linq.Dynamic.Core.CustomTypeProviders;
+global using System.Globalization;
 
 // microsoft
 global using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -51,11 +56,11 @@ global using Swashbuckle.AspNetCore.Annotations;
 global using Swashbuckle.AspNetCore.SwaggerGen;
 global using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
 global using Bogus;
-global using System.Linq;
-global using System.Linq.Dynamic.Core;
-global using System.Linq.Dynamic.Core.CustomTypeProviders;
+global using EFCore.BulkExtensions;
+global using CsvHelper;
 
 // project
+global using static ExampleWebApp.Backend.WebApi.Services.Abstractions.AppConfig.DatabaseConfig.ConnectionItemConfig;
 global using static ExampleWebApp.Backend.WebApi.Constants;
 global using static ExampleWebApp.Backend.WebApi.Toolkit;
 global using ExampleWebApp.Backend.WebApi;

@@ -22,7 +22,19 @@ public class AppConfig
 
     public DatabaseConfig Database { get; set; } = new();
 
+    public DbProviderConfig? DatabaseProvider
+    {
+        get
+        {
+            var connName = Database.ConnectionName;
+            var q = Database.Connections.FirstOrDefault(w => w.Name == connName);
+            return q?.Provider;
+        }
+    }
+
     public EmailServerConfig EmailServer { get; set; } = new();
+
+    public FakeDataSetConfig FakeDataSet { get; set; } = new();
 
     public bool IsUnitTest { get; set; }
 
@@ -91,7 +103,8 @@ public class AppConfig
 
             public enum DbProviderConfig
             {
-                Postgres
+                Postgres,
+                Mysql
             };
 
         }
@@ -132,6 +145,19 @@ public class AppConfig
             Ssl,
             Tls
         }
+    }
+
+    public class FakeDataSetConfig
+    {
+        /// <summary>
+        /// if not null the seeding of fakedata will saved to given csv pathfilename
+        /// </summary>        
+        public string? SaveToCsvPathfilename { get; set; }
+
+        /// <summary>
+        /// if not null the seeding of fakedata will be loaded from given csv pathfilename
+        /// </summary>
+        public string? LoadFromCsvPathfilename { get; set; }
     }
 
 }

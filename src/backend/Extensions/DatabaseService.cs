@@ -42,6 +42,19 @@ public static partial class Extensions
                     }
                     break;
 
+                case AppConfig.DatabaseConfig.ConnectionItemConfig.DbProviderConfig.Mysql:
+                    {
+                        var serverVersion = ServerVersion.AutoDetect(connString);
+
+                        options.UseMySql(connString, serverVersion, options =>
+                        {
+                            var migrationAssembly = Assembly.GetAssembly(typeof(AppDbContext));
+                            if (migrationAssembly is null) throw new Exception($"couldn't find migration assembly");
+                            options.MigrationsAssembly(migrationAssembly.FullName);
+                        });
+                    }
+                    break;
+
                 default: throw new NotImplementedException($"provider {provider} not implemented");
             }
 
@@ -77,6 +90,8 @@ public static partial class Extensions
             // }
             //        
 
+            var appConfig = app.Configuration.GetAppConfig();
+
             // if (app.Configuration.IsUnitTest())
             //     System.Console.WriteLine("============> APPLY MIGRATION");
 
@@ -87,14 +102,16 @@ public static partial class Extensions
             if (appliedMigrations.Count == 0 && pendingMigrations.Count == 0)
                 throw new Exception("no initial migration found");
 
-            //
-            // create functions
-            //
-            {                
-                #region GuidString
-                {                    
-                    var sql =
-                        $"""
+            if (appConfig.DatabaseProvider == DbProviderConfig.Postgres)
+            {
+                //
+                // create functions
+                //
+                {
+                    #region GuidString
+                    {
+                        var sql =
+                            $"""
                             create or replace function "{DBFN_GUID_STRING}"(field uuid)
                             returns text as
                             $$
@@ -103,9 +120,10 @@ public static partial class Extensions
                             language sql
                             """;
 
-                    await db.Database.ExecuteSqlRawAsync(sql, cancellationToken);
+                        await db.Database.ExecuteSqlRawAsync(sql, cancellationToken);
+                    }
+                    #endregion
                 }
-                #endregion
             }
 
             if (pendingMigrations.Count > 0)
@@ -113,6 +131,8 @@ public static partial class Extensions
                 app.Logger.LogInformation("database migrations");
 
                 var migrator = db.Database.GetInfrastructure().GetService<IMigrator>();
+
+                db.Database.SetCommandTimeout(TimeSpan.FromMinutes(10));
 
                 if (migrator is null)
                     throw new Exception($"unable to retrieve db migrator");
