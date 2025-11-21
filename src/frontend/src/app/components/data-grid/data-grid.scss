@@ -1,0 +1,77 @@
+.data-grid-div {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    // border: 1px solid cyan;
+}
+
+.data-grid-table {
+    display: flex;
+    flex-direction: column;
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;    
+}
+
+.data-grid-thead {
+    user-select: none;
+    background-color: var(--default-bg);
+    // border: 1px solid red;
+    position: sticky;
+    top: 0;
+}
+
+.data-grid-thead-tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    border-top: 1px solid var(--table-td-border);
+    border-bottom: 1px solid var(--table-td-border);
+    border-left: 1px solid var(--table-td-border);
+}
+
+.data-grid-th {
+    z-index: 2;
+    border-right: 1px solid var(--table-td-border);
+}
+
+.data-grid-th-main-div {
+    padding: .5rem;
+    position: relative;
+}
+
+.data-grid-th-div {
+    min-height: 1.5rem;
+    display: flex;
+    flex-direction: row;    
+}
+
+.data-grid-tbody {
+    // border: 1px solid green;
+}
+
+.data-grid-tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.data-grid-td:first-child {
+    border-left: 1px solid var(--table-td-border);
+}
+
+.data-grid-td {
+    border-bottom: 1px solid var(--table-td-border);
+    border-right: 1px solid var(--table-td-border);
+    overflow-x: hidden;
+}
+
+.data-grid-td-main-div {    
+    padding: .5rem;    
+}
+
+.data-grid-sort {
+    background-color: var(--highlight-bg)
+}

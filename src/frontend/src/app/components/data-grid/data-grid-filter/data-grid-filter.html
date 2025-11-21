@@ -1,0 +1,49 @@
+@if (this.filterActive || !this.filterActive) {
+
+@if (this.column.fieldKind == null || this.column.fieldKind === FieldKind.generic) {
+<mat-form-field
+    subscriptSizing="dynamic"
+    [class]="'formField ' + (this.filterActive ? 'textInputActive' : 'textInput')"
+    appearance="outline">
+    <button mat-icon-button matSuffix style="margin:0;padding:0; height:unset;" (click)="clearFilter()">
+        <mat-icon>clear</mat-icon>
+    </button>
+    <input matInput
+        [value]="this.text"
+        (input)="this.text = $event.target.value">
+</mat-form-field>
+}
+
+@if (this.column.fieldKind === FieldKind.numeric || this.column.fieldKind === FieldKind.dateTimeOffset) {
+<div class="formField field-prefix-tool-div">
+    <mat-select
+        class="compare-op"
+        [(value)]="operator">
+        <mat-option [value]="CompareOp.lessThansOrEquals">&lt;=</mat-option>
+        <mat-option [value]="CompareOp.lessThan">&lt;</mat-option>
+        <mat-option [value]="CompareOp.Equals">=</mat-option>
+        <mat-option [value]="CompareOp.greatThan">&gt;</mat-option>
+        <mat-option [value]="CompareOp.greatThanOrEquals">&gt;=</mat-option>
+    </mat-select>
+
+    <mat-form-field
+        subscriptSizing="dynamic"
+        [class]="(this.filterActive ? 'textInputActive' : 'textInput')"
+        appearance="outline">
+
+        <input matInput
+            class="text-input-number"
+            [type]="this.column.fieldKind === FieldKind.numeric ? 'numeric' : 'date'"
+            [value]="this.text"
+            (input)="this.text = $event.target.value">
+
+        <button mat-icon-button matSuffix
+            class="cancel-btn"
+            (click)="clearFilter()">
+            <mat-icon>clear</mat-icon>
+        </button>
+    </mat-form-field>
+</div>
+}
+
+}

@@ -21,10 +21,13 @@ export class ThemeService {
   }
 
   setTheme(theme: 'light' | 'dark') {
-    this.renderer.removeClass(this.document.body, 'light-theme');
-    this.renderer.removeClass(this.document.body, 'dark-theme');
+    this.renderer.removeClass(this.document.documentElement, 'theme-light');
+    this.renderer.removeClass(this.document.documentElement, 'theme-dark');    
+    this.renderer.addClass(this.document.documentElement, `theme-${theme}`);
 
-    this.renderer.addClass(this.document.body, `${theme}-theme`);
+    this.renderer.removeClass(this.document.body, 'theme-light');
+    this.renderer.removeClass(this.document.body, 'theme-dark');
+    this.renderer.addClass(this.document.body, `theme-${theme}`);
 
     this.currentTheme = theme
     this.localStorageService.data.colorScheme = this.currentTheme

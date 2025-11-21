@@ -1,4 +1,6 @@
 export * from './accessTokenNfo';
+export * from './aliveWSMessageType';
+export * from './aliveWSProtocol';
 export * from './authOptions';
 export * from './countGenericRequest';
 export * from './currentUserResponseDto';
@@ -27,3 +29,5 @@ export * from './sortModelItem';
 export * from './userListItemResponseDto';
 export * from './userPermission';
 export * from './usernameAuthOptions';
+export * from './wSPing';
+export * from './wSPong';

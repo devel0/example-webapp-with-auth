@@ -1,0 +1,29 @@
+<app-main-layout>
+
+    <div class="pager-div">
+        <app-data-grid-pager
+            [dataGrid]="this.dataGrid">
+            <button title="columns chooser" toolbar-prefix (click)="this.dataGrid.showColumnsChooser()">
+                <mat-icon>calendar_view_week</mat-icon>
+            </button>
+
+        </app-data-grid-pager>
+    </div>
+
+    <app-full-height-div>
+
+        <div class="table-demo-div">
+
+            <app-data-grid
+                #dgRef
+                [columns]="this.columns"
+                [filterTextBox]="true"
+                [loadData]="loadData.bind(this)"
+                [countData]="countData.bind(this)"
+                [computeDynFilter]="computeDynFilter.bind(this)" />
+
+        </div>
+
+    </app-full-height-div>
+
+</app-main-layout>

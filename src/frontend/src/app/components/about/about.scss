@@ -3,7 +3,7 @@
     line-height: 1rem;
 }
 
-:host-context(body.dark-theme) {
+:host-context(body.theme-dark) {
     .devText {
         color: yellow;
     }
@@ -13,7 +13,7 @@
     }
 }
 
-:host-context(body.light-theme) {
+:host-context(body.theme-light) {
     .devText {
         color: rgb(224, 138, 0);
     }

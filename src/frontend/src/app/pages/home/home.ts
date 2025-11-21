@@ -1,19 +1,17 @@
 import { Component } from '@angular/core';
-import { firstValueFrom, Subscription } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { GlobalService } from '../../services/global-service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MainApiService } from '../../../api';
 import { MainLayout } from "../../components/main-layout/main-layout";
-import { MatButtonModule } from '@angular/material/button';
 import { SnackService } from '../../services/snack-service';
 import { AuthService } from '../../services/auth-service';
-import { environment } from '../../../environments/environment';
+import { BasicModule } from '../../modules/basic/basic-module';
 
 @Component({
   selector: 'app-home',
   imports: [
-    MainLayout,
-    MatButtonModule,    
+    BasicModule, MainLayout,
   ],
   templateUrl: './home.html',
   styleUrl: './home.scss',
@@ -58,6 +56,6 @@ export class Home {
       if (error instanceof HttpErrorResponse) {
       }
     }
-  }  
+  }
 
 }

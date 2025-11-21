@@ -1,0 +1,76 @@
+::ng-deep .formField {
+
+    .mat-mdc-select-arrow {
+        display: none;
+    }
+
+    .mat-mdc-form-field-infix {
+        padding: unset !important;
+        min-height: unset !important;
+    }
+
+    .mat-mdc-icon-button {
+        display: flex;
+        justify-content: center;
+    }
+
+    .mat-mdc-text-field-wrapper {
+        padding-left: .2rem;
+    }
+
+    .mdc-list-item {
+        padding: 0;
+    }
+
+    // disable number spin buttons
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+}
+
+.formField {
+    width: 100%;
+    flex-grow: 1;
+}
+
+.textInput {
+    width: 100%;
+}
+
+.textInputActive {
+    width: 100%;
+    background-color: var(--highlight-bg)
+}
+
+.cancel-btn {
+    margin: 0px;
+    padding: 0px;
+    height: unset;
+}
+
+::ng-deep .mat-pseudo-checkbox {
+    display: none !important;
+}
+
+.text-input-number {
+    text-align: right;
+}
+
+.compare-op {
+    margin: 0px;
+    padding: 0px;
+    height: unset;
+    width: 4rem;    
+    
+    .mat-mdc-option {
+        padding: 0;
+    }
+}
+
+.field-prefix-tool-div {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}

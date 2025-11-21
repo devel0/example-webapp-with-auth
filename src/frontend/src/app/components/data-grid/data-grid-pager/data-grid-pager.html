@@ -1,0 +1,37 @@
+@if (this.dataGrid != null)
+{
+<div
+    class="toolbar">
+
+    <ng-content select="[toolbar-prefix]"></ng-content>
+
+    <button (click)="this.dataGrid.firstPage()">
+        <mat-icon>first_page</mat-icon>
+    </button>
+
+    <button (click)="this.dataGrid.prevPage()">
+        <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <button (click)="this.dataGrid.nextPage()">
+        <mat-icon>chevron_right</mat-icon>
+    </button>
+
+    <button (click)="this.dataGrid.lastPage()">
+        <mat-icon>last_page</mat-icon>
+    </button>
+
+    <div class="pager-page">
+        <span>
+            page: {{ ((this.dataGrid.page$ | async) ?? 0) + 1}} of {{this.dataGrid.totalPages$ | async}}
+        </span>
+
+        <span>
+            ( {{ this.dataGrid.totals$ | async }} total rows )
+        </span>
+    </div>
+
+    <ng-content select="[toolbar-suffix]"></ng-content>
+
+</div>
+}

@@ -26,14 +26,6 @@ body {
   margin: 0;
 }
 
-body.light-theme {
-  color-scheme: light;
-}
-
-body.dark-theme {
-  color-scheme: dark;
-}
-
 html,
 body {
   height: 100%;
@@ -42,4 +34,12 @@ body {
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+body.theme-light {
+  color-scheme: light;
+}
+
+body.theme-dark {
+  color-scheme: dark;
 }

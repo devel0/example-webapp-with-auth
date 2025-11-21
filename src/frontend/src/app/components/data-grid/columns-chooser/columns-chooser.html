@@ -1,0 +1,14 @@
+<div class="main-div">
+    <mat-dialog-content>
+        <h3>Columns chooser</h3>
+        <div class="columns-items">
+            @for (colState of this.dataGrid.columnsState$ | async; track $index) {
+            <mat-checkbox
+                [checked]="colState.collapsed !== true"
+                (change)="this.dataGrid.setColumnVisibility($index, !$event.checked)">
+                {{this.dataGrid.columns[$index].header}}
+            </mat-checkbox>
+            }
+        </div>
+    </mat-dialog-content>
+</div>

@@ -1,10 +1,11 @@
 import { Component, isDevMode } from '@angular/core';
 import { APP_NAME } from '../../constants/general';
 import { environment } from '../../../environments/environment';
+import { BasicModule } from '../../modules/basic/basic-module';
 
 @Component({
   selector: 'app-about',
-  imports: [],
+  imports: [BasicModule],
   templateUrl: './about.html',
   styleUrl: './about.scss'
 })

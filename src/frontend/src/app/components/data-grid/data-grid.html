@@ -1,0 +1,77 @@
+<div
+    class="data-grid-div">
+
+    <table
+        appTrackResize
+        (sizeChanged)="onTableSizeChanged($event)"
+        class="data-grid-table">
+
+        @if (this.columnsState$ | async; as _columnsState) {
+
+        <thead class="data-grid-thead">
+
+            <tr class="data-grid-thead-tr">
+
+                @for (colState of this.columnsState$ | async | skipIf:'collapsed':true; track colState.columnIndex) {
+                <th class="data-grid-th"
+                    [width]="`${_columnsState[colState.columnIndex].customWidth}px`">
+
+                    <div class="data-grid-th-main-div">
+
+                        <div
+                            (click)="toggleColumnSort(colState.columnIndex, $event.shiftKey)"
+                            class="data-grid-th-div">
+                            <b>{{this.columns[colState.columnIndex].header}}</b>
+                            <span style="flex-grow: 1;"></span>
+
+                            @if (_columnsState[colState.columnIndex].sortDirection === 'Ascending') {
+                            <mat-icon class="data-grid-sort">arrow_drop_up</mat-icon>
+                            }
+
+                            @if (_columnsState[colState.columnIndex].sortDirection === 'Descending') {
+                            <mat-icon class="data-grid-sort">arrow_drop_down</mat-icon>
+                            }
+                        </div>
+
+                        @if (filterTextBox) {
+                        <app-data-grid-filter
+                            [column]="columns[colState.columnIndex]"
+                            [columnState]="_columnsState[colState.columnIndex]"
+                            (filterChange)="this.onFilterChanged(colState.columnIndex, $event)" />
+                        }
+
+                        <app-data-grid-column-handle
+                            (columnWidthChange)="onColumnWidthDeltaChange(colState.columnIndex, $event)" />
+                    </div>
+
+                </th>
+                }
+
+            </tr>
+
+        </thead>
+
+        <tbody class="data-grid-tbody">
+            @for (row of this.pageData$ | async; track $index) {
+            <tr class="data-grid-tr">
+
+                @for(colState of this.columnsState$ | async | skipIf:'collapsed':true; track colState.columnIndex) {
+                <td class="data-grid-td"
+                    [width]="`${_columnsState[colState.columnIndex].customWidth}px`">
+                    <div
+                        [class]="'data-grid-td-main-div' + (this.columns[colState.columnIndex].dataDivClass == null ?
+                            '' :
+                            ` ${this.columns[colState.columnIndex].dataDivClass}`)">
+                        {{this.columns[colState.columnIndex].getData(row)}}
+                    </div>
+                </td>
+                }
+
+            </tr>
+            }
+        </tbody>
+
+        }
+
+    </table>
+</div>

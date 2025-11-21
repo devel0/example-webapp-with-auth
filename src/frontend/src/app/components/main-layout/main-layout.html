@@ -1,77 +1,81 @@
-<div>
-    <!-- https://fonts.google.com/icons -->
+<div class="root-div">
+    <div>
+        <!-- https://fonts.google.com/icons -->
 
-    <mat-toolbar>
-        <div class="app-icon">
-            <img height="100%" src="app-icon.svg" />
-        </div>
+        <mat-toolbar>
+            <div (click)="goHome()" class="app-icon">
+                <img height="100%" src="app-icon.svg" />
+            </div>
 
-        @if (globalService.isMobile) {
-        <button matIconButton [matMenuTriggerFor]="mobileMenu">
-            <mat-icon>menu</mat-icon>
-        </button>
-        <mat-menu #mobileMenu>
+            @if (globalService.isMobile) {
+            <button matIconButton [matMenuTriggerFor]="mobileMenu">
+                <mat-icon>menu</mat-icon>
+            </button>
+            <mat-menu #mobileMenu>
+                @for (menuItem of this.menuService.menuItems; track $index) {
+                <button mat-menu-item (click)="menuItem.action?.()">
+                    @if (menuItem.icon) {
+                    <mat-icon>{{menuItem.icon}}</mat-icon>
+                    }
+                    <span>{{menuItem.name}}</span>
+                </button>
+                }
+            </mat-menu>
+            }
+
+            @if (!globalService.isMobile) {
+            <div (click)="goHome()">
+                <span class="app-title">My App</span>
+            </div>
+
             @for (menuItem of this.menuService.menuItems; track $index) {
-            <button mat-menu-item (click)="menuItem.action?.()">
+            <button matButton (click)="menuItem.action?.()">
                 @if (menuItem.icon) {
                 <mat-icon>{{menuItem.icon}}</mat-icon>
                 }
                 <span>{{menuItem.name}}</span>
             </button>
             }
-        </mat-menu>
-        }
 
-        @if (!globalService.isMobile) {
-        <span class="app-title">My App</span>
-
-        @for (menuItem of this.menuService.menuItems; track $index) {
-        <button matButton (click)="menuItem.action?.()">
-            @if (menuItem.icon) {
-            <mat-icon>{{menuItem.icon}}</mat-icon>
             }
-            <span>{{menuItem.name}}</span>
-        </button>
-        }
 
-        }
+            <span class="example-spacer"></span>
 
-        <span class="example-spacer"></span>
-
-        @if (currentTheme === 'dark') {
-        <button (click)="themeService.toggleTheme()" matIconButton>
-            <mat-icon>light_mode</mat-icon>
-        </button>
-        }
-        @else {
-        <button (click)="themeService.toggleTheme()" matIconButton>
-            <mat-icon>dark_mode</mat-icon>
-        </button>
-        }
-
-        <button matIconButton [matMenuTriggerFor]="userMenu">
-            <mat-icon>account_circle</mat-icon>
-        </button>
-        <mat-menu #userMenu>
-            <button mat-menu-item>
-                {{userName}}
+            @if (currentTheme === 'dark') {
+            <button (click)="themeService.toggleTheme()" matIconButton>
+                <mat-icon>light_mode</mat-icon>
             </button>
-            <button (click)="authService.logout()" mat-menu-item>
-                <mat-icon>logout</mat-icon>
-                Logout
+            }
+            @else {
+            <button (click)="themeService.toggleTheme()" matIconButton>
+                <mat-icon>dark_mode</mat-icon>
             </button>
-        </mat-menu>
+            }
 
-    </mat-toolbar>
+            <button matIconButton [matMenuTriggerFor]="userMenu">
+                <mat-icon>account_circle</mat-icon>
+            </button>
+            <mat-menu #userMenu>
+                <button mat-menu-item>
+                    {{userName}}
+                </button>
+                <button (click)="authService.logout()" mat-menu-item>
+                    <mat-icon>logout</mat-icon>
+                    Logout
+                </button>
+            </mat-menu>
 
-    @if (globalService.generalNetwork != 0) {
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-    }
+        </mat-toolbar>
 
+        @if (globalService.generalNetwork != 0) {
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        }
+
+    </div>
+
+    <div class="content">
+        <ng-content />
+    </div>
+
+    <app-stacked-snackbar [snacks]="snackService.snacks" />
 </div>
-
-<div class="content">
-    <ng-content />
-</div>
-
-<app-stacked-snackbar [snacks]="snackService.snacks" />

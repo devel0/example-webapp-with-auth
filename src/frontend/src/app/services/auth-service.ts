@@ -1,10 +1,10 @@
-import { inject, Injectable } from '@angular/core';
-import { LocalStorageService } from './local-storage-service';
 import { AuthApiService, CurrentUserResponseDto } from '../../api';
 import { firstValueFrom } from 'rxjs';
-import { HttpErrorResponse, HttpStatusCode, HttpUrlEncodingCodec } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { LocalStorageService } from './local-storage-service';
 import { RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC } from '../constants/general';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -87,7 +87,7 @@ export class AuthService {
         const renewAt = new Date(refreshTokenExpire.getTime() - RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC * 1e3)
         const now = new Date()
         if (now.getTime() < renewAt.getTime()) {
-          console.log(`Renew refresh token at ${renewAt}`)
+          console.debug(`Renew refresh token at ${renewAt}`)
           setTimeout(async () => {
             try {
               const res = await firstValueFrom(this.authApiService.apiAuthRenewRefreshTokenPost())
@@ -122,7 +122,7 @@ export class AuthService {
     catch (error) {
       if (error instanceof HttpErrorResponse) {
         if (error.status === HttpStatusCode.Unauthorized) {
-          // console.log('unauth')
+          // console.debug('unauth')
         }
       }
     }

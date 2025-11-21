@@ -1,30 +1,29 @@
 import { Component } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle'
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
 import { StackedSnackbar } from "../stacked-snackbar/stacked-snackbar";
 import { SnackService } from '../../services/snack-service';
 import { ThemeService } from '../../services/theme-service';
 import { AuthService } from '../../services/auth-service';
-import { ApiInterceptor } from '../../interceptors/api-interceptor';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { GlobalService } from '../../services/global-service';
 import { Subscription } from 'rxjs';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MenuService } from '../../services/menu-service';
+import { BasicModule } from '../../modules/basic/basic-module';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-main-layout',
   imports: [
-    MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule,
-    StackedSnackbar, MatProgressBarModule
+    BasicModule, StackedSnackbar,
+    MatToolbarModule, MatMenuModule, MatProgressBarModule
   ],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss'
 })
 export class MainLayout {
+
 
   private breakpointObserverSub!: Subscription
 
@@ -36,7 +35,8 @@ export class MainLayout {
     public readonly authService: AuthService,
     public readonly globalService: GlobalService,
     private readonly breakpointObserver: BreakpointObserver,
-    public readonly menuService: MenuService
+    public readonly menuService: MenuService,
+    private readonly router: Router
   ) {
 
   }
@@ -55,6 +55,10 @@ export class MainLayout {
   ngOnDestroy() {
     this.networkErrorSub.unsubscribe()
     this.breakpointObserverSub.unsubscribe()
+  }
+
+  goHome() {
+    this.router.navigate(['/'])
   }
 
   get currentTheme() {

@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
-import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpResponse, HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, Observable, tap } from 'rxjs';
 import { GlobalService } from '../services/global-service';
-import { SnackService } from '../services/snack-service';
+import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpResponse, HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { PlatformLocation } from '@angular/common';
 import { ROUTEPATH_LOGIN } from '../constants/general';
-import { ActivatedRoute, Router } from '@angular/router';
+import { SnackService } from '../services/snack-service';
 
 @Injectable()
 export class ApiInterceptor implements HttpInterceptor {

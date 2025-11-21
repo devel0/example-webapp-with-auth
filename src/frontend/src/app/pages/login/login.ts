@@ -1,21 +1,18 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth-service';
-import { ActivatedRoute, Route, Router } from '@angular/router';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { FormsModule } from '@angular/forms';
 import { APP_NAME } from '../../constants/general';
 import { SnackService } from '../../services/snack-service';
 import { StackedSnackbar } from "../../components/stacked-snackbar/stacked-snackbar";
+import { BasicModule } from '../../modules/basic/basic-module';
 
 @Component({
   selector: 'app-login',
   imports: [
-    MatFormFieldModule, MatInputModule, MatCardModule, MatButtonModule, FormsModule,
-    StackedSnackbar
-],
+    BasicModule, StackedSnackbar,
+    MatCardModule,    
+  ],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })

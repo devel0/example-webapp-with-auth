@@ -15,7 +15,8 @@
         roles: {{this.authService.currentUser?.roles}}
     </span>
 
-    <br />
+    <div class="sample-toolbar">
+
     <button
         (click)="doLongRunningOp()"
         matButton>
@@ -27,5 +28,7 @@
         matButton>
         test exception
     </button>
+
+    </div>
 
 </app-main-layout>

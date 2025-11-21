@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatDialog, } from '@angular/material/dialog';
 import { About } from '../components/about/about';
+import { Router } from '@angular/router';
 
 export interface MenuItem {
   /** name to display */
@@ -25,6 +26,7 @@ export interface MenuItem {
 export class MenuService {
 
   constructor(
+    private readonly router: Router,
     private readonly dialog: MatDialog
   ) {
   }
@@ -33,6 +35,12 @@ export class MenuService {
 
   get menuItems() {
     const res: MenuItem[] = [
+      {
+        name: 'FakeData',
+        action: () => {
+          this.router.navigate(['fake-data'])
+        }
+      },
       {
         icon: 'info_outline',
         name: 'About',

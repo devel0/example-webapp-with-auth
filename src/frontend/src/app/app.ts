@@ -1,6 +1,6 @@
 import { HTTP_INTERCEPTORS, provideHttpClient } from '@angular/common/http';
 import { Component, signal } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { ApiInterceptor } from './interceptors/api-interceptor';
 import { AuthApiService, provideApi } from '../api';
 import { environment } from '../environments/environment';
@@ -21,13 +21,13 @@ export class App {
   constructor(
     private readonly authApiService: AuthApiService,
     private readonly authService: AuthService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
   ) {
   }
 
-  async ngOnInit() {
-    if (await this.authService.isAuth())
-      this.router.navigate(["home"])
+  async ngOnInit() {        
+    
   }
 
 }
