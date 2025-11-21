@@ -1,6 +1,6 @@
 <Project>
     <PropertyGroup>
         <noWarn>1591</noWarn>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>            
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>        
     </PropertyGroup>
 </Project>

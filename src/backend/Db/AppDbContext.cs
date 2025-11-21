@@ -19,7 +19,10 @@ public partial class AppDbContext : IdentityDbContext<ApplicationUser>
 
     void ConfigureDbFunctions(ModelBuilder builder)
     {
-         {
+        var appConfig = configuration.GetAppConfig();
+
+        if (appConfig.DatabaseProvider == DbProviderConfig.Postgres)
+        {
             var method = typeof(DbFun).GetMethod(nameof(DbFun.GuidString));
             if (method is not null)
                 builder
@@ -49,6 +52,8 @@ public partial class AppDbContext : IdentityDbContext<ApplicationUser>
             }
 
         }
+
+
     }
 
 }

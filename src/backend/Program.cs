@@ -36,6 +36,7 @@ builder.Services.AddScoped<IJWTService, JWTService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUtilService, UtilService>();
 builder.Services.AddScoped<IFakeService, FakeService>();
+builder.Services.AddScoped<IWebSocketService<AliveWSProtocol>, AliveWebSocketService>();
 
 // setup default roles admin, user, advanced
 builder.Services.SetupRoles();
@@ -88,6 +89,12 @@ if (app.Environment.IsProduction())
 
 // adds authentication middleware
 app.UseAuthentication();
+
+// add websocket support
+app.UseWebSockets(new WebSocketOptions
+{
+    KeepAliveInterval = WS_KEEPALIVE_INTERVAL
+});
 
 // adds routing middleware
 app.UseRouting();

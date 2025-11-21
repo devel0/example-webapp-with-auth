@@ -12,8 +12,9 @@ public static partial class Extensions
         .AddSwaggerGen(options =>
         {
             options.SwaggerDoc("v1", new OpenApiInfo { Title = SWAGGER_API_TITLE, Version = "v1" });
-
-            // options.DocumentFilter<CustomModelDocumentFilter<SomeExportedApiAddictionalType>>();
+            
+            options.DocumentFilter<GenerateSwaggerSchemaDocumentFilter>();            
+            // options.DocumentFilter<CustomModelDocumentFilter<SomeType>>();            
 
             var xmlFiles = Directory.GetFiles(AppContext.BaseDirectory, "*.xml");
             // var xmlFiles = Directory.GetFiles(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");

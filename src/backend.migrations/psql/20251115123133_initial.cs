@@ -53,6 +53,23 @@ namespace webapi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "fake_datas",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    first_name = table.Column<string>(type: "text", nullable: false),
+                    last_name = table.Column<string>(type: "text", nullable: false),
+                    email = table.Column<string>(type: "text", nullable: false),
+                    phone = table.Column<string>(type: "text", nullable: false),
+                    group_number = table.Column<int>(type: "integer", nullable: false),
+                    date_of_birth = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_fake_datas", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "user_refresh_tokens",
                 columns: table => new
                 {
@@ -238,6 +255,9 @@ namespace webapi.Migrations
 
             migrationBuilder.DropTable(
                 name: "asp_net_user_tokens");
+
+            migrationBuilder.DropTable(
+                name: "fake_datas");
 
             migrationBuilder.DropTable(
                 name: "user_refresh_tokens");
