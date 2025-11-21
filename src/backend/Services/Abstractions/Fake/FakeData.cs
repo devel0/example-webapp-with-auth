@@ -1,3 +1,5 @@
+using NpgsqlTypes;
+
 namespace ExampleWebApp.Backend.WebApi.Services.Abstractions.Fake;
 
 [@Index(nameof(FirstName))]
@@ -22,6 +24,6 @@ public class FakeData
 
     public int GroupNumber { get; set; }
 
-    public DateTimeOffset DateOfBirth { get; set; }
+    public DateTimeOffset DateOfBirth { get; set; }    
 
 }

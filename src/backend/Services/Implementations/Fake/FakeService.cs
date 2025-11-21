@@ -1,4 +1,3 @@
-using EFCore.BulkExtensions;
 using webapi.Migrations;
 
 namespace ExampleWebApp.Backend.WebApi.Services.Fake;
@@ -8,17 +7,20 @@ public class FakeService : IFakeService
 
     readonly ILogger logger;
     readonly AppDbContext dbContext;
+    readonly IConfiguration configuration;
 
     static SemaphoreSlim semFake = new SemaphoreSlim(1, 1);
     static bool fakeInitialized = false;
 
     public FakeService(
         ILogger<FakeService> logger,
-        AppDbContext dbContext
+        AppDbContext dbContext,
+        IConfiguration configuration
     )
     {
         this.logger = logger;
         this.dbContext = dbContext;
+        this.configuration = configuration;
     }
 
     async Task FakerInit(CancellationToken cancellationToken)
@@ -31,12 +33,13 @@ public class FakeService : IFakeService
             {
                 if (!await dbContext.FakeDatas.AnyAsync(cancellationToken))
                 {
-                    var BULK_SLICE = 10_000;
+                    var BULK_SLICE_SIZE = 1_000;
                     var BULK_SLICE_CNT = 1_000;
+                    var appConfig = configuration.GetAppConfig();
 
-                    var CNT = BULK_SLICE * BULK_SLICE_CNT;
+                    var CNT = BULK_SLICE_SIZE * BULK_SLICE_CNT;
 
-                    logger.LogInformation($"initializing {CNT} fake data db ( bulk slice {BULK_SLICE} )");
+                    logger.LogInformation($"initializing {CNT} fake data db ( bulk slice {BULK_SLICE_SIZE} )");
 
                     var userFaker = new Faker<FakeData>()
                         .RuleFor(u => u.Id, f => Guid.NewGuid())
@@ -53,29 +56,95 @@ public class FakeService : IFakeService
                             return dto.ToOffset(TimeSpan.Zero);
                         });
 
-
-                    var migration = new fakerdataindexes();
-
-                    var sqlGenerator = dbContext.GetService<IMigrationsSqlGenerator>();
-
-                    // remove indexes
-                    var commands = sqlGenerator.Generate(migration.DownOperations);
-
-                    foreach (var cmd in commands)                    
-                        dbContext.Database.ExecuteSqlRaw(cmd.CommandText);                    
-
-                    for (var s = 0; s < BULK_SLICE_CNT; ++s)
                     {
-                        var slice = userFaker.Generate(BULK_SLICE);
+                        var migration = new fakerdataindexes();
 
-                        await dbContext.BulkInsertAsync(slice, cancellationToken: cancellationToken);
+                        var sqlGenerator = dbContext.GetService<IMigrationsSqlGenerator>();
+
+                        var appliedMigrations = (await dbContext.Database.GetAppliedMigrationsAsync(cancellationToken)).ToList();
+
+                        if (appliedMigrations.Any(w => w.EndsWith("_faker-data-indexes")))
+                        {
+                            // remove indexes
+                            var commands = sqlGenerator.Generate(migration.DownOperations);
+
+                            foreach (var cmd in commands)
+                                dbContext.Database.ExecuteSqlRaw(cmd.CommandText);
+
+                        }
+
+                        CsvWriter? csvWrite = null;
+                        CsvReader? csvRead = null;
+
+                        if (appConfig.FakeDataSet.SaveToCsvPathfilename is not null)
+                        {
+                            var writer = new StreamWriter(appConfig.FakeDataSet.SaveToCsvPathfilename);
+                            csvWrite = new CsvWriter(writer, CultureInfo.InvariantCulture);
+                        }
+                        else if (appConfig.FakeDataSet.LoadFromCsvPathfilename is not null)
+                        {
+                            var reader = new StreamReader(appConfig.FakeDataSet.LoadFromCsvPathfilename);
+                            csvRead = new CsvReader(reader, CultureInfo.InvariantCulture);
+                        }
+
+                        Stopwatch sw = new();
+
+                        sw.Start();
+
+                        await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+
+                        try
+                        {
+
+                            for (var s = 0; s < BULK_SLICE_CNT; ++s)
+                            {
+                                List<FakeData> slice;
+
+                                if (csvRead is not null)
+                                {
+                                    slice = new();
+                                    for (int i = 0; i < BULK_SLICE_SIZE; ++i)
+                                    {
+                                        csvRead.Read();
+                                        slice.Add(csvRead.GetRecord<FakeData>());
+                                    }
+                                }
+
+                                else
+                                    slice = userFaker.Generate(BULK_SLICE_SIZE);
+
+                                if (csvWrite is not null)
+                                {
+                                    csvWrite.WriteRecords(slice);
+                                }
+
+                                await dbContext.BulkInsertAsync(slice, cancellationToken: cancellationToken);
+                            }
+
+                            await dbContext.SaveChangesAsync(cancellationToken);
+
+                            await transaction.CommitAsync(cancellationToken);
+
+                        }
+                        catch (Exception ex)
+                        {
+                            await transaction.RollbackAsync(cancellationToken);
+                        }
+
+                        sw.Stop();
+                        logger.LogInformation($"bulk insert of {BULK_SLICE_CNT * BULK_SLICE_SIZE} rows taken {sw.Elapsed}");
+
+                        if (csvWrite is not null)
+                            csvWrite.Dispose();
+
+                        {
+                            // get indexes back
+                            var commands = sqlGenerator.Generate(migration.UpOperations);
+
+                            foreach (var cmd in commands)
+                                dbContext.Database.ExecuteSqlRaw(cmd.CommandText);
+                        }
                     }
-
-                    // get indexes back
-                    commands = sqlGenerator.Generate(migration.UpOperations);
-
-                    foreach (var cmd in commands)                    
-                        dbContext.Database.ExecuteSqlRaw(cmd.CommandText);                    
                 }
 
                 fakeInitialized = true;

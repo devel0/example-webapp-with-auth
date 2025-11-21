@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace webapi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251101165023_faker-data")]
-    partial class fakerdata
+    [Migration("20251115123141_faker-data-indexes")]
+    partial class fakerdataindexes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -181,6 +181,18 @@ namespace webapi.Migrations
 
                     b.HasKey("Id")
                         .HasName("PK_fake_datas");
+
+                    b.HasIndex("DateOfBirth");
+
+                    b.HasIndex("Email");
+
+                    b.HasIndex("FirstName");
+
+                    b.HasIndex("GroupNumber");
+
+                    b.HasIndex("LastName");
+
+                    b.HasIndex("Phone");
 
                     b.ToTable("fake_datas");
                 });

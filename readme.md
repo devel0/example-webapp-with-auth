@@ -18,6 +18,7 @@
   - [angular][10]
     - openapi typescript/angular api services generated from backend swagger endpoint
     - layout with responsive menu
+    - TODO: websocket alive check
     - authguard protected pages routes
     - login / logout ( TODO: reset lost password through email link )
     - ( TODO: user manager )
@@ -27,6 +28,7 @@
   - [react][11]
     - openapi typescript/axios api generated from backend swagger endpoint
     - layout with responsive menu
+    - websocket alive check
     - protected pages with react router dom
     - zustand global services
     - datagrid pagination with server side sort/filter
@@ -97,6 +99,8 @@ dotnet user-secrets set "AppConfig:Database:ConnectionName" "Development"
 
 cd ../..
 ```
+
+- adjust [BULK_SLICE_CNT][13] ( currently 1M rows generated on first datagrid load )
 
 - start backend choosing C-S-P `Debug: Select and Start Debugging` then `BACKEND`
 
@@ -222,3 +226,4 @@ use provided script [gen-api.sh][9] to generate frontend api from the backend sw
 [10]: https://github.com/devel0/example-webapp-with-auth/tree/frontend/angular/doc/frontend.md
 [11]: https://github.com/devel0/example-webapp-with-auth/tree/frontend/react/doc/frontend.md
 [12]: ./doc/backend.md
+[13]: https://github.com/devel0/example-webapp-with-auth/blob/883fb59a458dce1dd3c0607be5709437f406fb2b/src/backend/Services/Implementations/Fake/FakeService.cs#L37
