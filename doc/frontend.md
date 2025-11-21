@@ -2,6 +2,8 @@
 
 [source code](../src/frontend)
 
+![](./data-grid.gif)
+
 ## developer notes
 
 ### common task
@@ -42,6 +44,16 @@ note: `canActivate` with `AuthGuard` ensure the route activation only if authori
 
 - [environment dev and prod variables][9] and definition are in [environments](../src/frontend/src/environments)
 
+- [create a datagrid][10]
+
+- [track resize directive][11]
+
+- [accept a child][12] ([html][13]) from [parent][14]
+
+- [pipe filter][15] from async [conditionally][16]
+
+- [open modal passing some arg][17]
+
 ## how this project was built ( frontend )
 
 ```sh
@@ -76,3 +88,19 @@ ng g s --skip-tests services/global-service
 [8]: https://github.com/devel0/example-webapp-with-auth/blob/a86108534117cf58d2a9cc66d07a694114444d38/src/frontend/src/app/components/about/about.ts#L21
 
 [9]: https://github.com/devel0/example-webapp-with-auth/blob/a56f1c25266f1bfab8acbc38381cf4ec11651c60/src/frontend/src/app/pages/home/home.ts#L26
+
+[10]: https://github.com/devel0/example-webapp-with-auth/blob/1a6d944dd6a5e9315b9a786a4114b1dbc79e6011/src/frontend/src/app/pages/fake-data
+
+[11]: https://github.com/devel0/example-webapp-with-auth/blob/1a6d944dd6a5e9315b9a786a4114b1dbc79e6011/src/frontend/src/app/components/data-grid/data-grid.html#L6
+
+[12]: https://github.com/devel0/example-webapp-with-auth/blob/1a6d944dd6a5e9315b9a786a4114b1dbc79e6011/src/frontend/src/app/components/data-grid/data-grid-pager/data-grid-pager.ts#L15
+
+[13]: https://github.com/devel0/example-webapp-with-auth/blob/1a6d944dd6a5e9315b9a786a4114b1dbc79e6011/src/frontend/src/app/components/data-grid/data-grid-pager/data-grid-pager.html#L6
+
+[14]: https://github.com/devel0/example-webapp-with-auth/blob/1a6d944dd6a5e9315b9a786a4114b1dbc79e6011/src/frontend/src/app/pages/fake-data/fake-data.html#L6
+
+[15]: https://github.com/devel0/example-webapp-with-auth/blob/1a6d944dd6a5e9315b9a786a4114b1dbc79e6011/src/frontend/src/app/components/utils/skip-if-pipe.ts#L7
+
+[16]: https://github.com/devel0/example-webapp-with-auth/blob/1a6d944dd6a5e9315b9a786a4114b1dbc79e6011/src/frontend/src/app/components/data-grid/data-grid.html#L15
+
+[17]: https://github.com/devel0/example-webapp-with-auth/blob/1a6d944dd6a5e9315b9a786a4114b1dbc79e6011/src/frontend/src/app/components/data-grid/data-grid.ts#L276
