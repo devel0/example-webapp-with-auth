@@ -54,17 +54,17 @@ public class AuthController : ControllerBase
                 throw new NotImplementedException($"{nameof(CurrentUserResponseDto)}.{nameof(CurrentUserResponseDto.Status)} == {res.Status}");
         }
     }
-        
+
     [HttpPost]
     public async Task<ActionResult<RenewAccessTokenResponse>> RenewAccessToken()
-    {        
-        var res = await authService.RenewCurrentUserAccessTokenAsync(cancellationToken);        
+    {
+        var res = await authService.RenewCurrentUserAccessTokenAsync(cancellationToken);
 
         switch (res.Status)
         {
             case RenewAccessTokenStatus.OK:
                 return res;
-            
+
             case RenewAccessTokenStatus.InvalidAuthentication:
             case RenewAccessTokenStatus.InvalidAccessToken:
             case RenewAccessTokenStatus.InvalidRefreshToken:
@@ -159,6 +159,22 @@ public class AuthController : ControllerBase
 
         return res;
     }
+
+    /// <summary>
+    /// count items with optional filtering
+    /// </summary>        
+    [HttpPost]
+    [Authorize(Roles = ROLE_admin)]
+    public async Task<ActionResult<int>> CountUsers(CountGenericRequest req) =>
+        await authService.CountAsync(req.dynFilter, cancellationToken);
+
+    /// <summary>
+    /// get items with optional filtering, sorting
+    /// </summary>          
+    [HttpPost]
+    [Authorize(Roles = ROLE_admin)]
+    public async Task<ActionResult<List<UserListItemResponseDto>>> GetUsers(GetGenericRequest req) =>
+        await authService.GetViewAsync(req.Offset, req.Count, req.DynFilter, req.Sort, cancellationToken);
 
     /// <summary>
     /// List all roles.

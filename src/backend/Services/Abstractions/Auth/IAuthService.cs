@@ -53,6 +53,11 @@ public interface IAuthService
         CancellationToken cancellationToken,
         string? username = null);
 
+    Task<int> CountAsync(string? dynFilter, CancellationToken cancellationToken);
+
+    Task<List<UserListItemResponseDto>> GetViewAsync(
+        int off, int cnt, string? dynFilter, GenericSort? sort, CancellationToken cancellationToken);
+
     /// <summary>
     /// Delete given user.
     /// </summary>
