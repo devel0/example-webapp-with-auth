@@ -55,7 +55,11 @@
 .data-grid-tr {
     display: table;
     width: 100%;
-    table-layout: fixed;
+    table-layout: fixed;    
+}
+
+.data-grid-tbody tr:hover {
+    background-color: var(--highlight-bg-semi);
 }
 
 .data-grid-td:first-child {
