@@ -41,6 +41,14 @@
 
             <span class="example-spacer"></span>
 
+            @if (this.aliveWebsocketService.connected$ | async) {
+            <mat-icon fontSet="material-icons-outlined">cloud</mat-icon>
+            }
+            @else
+            {
+            <mat-icon fontSet="material-icons-outlined">cloud_off</mat-icon>
+            }
+
             @if (currentTheme === 'dark') {
             <button (click)="themeService.toggleTheme()" matIconButton>
                 <mat-icon>light_mode</mat-icon>

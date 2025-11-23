@@ -1,4 +1,7 @@
-export const environment = {    
+export const environment = {  
+    /** ie. 'webapp-test.searchathing.com' */
+    serverName: '',
+      
     /** ie. 'https://webapp-test.searchathing.com' */
     basePath: '',
 

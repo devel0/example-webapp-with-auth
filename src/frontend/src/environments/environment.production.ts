@@ -1,4 +1,5 @@
 export const environment = {    
+    serverName: 'test.searchathing.com',
     basePath: "https://test.searchathing.com",
     ssoPath: "https://test.searchathing.com/app/login",
     commit: "f00c39d",

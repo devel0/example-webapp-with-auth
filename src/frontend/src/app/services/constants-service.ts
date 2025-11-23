@@ -1,4 +1,5 @@
 import { Injectable, isDevMode } from '@angular/core';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -12,5 +13,13 @@ export class ConstantsService {
 
   /** invoke RenewRefreshToken api before expiration */
   readonly RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC = isDevMode() ? 10 : 30;  
+
+  readonly ALIVE_WEBSOCKET_URL = `wss://${environment.serverName}/api/Main/AliveWebSocket`
+
+  /** ms between each ping alive test */
+  readonly WEBSOCKET_PING_MS = 10000
+
+  /** max ms after each ping to expect receive a pong */
+  readonly WEBSOCKET_PONG_MS = 2000
 
 }

@@ -12,6 +12,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { MenuService } from '../../services/menu-service';
 import { BasicModule } from '../../modules/basic/basic-module';
 import { Router } from '@angular/router';
+import { AliveWebsocketService } from '../../services/websocket/alive-websocket-service';
 
 @Component({
   selector: 'app-main-layout',
@@ -24,7 +25,6 @@ import { Router } from '@angular/router';
 })
 export class MainLayout {
 
-
   private breakpointObserverSub!: Subscription
 
   private networkErrorSub!: Subscription
@@ -36,7 +36,8 @@ export class MainLayout {
     public readonly globalService: GlobalService,
     private readonly breakpointObserver: BreakpointObserver,
     public readonly menuService: MenuService,
-    private readonly router: Router
+    private readonly router: Router,
+    public readonly aliveWebsocketService: AliveWebsocketService
   ) {
 
   }
