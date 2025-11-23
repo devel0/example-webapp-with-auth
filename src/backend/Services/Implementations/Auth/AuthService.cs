@@ -347,6 +347,33 @@ public class AuthService : IAuthService
         return [.. res];
     }
 
+    public async Task<int> CountAsync(string? dynFilter, CancellationToken cancellationToken)
+    {
+        var users = await ListUsersAsync(cancellationToken);
+
+        var q = users.AsQueryable();
+
+        q = q.ApplySortAndFilter(sort: null, dynFilter);
+
+        return q.Count();
+    }
+
+    public async Task<List<UserListItemResponseDto>> GetViewAsync(
+        int off, int cnt, string? dynFilter, GenericSort? sort, CancellationToken cancellationToken)
+    {
+        var users = await ListUsersAsync(cancellationToken);
+
+        var q = users.AsQueryable();
+
+        q = q.ApplySortAndFilter(sort, dynFilter);
+
+        var q2 = q.Skip(off);
+        if (cnt >= 0) q2 = q2.Take(cnt);
+        var tmp = q2.ToList();
+
+        return tmp;
+    }
+
     async Task<List<string>> AllRolesAsync()
     {
         return (await roleManager.Roles.ToListAsync())
