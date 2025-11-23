@@ -1,0 +1,23 @@
+.toolbar {
+    display: flex;
+    gap: 1rem;
+}
+
+.pager-div {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.table-users-div {
+    padding: 1rem;
+    border: 1px solid yellow;
+    height: calc(100% - 2px - 2rem);
+}
+
+app-full-height-div {
+    // background-color: red;
+}
+
+::ng-deep .number-div {
+    text-align: right;
+}

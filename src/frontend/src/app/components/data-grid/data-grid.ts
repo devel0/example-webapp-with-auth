@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { BasicModule } from '../../modules/basic/basic-module';
 import { BehaviorSubject } from 'rxjs';
 import { ComputeDynFilerNfo, DataGridColumn, DataGridColumnState, FieldKind, FilterNfo, NeedCountNfo, NeedLoadNfo } from './types/data-grid-types';
@@ -28,6 +28,12 @@ export class DataGrid<T> implements OnInit, AfterViewInit, OnDestroy {
   @Input({ alias: 'computeDynFilter', required: true }) computeDynFilter!: (nfo: ComputeDynFilerNfo) => string
   @Input({ alias: 'columns', required: true }) columns: DataGridColumn<T>[] = []
   @Input('filterTextBox') filterTextBox: boolean = false
+  @Input('getRowId') getRowId!: (row: T) => string
+
+  @Output() rowClicked = new EventEmitter<T>()
+
+  private selectedRowIds = new BehaviorSubject<Set<string>>(new Set<string>())
+  selectedRowIds$ = this.selectedRowIds.asObservable()
 
   private dynFilter = new BehaviorSubject<string | null>(null)
   dynFilter$ = this.dynFilter.asObservable()
@@ -198,6 +204,34 @@ export class DataGrid<T> implements OnInit, AfterViewInit, OnDestroy {
     this.pageData.next(data ?? [])
   }
 
+  private toggleRowSelect(row: T) {
+    if (this.getRowId == null) {
+      console.debug(`cannot select row if getRowId is null`)
+      return
+    }
+
+    const rowId = this.getRowId(row)
+    const newSelectedRows = new Set<string>(this.selectedRowIds.value)
+    if (newSelectedRows.has(rowId))
+      newSelectedRows.delete(rowId)
+    else
+      newSelectedRows.add(rowId)
+    this.selectedRowIds.next(newSelectedRows)
+  }
+
+  isRowSelected(row: T) {
+    if (this.getRowId != null) {
+      return this.selectedRowIds.value.has(this.getRowId(row))
+    }
+    return false
+  }
+
+  async OnRowClicked(row: T) {
+    this.toggleRowSelect(row)
+
+    this.rowClicked.emit(row)
+  }
+
   async onFilterChanged(colIdx: number, filterNfo: FilterNfo | null) {
     if (this.columnsState.value == null) return
 
@@ -214,7 +248,7 @@ export class DataGrid<T> implements OnInit, AfterViewInit, OnDestroy {
 
     this.columnsState.next(newColumnsState)
 
-    if (filterChangedFromPrevious) {      
+    if (filterChangedFromPrevious) {
       await this.execCountAndLoad()
     }
   }

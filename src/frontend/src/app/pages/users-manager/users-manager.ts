@@ -1,34 +1,34 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { BehaviorSubject, firstValueFrom, map, pairwise, Subscription } from 'rxjs';
+import { AuthApiService, GenericSort, SortModelItem, UserListItemResponseDto, UserPermission } from '../../../api';
 import { buildGenericDynFilter, ColumnFilterNfo } from '../../components/data-grid/utils/DataGridDynFilter';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ComputeDynFilerNfo, DataGridColumn, NeedCountNfo, NeedLoadNfo } from '../../components/data-grid/types/data-grid-types';
 import { DataGrid } from "../../components/data-grid/data-grid";
-import { ComputeDynFilerNfo, DataGridColumn, DataGridColumnState, FieldKind, NeedCountNfo, NeedLoadNfo } from '../../components/data-grid/types/data-grid-types';
-import { FakeData as FakeDataType } from '../../../api/model/fakeData'
-import { FakeDataApiService, GenericSort, SortModelItem } from '../../../api';
-import { from } from 'linq-to-typescript';
 import { FullHeightDiv } from "../../components/full-height-div/full-height-div";
 import { HttpErrorResponse } from '@angular/common/http';
 import { MainLayout } from "../../components/main-layout/main-layout";
 import { pathBuilder } from '../../utils/utils';
-import { DataGridPager } from "../../components/data-grid/data-grid-pager/data-grid-pager";
+import { from } from 'linq-to-typescript';
+import { firstValueFrom } from 'rxjs';
 import { MatIcon } from "@angular/material/icon";
+import { DataGridPager } from "../../components/data-grid/data-grid-pager/data-grid-pager";
 
-type TDATA = FakeDataType
+type TDATA = UserListItemResponseDto
 const fnTDATA = pathBuilder<TDATA>()
 
 @Component({
-  selector: 'app-fake-data',
-  imports: [MainLayout, DataGrid, FullHeightDiv, DataGridPager, MatIcon],
-  templateUrl: './fake-data.html',
-  styleUrl: './fake-data.scss'
+  selector: 'app-users-manager',
+  imports: [MainLayout, FullHeightDiv, DataGrid, MatIcon, DataGridPager],
+  templateUrl: './users-manager.html',
+  styleUrl: './users-manager.scss',
 })
-export class FakeData implements OnInit, AfterViewInit, OnDestroy {
+export class UsersManager implements OnInit, AfterViewInit, OnDestroy {
+
   @ViewChild('dgRef') dgRef!: DataGrid<TDATA>
 
   dataGrid!: DataGrid<TDATA>
 
   constructor(
-    private readonly fakerApi: FakeDataApiService
+    private readonly authApiService: AuthApiService
   ) {
   }
 
@@ -42,7 +42,11 @@ export class FakeData implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
   }
 
-  ngAfterViewInit() {    
+  ngAfterViewInit() {
+  }
+
+  addUser() {
+    
   }
 
   computeDynFilter(nfo: ComputeDynFilerNfo) {
@@ -61,21 +65,21 @@ export class FakeData implements OnInit, AfterViewInit, OnDestroy {
             filterCaseSensitive: x.col.filterCaseSensitive,
             kind: x.col.fieldKind,
             preProcessField: x.col.dbFunFilterPreprocess
-          } as ColumnFilterNfo<FakeData>
+          } as ColumnFilterNfo<TDATA>
         })
       })
     }
 
     return dynFilterTmp
   }
-  
-  getRowId(row: TDATA) { return row.id ?? '' }
+
+  getRowId(row: TDATA) { return row.userName ?? '' }
 
   async countData(nfo: NeedCountNfo) {
     let res: number | null = null
 
     try {
-      res = await firstValueFrom(this.fakerApi.apiFakeDataCountFakeDatasPost({
+      res = await firstValueFrom(this.authApiService.apiAuthCountUsersPost({
         dynFilter: nfo.dynFilter
       }))
     } catch (error) {
@@ -114,7 +118,7 @@ export class FakeData implements OnInit, AfterViewInit, OnDestroy {
         this.computeDynFilter({ columnsState: nfo.columnsState }) :
         nfo.precomputedDynFilter
 
-      res = await firstValueFrom(this.fakerApi.apiFakeDataGetFakeDatasPost({
+      res = await firstValueFrom(this.authApiService.apiAuthGetUsersPost({
         count: nfo.pageSize,
         offset: nfo.page * nfo.pageSize,
         sort,
@@ -131,23 +135,9 @@ export class FakeData implements OnInit, AfterViewInit, OnDestroy {
 
   columns: DataGridColumn<TDATA>[] = [
     {
-      header: 'Id',
-      fieldName: fnTDATA('id'),
-      flexWidth: 2,
-      // width: 350,
-      getData: x => x.id,
-      dbFunFilterPreprocess: 'DbFun.GuidString'
-    },
-    {
-      header: 'FirstName',
-      fieldName: fnTDATA('firstName'),
-      getData: x => x.firstName,
-      // initialSortDirection: 'Ascending'
-    },
-    {
-      header: 'LastName',
-      fieldName: fnTDATA('lastName'),
-      getData: x => x.lastName
+      header: 'Username',
+      fieldName: fnTDATA('userName'),
+      getData: x => x.userName,
     },
     {
       header: 'Email',
@@ -155,25 +145,15 @@ export class FakeData implements OnInit, AfterViewInit, OnDestroy {
       getData: x => x.email
     },
     {
-      header: 'Phone',
-      fieldName: fnTDATA('phone'),
-      getData: x => x.phone
+      header: 'Roles',
+      fieldName: fnTDATA('roles'),
+      getData: x => x.roles
     },
     {
-      header: 'Group',
-      fieldName: fnTDATA('groupNumber'),
-      fieldKind: FieldKind.numeric,
-      getData: x => x.groupNumber,
-      dataDivClass: 'number-div'
-    },
-    {
-      header: 'Birth date',
-      fieldName: fnTDATA('dateOfBirth'),
-      fieldKind: FieldKind.dateTimeOffset,
-      width: 240,
-      getData: x => new Date(x.dateOfBirth ?? '').toISOString()
+      header: 'Disabled',
+      fieldName: fnTDATA('disabled'),
+      getData: x => x.disabled
     },
   ]
 
 }
-

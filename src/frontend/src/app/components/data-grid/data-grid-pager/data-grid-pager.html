@@ -29,6 +29,13 @@
         <span>
             ( {{ this.dataGrid.totals$ | async }} total rows )
         </span>
+
+        @if ((this.dataGrid.selectedRowIds$ | async)?.size ?? 0 > 0) {
+        <span>
+            # {{ (this.dataGrid.selectedRowIds$ | async)?.size }} selected
+        </span>
+        }
+
     </div>
 
     <ng-content select="[toolbar-suffix]"></ng-content>

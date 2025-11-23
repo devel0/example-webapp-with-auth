@@ -42,6 +42,12 @@ export class MenuService {
         }
       },
       {
+        name: 'UsersManager',
+        action: () => {
+          this.router.navigate(['users-manager'])
+        }
+      },
+      {
         icon: 'info_outline',
         name: 'About',
         action: () => {

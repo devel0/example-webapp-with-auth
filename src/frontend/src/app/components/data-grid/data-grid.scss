@@ -58,6 +58,10 @@
     table-layout: fixed;    
 }
 
+.data-grid-tr-selected {
+    background-color: var(--highlight-bg-semi-selected);
+}
+
 .data-grid-tbody tr:hover {
     background-color: var(--highlight-bg-semi);
 }
