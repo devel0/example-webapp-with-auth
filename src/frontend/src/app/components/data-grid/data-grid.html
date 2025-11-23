@@ -54,7 +54,8 @@
         <tbody class="data-grid-tbody">
             @for (row of this.pageData$ | async; track $index) {
             <tr [class]="'data-grid-tr' + (this.isRowSelected(row) ? ' data-grid-tr-selected' : '')"
-                (click)="this.OnRowClicked(row)">
+                (click)="this.OnRowClicked(row)"
+                (dblclick)="this.OnRowDoubleClicked(row)">
 
                 @for(colState of this.columnsState$ | async | skipIf:'collapsed':true; track colState.columnIndex) {
                 <td class="data-grid-td"

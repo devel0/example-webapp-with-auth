@@ -1,0 +1,59 @@
+<div class="main-div">
+    <mat-dialog-content>
+        <h3>User edit</h3>
+
+        <div class="main-form-div">
+
+            <mat-form-field>
+                <mat-label>Username</mat-label>
+                <input matInput
+                    readonly="true"
+                    [value]="this.user.existingUsername" />
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>Email</mat-label>
+                <input matInput
+                    [value]="this.user.editEmail"
+                    (input)="this.user.editEmail = $event.target.value" />
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>Password</mat-label>
+                <input matInput
+                    type="password"
+                    [value]="this.user.editPassword"
+                    (input)="this.user.editPassword= $event.target.value" />
+            </mat-form-field>
+
+            <mat-checkbox
+                [checked]="this.user.editDisabled"
+                (change)="this.user.editDisabled = $event.checked">
+                Disabled
+            </mat-checkbox>
+
+            <mat-card>
+                <mat-card-header>
+                    <b>
+                        Roles
+                    </b>
+                </mat-card-header>
+
+                <mat-card-content>
+                    @for (role of this.allRoles | async; track $index) {
+                    <mat-checkbox
+                        [checked]="this.user.editRoles?.indexOf(role) !== -1"
+                        (change)="this.toggleRole(role)">
+                        {{role}}
+                    </mat-checkbox>
+                    }
+                </mat-card-content>
+            </mat-card>
+
+            <button matButton="filled"
+            (click)="this.onApply()">Apply</button>
+
+        </div>
+
+    </mat-dialog-content>
+</div>

@@ -1,11 +1,11 @@
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent } from '@angular/material/dialog';
 import { DataGrid } from '../data-grid';
 import { BasicModule } from '../../../modules/basic/basic-module';
 
 @Component({
   selector: 'app-columns-chooser',
-  imports: [BasicModule, MatDialogContent, MatDialogActions],
+  imports: [BasicModule, MatDialogContent],
   templateUrl: './columns-chooser.html',
   styleUrl: './columns-chooser.scss',
 })

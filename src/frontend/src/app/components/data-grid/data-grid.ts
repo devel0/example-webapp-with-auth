@@ -31,6 +31,7 @@ export class DataGrid<T> implements OnInit, AfterViewInit, OnDestroy {
   @Input('getRowId') getRowId!: (row: T) => string
 
   @Output() rowClicked = new EventEmitter<T>()
+  @Output() rowDoubleClicked = new EventEmitter<T>()
 
   private selectedRowIds = new BehaviorSubject<Set<string>>(new Set<string>())
   selectedRowIds$ = this.selectedRowIds.asObservable()
@@ -193,6 +194,11 @@ export class DataGrid<T> implements OnInit, AfterViewInit, OnDestroy {
       this.page.next(Math.max(0, this.totalPages.value - 1))
   }
 
+  /** reload current page  */
+  async reload() {
+    await this.execLoad()
+  }
+
   /** load and update {@link pageData} */
   private async execLoad() {
     const data = await this.loadData({
@@ -226,10 +232,20 @@ export class DataGrid<T> implements OnInit, AfterViewInit, OnDestroy {
     return false
   }
 
-  async OnRowClicked(row: T) {
-    this.toggleRowSelect(row)
+  private singleClickTimeoutMs = 250
+  private singleClickTimeoutRefs: number[] = []
 
-    this.rowClicked.emit(row)
+  async OnRowClicked(row: T) {
+    this.singleClickTimeoutRefs.push(setTimeout(() => {
+      this.toggleRowSelect(row)
+      this.rowClicked.emit(row)
+    }, this.singleClickTimeoutMs))
+  }
+
+  async OnRowDoubleClicked(row: T) {
+    this.singleClickTimeoutRefs.forEach(w => clearTimeout(w))
+    this.singleClickTimeoutRefs = []
+    this.rowDoubleClicked.emit(row)
   }
 
   async onFilterChanged(colIdx: number, filterNfo: FilterNfo | null) {

@@ -1,4 +1,4 @@
-import { AuthApiService, GenericSort, SortModelItem, UserListItemResponseDto, UserPermission } from '../../../api';
+import { AuthApiService, EditUserRequestDto, GenericSort, SortModelItem, UserListItemResponseDto, UserPermission } from '../../../api';
 import { buildGenericDynFilter, ColumnFilterNfo } from '../../components/data-grid/utils/DataGridDynFilter';
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ComputeDynFilerNfo, DataGridColumn, NeedCountNfo, NeedLoadNfo } from '../../components/data-grid/types/data-grid-types';
@@ -8,9 +8,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { MainLayout } from "../../components/main-layout/main-layout";
 import { pathBuilder } from '../../utils/utils';
 import { from } from 'linq-to-typescript';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { MatIcon } from "@angular/material/icon";
 import { DataGridPager } from "../../components/data-grid/data-grid-pager/data-grid-pager";
+import { MatDialog } from '@angular/material/dialog';
+import { UserEditModal } from '../../components/user-edit-modal/user-edit-modal'
 
 type TDATA = UserListItemResponseDto
 const fnTDATA = pathBuilder<TDATA>()
@@ -27,7 +29,10 @@ export class UsersManager implements OnInit, AfterViewInit, OnDestroy {
 
   dataGrid!: DataGrid<TDATA>
 
+  private dialogSub: Subscription | null = null
+
   constructor(
+    public readonly dialog: MatDialog,
     private readonly authApiService: AuthApiService
   ) {
   }
@@ -40,13 +45,34 @@ export class UsersManager implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.dialogSub != null) this.dialogSub.unsubscribe()
   }
 
   ngAfterViewInit() {
   }
 
   addUser() {
-    
+
+  }
+
+  onRowDoubleClicked(row: TDATA) {
+    const edit: EditUserRequestDto = {
+      existingUsername: row.userName,
+      editEmail: row.email,
+      editRoles: [...row.roles],
+      editDisabled: row.disabled
+    }
+
+    const dialogRef = this.dialog.open(UserEditModal,
+      {
+        data: {
+          user: edit
+        }
+      })
+
+    this.dialogSub = dialogRef.afterClosed().subscribe(x => {
+      this.dataGrid.reload()
+    })
   }
 
   computeDynFilter(nfo: ComputeDynFilerNfo) {

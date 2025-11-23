@@ -22,7 +22,9 @@
                 [loadData]="loadData.bind(this)"
                 [countData]="countData.bind(this)"
                 [computeDynFilter]="computeDynFilter.bind(this)"
-                [getRowId]="this.getRowId" />
+                [getRowId]="this.getRowId"
+                (rowDoubleClicked)="this.onRowDoubleClicked($event)"
+                />
 
         </div>
 
