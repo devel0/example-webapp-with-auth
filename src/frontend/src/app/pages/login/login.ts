@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth-service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
-import { APP_NAME } from '../../constants/general';
 import { SnackService } from '../../services/snack-service';
 import { StackedSnackbar } from "../../components/stacked-snackbar/stacked-snackbar";
 import { BasicModule } from '../../modules/basic/basic-module';
+import { ConstantsService } from '../../services/constants-service';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +19,7 @@ import { BasicModule } from '../../modules/basic/basic-module';
 export class Login {
 
   constructor(
+    private readonly constantsService: ConstantsService,
     private readonly authService: AuthService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
@@ -26,7 +27,7 @@ export class Login {
   ) {
   }
 
-  get appName() { return APP_NAME }
+  get appName() { return this.constantsService.APP_NAME }
 
   async doLogin(username: string, password: string) {
     if (await this.authService.login(username, password)) {

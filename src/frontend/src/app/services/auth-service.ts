@@ -3,8 +3,8 @@ import { firstValueFrom } from 'rxjs';
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LocalStorageService } from './local-storage-service';
-import { RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC } from '../constants/general';
 import { Router } from '@angular/router';
+import { ConstantsService } from './constants-service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +13,7 @@ export class AuthService {
   private currentUserInitialized = false
 
   constructor(
+    private readonly constantsService: ConstantsService,
     private readonly localStorageService: LocalStorageService,
     private readonly authApiService: AuthApiService,
     private readonly router: Router,    
@@ -84,7 +85,7 @@ export class AuthService {
       if (q != null) {
         const refreshTokenExpire = new Date(q);
 
-        const renewAt = new Date(refreshTokenExpire.getTime() - RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC * 1e3)
+        const renewAt = new Date(refreshTokenExpire.getTime() - this.constantsService.RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC * 1e3)
         const now = new Date()
         if (now.getTime() < renewAt.getTime()) {
           console.debug(`Renew refresh token at ${renewAt}`)

@@ -4,13 +4,15 @@ import { GlobalService } from '../services/global-service';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpResponse, HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PlatformLocation } from '@angular/common';
-import { ROUTEPATH_LOGIN } from '../constants/general';
 import { SnackService } from '../services/snack-service';
+import { ConstantsService } from '../services/constants-service';
+import { ROUTEPATH_LOGIN } from '../constants/general';
 
 @Injectable()
 export class ApiInterceptor implements HttpInterceptor {
 
   constructor(
+    private readonly constantsService: ConstantsService,
     private readonly globalService: GlobalService,
     private readonly snackService: SnackService,
     private readonly platformLocation: PlatformLocation,

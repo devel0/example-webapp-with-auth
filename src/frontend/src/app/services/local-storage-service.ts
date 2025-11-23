@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LocalStorageData } from '../types/local-storage-data';
-import { LOCAL_STORAGE_KEY_DATA } from '../constants/general';
+import { ConstantsService } from './constants-service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +8,9 @@ import { LOCAL_STORAGE_KEY_DATA } from '../constants/general';
 export class LocalStorageService {
   private _data: LocalStorageData | null = null
 
-  constructor() {
+  constructor(
+    private readonly constantsService: ConstantsService
+  ) {
 
   }
 
@@ -16,7 +18,7 @@ export class LocalStorageService {
    * or initialize an new empty {@link LocalStorageData} */
   get data(): LocalStorageData {
     if (this._data == null) {
-      const q = localStorage.getItem(LOCAL_STORAGE_KEY_DATA)
+      const q = localStorage.getItem(this.constantsService.LOCAL_STORAGE_KEY_DATA)
 
       if (q == null) {
         this._data = new LocalStorageData()
@@ -33,7 +35,7 @@ export class LocalStorageService {
 
   /** save current {@link data} to the local storage under {@link LOCAL_STORAGE_KEY_DATA} key */
   save() {
-    localStorage.setItem(LOCAL_STORAGE_KEY_DATA, JSON.stringify(this._data))
+    localStorage.setItem(this.constantsService.LOCAL_STORAGE_KEY_DATA, JSON.stringify(this._data))
   }
 
 }

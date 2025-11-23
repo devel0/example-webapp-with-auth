@@ -1,7 +1,7 @@
 import { Component, isDevMode } from '@angular/core';
-import { APP_NAME } from '../../constants/general';
 import { environment } from '../../../environments/environment';
 import { BasicModule } from '../../modules/basic/basic-module';
+import { ConstantsService } from '../../services/constants-service';
 
 @Component({
   selector: 'app-about',
@@ -12,10 +12,12 @@ import { BasicModule } from '../../modules/basic/basic-module';
 export class About {
 
 
-  constructor() {
+  constructor(
+    private readonly constantsService: ConstantsService,
+  ) {
   }
 
-  get appName() { return APP_NAME }
+  get appName() { return this.constantsService.APP_NAME }
 
   get devMode() { return isDevMode() }
 
