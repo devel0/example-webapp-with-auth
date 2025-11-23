@@ -10,6 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ColumnsChooser } from './columns-chooser/columns-chooser';
 import { VisibleColumnsPipePipe } from "./visible-columns-pipe-pipe";
 import { SkipIfPipe } from "../utils/skip-if-pipe";
+import { emptyString } from '../../utils/utils';
 
 @Component({
   selector: 'app-data-grid',
@@ -158,6 +159,7 @@ export class DataGrid<T> implements OnInit, AfterViewInit, OnDestroy {
       if (!this.initialLoadExecuted) {
         this.initialLoadExecuted = true
 
+        console.log(`initial load => exec count and load`)
         await this.execCountAndLoad()
       }
     }
@@ -198,16 +200,23 @@ export class DataGrid<T> implements OnInit, AfterViewInit, OnDestroy {
 
   async onFilterChanged(colIdx: number, filterNfo: FilterNfo | null) {
     if (this.columnsState.value == null) return
+
     const newColumnsState = [...this.columnsState.value]
     newColumnsState[colIdx] = { ...this.columnsState.value[colIdx] }
 
     const colState = newColumnsState[colIdx]
     const col = this.columns[colIdx]
+    let filterChangedFromPrevious =
+      (colState.filter == null && !emptyString(filterNfo?.filter))
+      ||
+      (colState.filter != null && colState.filter.filter !== (filterNfo?.filter ?? ''))
     colState.filter = filterNfo
 
     this.columnsState.next(newColumnsState)
 
-    await this.execCountAndLoad()
+    if (filterChangedFromPrevious) {      
+      await this.execCountAndLoad()
+    }
   }
 
   setColumnVisibility(colIdx: number, collapsed: boolean) {
