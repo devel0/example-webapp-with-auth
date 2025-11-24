@@ -14,7 +14,7 @@ import { emptyString } from '../../utils/utils';
 
 @Component({
   selector: 'app-data-grid',
-  imports: [BasicModule, DataGridFilter, TrackResize, DataGridColumnHandle, VisibleColumnsPipePipe, SkipIfPipe],
+  imports: [BasicModule, DataGridFilter, TrackResize, DataGridColumnHandle, SkipIfPipe],
   templateUrl: './data-grid.html',
   styleUrl: './data-grid.scss'
 })
