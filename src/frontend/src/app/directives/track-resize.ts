@@ -13,7 +13,7 @@ export class TrackResize {
   private size: SizeNfo | null = null
   private element!: ElementRef<HTMLElement>
 
-  constructor(    
+  constructor(
     element: ElementRef<HTMLElement>
   ) {
     this.element = element
@@ -31,8 +31,10 @@ export class TrackResize {
       }
 
       if (this.size == null || currentSize.width !== this.size.width || currentSize.height != this.size.height) {
-        this.size = currentSize
-        this.sizeChanged.emit(this.size)
+        if (currentSize != this.size) {
+          this.size = currentSize
+          this.sizeChanged.emit(this.size)
+        }
       }
     } catch (err) {
       console.error(`error reading element size ${err}`)
