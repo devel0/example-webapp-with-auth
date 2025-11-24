@@ -42,7 +42,7 @@ export class ApiInterceptor implements HttpInterceptor {
             const baseHref = this.platformLocation.getBaseHrefFromDOM()
 
             statusCode = error.status;
-            if (statusCode == HttpStatusCode.InternalServerError) {
+            if (statusCode === HttpStatusCode.InternalServerError || statusCode === HttpStatusCode.Forbidden) {
               if (error.error?.title != null) {
                 const title = error.error.title
                 const message = error.error.detail
