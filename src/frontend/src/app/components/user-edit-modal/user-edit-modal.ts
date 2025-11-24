@@ -1,9 +1,7 @@
-import { Component, Inject } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
-import { AuthApiService, EditUserRequestDto, UserListItemResponseDto } from '../../../api';
+import { AuthApiService, EditUserRequestDto } from '../../../api';
 import { BasicModule } from "../../modules/basic/basic-module";
-import { MatCheckboxChange } from '@angular/material/checkbox';
-import { AuthService } from '../../services/auth-service';
 import { firstValueFrom, Observable } from 'rxjs';
 import { MatCard, MatCardHeader, MatCardContent } from "@angular/material/card";
 
@@ -13,20 +11,39 @@ import { MatCard, MatCardHeader, MatCardContent } from "@angular/material/card";
   templateUrl: './user-edit-modal.html',
   styleUrl: './user-edit-modal.scss',
 })
-export class UserEditModal {
+export class UserEditModal implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
   allRoles: Observable<string[]> | null = null
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private readonly authApi: AuthApiService,
-    public dialogRef: MatDialogRef<UserEditModal>
+    public dialogRef: MatDialogRef<UserEditModal>,
+    private changeDetector: ChangeDetectorRef,
   ) {
     this.loadAllRoles()
   }
 
+  ngOnInit(): void {
+  }
+
+  ngAfterViewInit(): void {
+
+  }
+
+  ngAfterViewChecked(): void {
+  }
+
+  ngOnDestroy(): void {
+
+  }
+
   private async loadAllRoles() {
     try {
-      this.allRoles = await this.authApi.apiAuthListRolesGet()
+      const q = await this.authApi.apiAuthListRolesGet()
+
+      this.allRoles = q
+
+      this.changeDetector.detectChanges()
     }
     catch (error) {
       console.error(error)
@@ -46,7 +63,7 @@ export class UserEditModal {
   async onApply() {
     try {
       const res = await firstValueFrom(this.authApi.apiAuthEditUserPost(this.user))
-      this.dialogRef.close()      
+      this.dialogRef.close()
     }
     catch (error) {
       console.error(error)
