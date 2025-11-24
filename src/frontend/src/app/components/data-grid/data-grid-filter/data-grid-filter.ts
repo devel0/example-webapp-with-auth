@@ -3,10 +3,11 @@ import { nameof } from "../../../utils/utils";
 import { CompareOp, DataGridColumnState, FieldKind, FilterNfo, IDataGridColumn } from '../types/data-grid-types';
 import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, NgZone, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { BehaviorSubject, debounceTime, distinctUntilChanged, Subscribable, Subscription } from 'rxjs';
+import { DisableAutocompleteDirective } from "../../../directives/disable-autocomplete";
 
 @Component({
   selector: 'app-data-grid-filter',
-  imports: [BasicModule],
+  imports: [BasicModule, DisableAutocompleteDirective],
   templateUrl: './data-grid-filter.html',
   styleUrl: './data-grid-filter.scss',
 })

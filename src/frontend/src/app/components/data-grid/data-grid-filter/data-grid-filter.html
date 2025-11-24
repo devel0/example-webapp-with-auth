@@ -8,7 +8,10 @@
     <button mat-icon-button matSuffix style="margin:0;padding:0; height:unset;" (click)="clearFilter()">
         <mat-icon>clear</mat-icon>
     </button>
+    <input style="display:none">
     <input matInput
+        disableAutocomplete
+        type="text"
         [value]="this.text"
         (input)="this.text = $event.target.value">
 </mat-form-field>
