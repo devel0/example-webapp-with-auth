@@ -4,10 +4,12 @@ import { AuthApiService, EditUserRequestDto } from '../../../api';
 import { BasicModule } from "../../modules/basic/basic-module";
 import { firstValueFrom, Observable } from 'rxjs';
 import { MatCard, MatCardHeader, MatCardContent } from "@angular/material/card";
+import { emptyString } from '../../utils/utils';
+import { DisableAutocompleteDirective } from "../../directives/disable-autocomplete";
 
 @Component({
   selector: 'app-user-edit-modal',
-  imports: [MatDialogContent, BasicModule, MatCard, MatCardHeader, MatCardContent],
+  imports: [MatDialogContent, BasicModule, MatCard, MatCardHeader, MatCardContent, DisableAutocompleteDirective],
   templateUrl: './user-edit-modal.html',
   styleUrl: './user-edit-modal.scss',
 })
@@ -60,7 +62,7 @@ export class UserEditModal implements OnInit, AfterViewInit, AfterViewChecked, O
       this.user.editRoles.splice(qIdx, 1)
   }
 
-  async onApply() {
+  async onApply() {    
     try {
       const res = await firstValueFrom(this.authApi.apiAuthEditUserPost(this.user))
       this.dialogRef.close()

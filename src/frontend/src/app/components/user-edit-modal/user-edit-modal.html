@@ -1,29 +1,36 @@
 <div class="main-div">
     <mat-dialog-content>
+        @if (this.user.existingUsername != null && this.user.existingUsername.length > 0) {
         <h3>User edit</h3>
+        }
+        @else
+        {
+        <h3>New user</h3>
+        }
 
         <div class="main-form-div">
 
             <mat-form-field>
-                <mat-label>Username</mat-label>
-                <input matInput
-                    readonly="true"
-                    [value]="this.user.existingUsername" />
+                <mat-label>Username</mat-label>                
+                <input matInput                    
+                    [readonly]="this.user.existingUsername != null"
+                    [value]="this.user.existingUsername != null ? this.user.existingUsername : (this.user.editUsername ?? '')"
+                    (input)="this.user.editUsername = $event.target.value" />
             </mat-form-field>
 
-            <mat-form-field>
-                <mat-label>Email</mat-label>
-                <input matInput
-                    [value]="this.user.editEmail"
+            <mat-form-field>                 
+                <mat-label>Email</mat-label>                
+                <input matInput                                                           
+                    [value]="this.user.editEmail ?? ''"
                     (input)="this.user.editEmail = $event.target.value" />
             </mat-form-field>
 
             <mat-form-field>
-                <mat-label>Password</mat-label>
-                <input matInput
+                <mat-label>Password</mat-label>                
+                <input matInput                    
                     type="password"
-                    [value]="this.user.editPassword"
-                    (input)="this.user.editPassword= $event.target.value" />
+                    [value]="this.user.editPassword ?? ''"
+                    (input)="this.user.editPassword = $event.target.value" />
             </mat-form-field>
 
             <mat-checkbox
@@ -42,16 +49,17 @@
                 <mat-card-content>
                     @for (role of this.allRoles | async; track $index) {
                     <mat-checkbox
-                        [checked]="this.user.editRoles?.indexOf(role) !== -1"
+                        [checked]="this.user.editRoles != null && this.user.editRoles.indexOf(role) !== -1"
                         (change)="this.toggleRole(role)">
                         {{role}}
                     </mat-checkbox>
                     }
                 </mat-card-content>
+
             </mat-card>
 
             <button matButton="filled"
-            (click)="this.onApply()">Apply</button>
+                (click)="this.onApply()">Apply</button>
 
         </div>
 

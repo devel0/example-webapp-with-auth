@@ -1,4 +1,4 @@
-import { AuthApiService, EditUserRequestDto, GenericSort, SortModelItem, UserListItemResponseDto, UserPermission } from '../../../api';
+import { AuthApiService, EditUserRequestDto, EditUserResponseDto, GenericSort, SortModelItem, UserListItemResponseDto, UserPermission } from '../../../api';
 import { buildGenericDynFilter, ColumnFilterNfo } from '../../components/data-grid/utils/DataGridDynFilter';
 import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ComputeDynFilerNfo, DataGridColumn, NeedCountNfo, NeedLoadNfo } from '../../components/data-grid/types/data-grid-types';
@@ -6,7 +6,7 @@ import { DataGrid } from "../../components/data-grid/data-grid";
 import { FullHeightDiv } from "../../components/full-height-div/full-height-div";
 import { HttpErrorResponse } from '@angular/common/http';
 import { MainLayout } from "../../components/main-layout/main-layout";
-import { pathBuilder } from '../../utils/utils';
+import { emptyString, pathBuilder } from '../../utils/utils';
 import { from } from 'linq-to-typescript';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { MatIcon } from "@angular/material/icon";
@@ -52,7 +52,21 @@ export class UsersManager implements OnInit, AfterViewInit, OnDestroy {
   }
 
   addUser() {
+    const newUser: EditUserRequestDto = {            
+      editRoles: []
+    }    
 
+    const dialogRef = this.dialog.open(UserEditModal,
+      {        
+        data: {
+          user: newUser
+        }
+      })
+
+    this.dialogSub = dialogRef.afterClosed().subscribe(x => {
+      
+      this.dataGrid.reload()
+    })
   }
 
   onRowDoubleClicked(row: TDATA) {
