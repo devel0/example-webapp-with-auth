@@ -21,7 +21,7 @@
     - websocket alive check
     - authguard protected pages routes
     - login / logout ( TODO: reset lost password through email link )
-    - ( TODO: user manager )
+    - user manager
     - datagrid pagination with server side sort/filter
     - light/dark theme scss styles
     - snacks    
