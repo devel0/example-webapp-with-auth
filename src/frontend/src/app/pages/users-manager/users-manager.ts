@@ -13,6 +13,8 @@ import { MatIcon } from "@angular/material/icon";
 import { DataGridPager } from "../../components/data-grid/data-grid-pager/data-grid-pager";
 import { MatDialog } from '@angular/material/dialog';
 import { UserEditModal } from '../../components/user-edit-modal/user-edit-modal'
+import { ConfirmModal, ConfirmModalProps } from '../../components/confirm-modal/confirm-modal';
+import { SnackService } from '../../services/snack-service';
 
 type TDATA = UserListItemResponseDto
 const fnTDATA = pathBuilder<TDATA>()
@@ -31,10 +33,15 @@ export class UsersManager implements OnInit, AfterViewInit, OnDestroy {
 
   private dialogSub: Subscription | null = null
 
+  private selectedRowsCountSub!: Subscription
+  selectedRowsCount = 0
+
   constructor(
     public readonly dialog: MatDialog,
-    private readonly authApiService: AuthApiService
+    private readonly authApiService: AuthApiService,
+    private readonly snackService: SnackService
   ) {
+
   }
 
   ngOnInit() {
@@ -46,26 +53,75 @@ export class UsersManager implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.dialogSub != null) this.dialogSub.unsubscribe()
+    if (this.selectedRowsCountSub != null) this.selectedRowsCountSub.unsubscribe()
   }
 
   ngAfterViewInit() {
+    if (this.dgRef != null)
+      this.selectedRowsCountSub = this.dgRef.selectedRowIds$.subscribe(async x => {
+        this.selectedRowsCount = x.size
+      })
   }
 
   addUser() {
-    const newUser: EditUserRequestDto = {            
+    const newUser: EditUserRequestDto = {
       editRoles: []
-    }    
+    }
 
     const dialogRef = this.dialog.open(UserEditModal,
-      {        
+      {
         data: {
           user: newUser
         }
       })
 
     this.dialogSub = dialogRef.afterClosed().subscribe(x => {
-      
+
       this.dataGrid.reload()
+    })
+  }
+
+  async delUsers() {
+    const rowIdsToDel = await firstValueFrom(this.dgRef.selectedRowIds$)
+
+    const dlg = this.dialog.open<ConfirmModal, ConfirmModalProps>(ConfirmModal, {
+      data: {
+        title: 'User removal confirm dialog',
+        msg: `Confirm to remove ${rowIdsToDel.size} users ?`,
+        buttons: [
+          {
+            buttonLabel: 'yes',
+            onClickResult: true
+          },
+          {
+            buttonLabel: 'no',
+            onClickResult: false,
+            isDefault: true
+          }
+        ]
+      }
+    })
+
+    dlg.afterClosed().subscribe(async dlgRes => {
+      if (dlgRes) {
+        const usernames = [...(await firstValueFrom(this.dgRef.selectedRowIds$))]
+
+        for (let i = 0; i < usernames.length; ++i) {
+          const username = usernames[i]
+
+          try {
+            await firstValueFrom(this.authApiService.apiAuthDeleteUserPost({
+              usernameToDelete: username
+            }))
+          }
+          catch (error) {
+            this.snackService.showError(`removing user ${username}`, String(error))
+            break
+          }
+        }
+
+        this.dataGrid.reload()
+      }
     })
   }
 

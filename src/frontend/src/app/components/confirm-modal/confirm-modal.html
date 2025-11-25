@@ -1,0 +1,37 @@
+<div class="main-div">
+
+    <mat-card>
+
+        <mat-card-title>
+            {{this.modalProps.title}}
+        </mat-card-title>
+
+        <mat-card-content>
+            {{this.modalProps.msg}}
+        </mat-card-content>
+
+        <mat-card-actions>
+            @for (btn of this.modalProps.buttons; track $index) {
+
+            @if (btn.isDefault === true) {
+            <button
+                matButton="outlined"
+                cdkFocusInitial
+                type="submit"
+                (click)="this.closeDialog(btn.onClickResult)">
+                {{btn.buttonLabel}}
+            </button>
+            }
+            @else {
+            <button
+                matButton="outlined"
+                (click)="this.closeDialog(btn.onClickResult)">
+                {{btn.buttonLabel}}
+            </button>
+            }
+            }
+        </mat-card-actions>
+
+    </mat-card>
+
+</div>

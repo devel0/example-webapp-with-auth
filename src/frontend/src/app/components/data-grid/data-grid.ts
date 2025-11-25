@@ -7,7 +7,7 @@ import { from } from 'linq-to-typescript';
 import { SizeNfo, TrackResize } from "../../directives/track-resize";
 import { DataGridColumnHandle } from "./data-grid-column-handle/data-grid-column-handle";
 import { MatDialog } from '@angular/material/dialog';
-import { ColumnsChooser } from './columns-chooser/columns-chooser';
+import { ColumnChooserProps, ColumnsChooser } from './columns-chooser/columns-chooser';
 import { VisibleColumnsPipePipe } from "./visible-columns-pipe-pipe";
 import { SkipIfPipe } from "../utils/skip-if-pipe";
 import { emptyString } from '../../utils/utils';
@@ -222,7 +222,7 @@ export class DataGrid<T> implements OnInit, AfterViewInit, OnDestroy {
   }
 
   showColumnsChooser() {
-    this.dialog.open(ColumnsChooser, {
+    this.dialog.open<ColumnsChooser<T>, ColumnChooserProps<T>>(ColumnsChooser, {
       data: {
         dataGrid: this
       }

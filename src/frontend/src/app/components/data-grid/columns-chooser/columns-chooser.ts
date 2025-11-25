@@ -3,6 +3,10 @@ import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent } from '@angular/materi
 import { DataGrid } from '../data-grid';
 import { BasicModule } from '../../../modules/basic/basic-module';
 
+export interface ColumnChooserProps<T> {
+  dataGrid: DataGrid<T>
+}
+
 @Component({
   selector: 'app-columns-chooser',
   imports: [BasicModule, MatDialogContent],
@@ -16,12 +20,13 @@ export class ColumnsChooser<T> {
     public dialogRef: MatDialogRef<ColumnsChooser<T>>) {
   }
 
-  get dataGrid() : DataGrid<T> {
+  get dataGrid(): DataGrid<T> {
+    const data: ColumnChooserProps<T> = this.data
+    
     return this.data.dataGrid
   }
 
-  closeDialog()
-  {
+  closeDialog() {
     this.dialogRef.close()
   }
 

@@ -8,6 +8,12 @@
                 <mat-icon>add_circle_outline</mat-icon>
             </button>
 
+            <button toolbar-prefix
+                [disabled]="this.selectedRowsCount === 0"
+                (click)="this.delUsers()">
+                <mat-icon>delete_outline</mat-icon>
+            </button>
+
         </app-data-grid-pager>
     </div>   
 

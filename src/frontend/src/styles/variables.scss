@@ -1,6 +1,9 @@
 :root {
   &.theme-light {
+    --default-fg: black;
+    --default-fg-semi: #ffffff20;
     --default-bg: white;
+    --bg-header: #cdcdcd;
     --highlight-fg: purple;
     --highlight-bg: yellow;
     --highlight-bg-semi: #9cdbff80;
@@ -9,7 +12,10 @@
   }
 
   &.theme-dark {
+    --default-fg: white;
+    --default-fg-semi: #ffffff80;
     --default-bg: #121212;
+    --bg-header: #333333;
     --highlight-fg: yellow;
     --highlight-bg: #894e00;
     --highlight-bg-semi: #894e0080;
