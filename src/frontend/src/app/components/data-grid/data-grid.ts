@@ -57,6 +57,9 @@ export class DataGrid<T> implements OnInit, AfterViewInit, OnDestroy {
   private columnsState = new BehaviorSubject<DataGridColumnState[] | null>(null)
   columnsState$ = this.columnsState.asObservable()
 
+  private singleClickTimeoutMs = 250
+  private singleClickTimeoutRefs: number[] = []
+
   get currentColumnState() { return this.columnsState.value }
 
   tableSize: SizeNfo | null = null
@@ -112,6 +115,118 @@ export class DataGrid<T> implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.columnsState.next(newColumnsState)
+  }
+
+  isRowSelected(row: T) {
+    if (this.getRowId != null) {
+      return this.selectedRowIds.value.has(this.getRowId(row))
+    }
+    return false
+  }
+
+  async OnRowClicked(row: T) {
+    this.singleClickTimeoutRefs.push(setTimeout(() => {
+      this.toggleRowSelect(row)
+      this.rowClicked.emit(row)
+    }, this.singleClickTimeoutMs))
+  }
+
+  async OnRowDoubleClicked(row: T) {
+    this.singleClickTimeoutRefs.forEach(w => clearTimeout(w))
+    this.singleClickTimeoutRefs = []
+    this.rowDoubleClicked.emit(row)
+  }
+
+  async onFilterChanged(colIdx: number, filterNfo: FilterNfo | null) {
+    if (this.columnsState.value == null) return
+
+    const newColumnsState = [...this.columnsState.value]
+    newColumnsState[colIdx] = { ...this.columnsState.value[colIdx] }
+
+    const colState = newColumnsState[colIdx]
+    const col = this.columns[colIdx]
+    let filterChangedFromPrevious =
+      (colState.filter == null && !emptyString(filterNfo?.filter))
+      ||
+      (colState.filter != null && colState.filter.filter !== (filterNfo?.filter ?? ''))
+    colState.filter = filterNfo
+
+    this.columnsState.next(newColumnsState)
+
+    if (filterChangedFromPrevious) {
+      await this.execCountAndLoad()
+    }
+  }
+
+  setColumnVisibility(colIdx: number, collapsed: boolean) {
+    if (this.columnsState.value == null) return
+    const newColumnsState = [...this.columnsState.value]
+    newColumnsState[colIdx] = { ...this.columnsState.value[colIdx] }
+    const colState = newColumnsState[colIdx]
+    colState.collapsed = collapsed
+    this.columnsState.next(newColumnsState)
+  }
+
+  async toggleColumnSort(colIdx: number, additive: boolean) {
+    if (this.columnsState.value == null) return
+    const newColumnsState = [...this.columnsState.value]
+    newColumnsState[colIdx] = { ...this.columnsState.value[colIdx] }
+
+    if (!additive) this.columnsState.value.forEach((w, wIdx) => {
+      if (wIdx === colIdx) return
+      w.sortDirection = null
+      w.sortTimestamp = null
+    })
+    const colState = newColumnsState[colIdx]
+
+    if (colState.sortDirection == null)
+      colState.sortDirection = 'Ascending'
+    else if (colState.sortDirection == 'Ascending')
+      colState.sortDirection = 'Descending'
+    else
+      colState.sortDirection = null
+
+    colState.sortTimestamp = new Date().valueOf()
+
+    this.columnsState.next(newColumnsState)
+
+    this.execLoad()
+  }
+
+  async firstPage() {
+    if (this.page.value !== 0) {
+      this.page.next(0)
+      this.execLoad()
+    }
+  }
+
+  async prevPage() {
+    if (this.page.value > 0) {
+      this.page.next(this.page.value - 1)
+      this.execLoad()
+    }
+  }
+
+  async nextPage() {
+    if (this.page.value < this.totalPages.value - 1) {
+      this.page.next(this.page.value + 1)
+      this.execLoad()
+    }
+  }
+
+  async lastPage() {
+    if (this.page.value !== this.totalPages.value - 1) {
+      this.page.next(this.totalPages.value - 1)
+      this.execLoad()
+    }
+  }
+
+  showColumnsChooser() {
+    this.dialog.open(ColumnsChooser, {
+      data: {
+        dataGrid: this
+      }
+    })
   }
 
   private async onTableResize() {
@@ -223,121 +338,6 @@ export class DataGrid<T> implements OnInit, AfterViewInit, OnDestroy {
     else
       newSelectedRows.add(rowId)
     this.selectedRowIds.next(newSelectedRows)
-  }
-
-  isRowSelected(row: T) {
-    if (this.getRowId != null) {
-      return this.selectedRowIds.value.has(this.getRowId(row))
-    }
-    return false
-  }
-
-  private singleClickTimeoutMs = 250
-  private singleClickTimeoutRefs: number[] = []
-
-  async OnRowClicked(row: T) {
-    this.singleClickTimeoutRefs.push(setTimeout(() => {
-      this.toggleRowSelect(row)
-      this.rowClicked.emit(row)
-    }, this.singleClickTimeoutMs))
-  }
-
-  async OnRowDoubleClicked(row: T) {
-    this.singleClickTimeoutRefs.forEach(w => clearTimeout(w))
-    this.singleClickTimeoutRefs = []
-    this.rowDoubleClicked.emit(row)
-  }
-
-  async onFilterChanged(colIdx: number, filterNfo: FilterNfo | null) {
-    if (this.columnsState.value == null) return
-
-    const newColumnsState = [...this.columnsState.value]
-    newColumnsState[colIdx] = { ...this.columnsState.value[colIdx] }
-
-    const colState = newColumnsState[colIdx]
-    const col = this.columns[colIdx]
-    let filterChangedFromPrevious =
-      (colState.filter == null && !emptyString(filterNfo?.filter))
-      ||
-      (colState.filter != null && colState.filter.filter !== (filterNfo?.filter ?? ''))
-    colState.filter = filterNfo
-
-    this.columnsState.next(newColumnsState)
-
-    if (filterChangedFromPrevious) {
-      await this.execCountAndLoad()
-    }
-  }
-
-  setColumnVisibility(colIdx: number, collapsed: boolean) {
-    if (this.columnsState.value == null) return
-    const newColumnsState = [...this.columnsState.value]
-    newColumnsState[colIdx] = { ...this.columnsState.value[colIdx] }
-    const colState = newColumnsState[colIdx]
-    colState.collapsed = collapsed
-    this.columnsState.next(newColumnsState)
-  }
-
-  async toggleColumnSort(colIdx: number, additive: boolean) {
-    if (this.columnsState.value == null) return
-    const newColumnsState = [...this.columnsState.value]
-    newColumnsState[colIdx] = { ...this.columnsState.value[colIdx] }
-
-    if (!additive) this.columnsState.value.forEach((w, wIdx) => {
-      if (wIdx === colIdx) return
-      w.sortDirection = null
-      w.sortTimestamp = null
-    })
-    const colState = newColumnsState[colIdx]
-
-    if (colState.sortDirection == null)
-      colState.sortDirection = 'Ascending'
-    else if (colState.sortDirection == 'Ascending')
-      colState.sortDirection = 'Descending'
-    else
-      colState.sortDirection = null
-
-    colState.sortTimestamp = new Date().valueOf()
-
-    this.columnsState.next(newColumnsState)
-
-    this.execLoad()
-  }
-
-  async firstPage() {
-    if (this.page.value !== 0) {
-      this.page.next(0)
-      this.execLoad()
-    }
-  }
-
-  async prevPage() {
-    if (this.page.value > 0) {
-      this.page.next(this.page.value - 1)
-      this.execLoad()
-    }
-  }
-
-  async nextPage() {
-    if (this.page.value < this.totalPages.value - 1) {
-      this.page.next(this.page.value + 1)
-      this.execLoad()
-    }
-  }
-
-  async lastPage() {
-    if (this.page.value !== this.totalPages.value - 1) {
-      this.page.next(this.totalPages.value - 1)
-      this.execLoad()
-    }
-  }
-
-  showColumnsChooser() {
-    this.dialog.open(ColumnsChooser, {
-      data: {
-        dataGrid: this
-      }
-    })
   }
 
 }
