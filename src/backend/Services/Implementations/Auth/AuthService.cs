@@ -347,6 +347,33 @@ public class AuthService : IAuthService
         return [.. res];
     }
 
+    public async Task<int> CountAsync(string? dynFilter, CancellationToken cancellationToken)
+    {
+        var users = await ListUsersAsync(cancellationToken);
+
+        var q = users.AsQueryable();
+
+        q = q.ApplySortAndFilter(sort: null, dynFilter);
+
+        return q.Count();
+    }
+
+    public async Task<List<UserListItemResponseDto>> GetViewAsync(
+        int off, int cnt, string? dynFilter, GenericSort? sort, CancellationToken cancellationToken)
+    {
+        var users = await ListUsersAsync(cancellationToken);
+
+        var q = users.AsQueryable();
+
+        q = q.ApplySortAndFilter(sort, dynFilter);
+
+        var q2 = q.Skip(off);
+        if (cnt >= 0) q2 = q2.Take(cnt);
+        var tmp = q2.ToList();
+
+        return tmp;
+    }
+
     async Task<List<string>> AllRolesAsync()
     {
         return (await roleManager.Roles.ToListAsync())
@@ -865,7 +892,7 @@ public class AuthService : IAuthService
     }
 
     public async Task<ResetLostPasswordResponseDto> ResetLostPasswordRequestAsync(
-        string email, string? token, string? resetPassword, CancellationToken cancellationToken)
+        string email, string? token, string? resetPassword, int? version, CancellationToken cancellationToken)
     {
         var user = await userManager.FindByEmailAsync(email);
         if (user is null)
@@ -909,7 +936,14 @@ public class AuthService : IAuthService
 
         var pwToken = await userManager.GeneratePasswordResetTokenAsync(user);
 
-        var resetUrl = $"https://{appServerName}/app/Login/:from/{HttpUtility.UrlEncode(pwToken)}";
+        string resetUrl;
+
+        if (version is null || version.Value != 2)
+            // react version
+            resetUrl = $"https://{appServerName}/app/Login/:from/{HttpUtility.UrlEncode(pwToken)}";
+        else
+            // angular version
+            resetUrl = $"https://{appServerName}/app/login?token={HttpUtility.UrlEncode(pwToken)}";
 
         var msg = new MimeMessage();
         msg.From.Add(new MailboxAddress(emailServerFromDisplayName, emailServerUsername));
