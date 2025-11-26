@@ -20,7 +20,7 @@
     - layout with responsive menu
     - websocket alive check
     - authguard protected pages routes
-    - login / logout ( TODO: reset lost password through email link )
+    - login / logout ( reset lost password through email link )
     - user manager
     - datagrid pagination with server side sort/filter
     - light/dark theme scss styles
