@@ -256,7 +256,7 @@ public class AuthController : ControllerBase
     /// </summary>    
     [HttpGet]
     [AllowAnonymous]
-    public async Task<ActionResult> ResetLostPassword(string? email, string? token, string? resetPassword)
+    public async Task<ActionResult> ResetLostPassword(string? email, string? token, string? resetPassword, int? version)
     {
         if (email is null)
             throw new BadHttpRequestException("Email address required.");
@@ -265,6 +265,7 @@ public class AuthController : ControllerBase
             email,
             token,
             resetPassword,
+            version,
             cancellationToken);
 
         switch (res.Status)
