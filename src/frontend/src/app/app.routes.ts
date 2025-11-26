@@ -12,6 +12,6 @@ export const routes: Routes = [
     { path: 'home', component: Home, canActivate: [AuthGuard] },
     { path: 'fake-data', component: FakeData, canActivate: [AuthGuard] },
     { path: 'users-manager', component: UsersManager, canActivate: [AuthGuard] },
-    { path: ROUTEPATH_LOGIN, component: Login },
+    { path: ROUTEPATH_LOGIN, component: Login },    
     { path: '**', redirectTo: '/home' }
 ];

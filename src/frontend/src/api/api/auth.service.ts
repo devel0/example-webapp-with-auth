@@ -755,13 +755,14 @@ export class AuthApiService extends BaseService {
      * @param email 
      * @param token 
      * @param resetPassword 
+     * @param version 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public apiAuthResetLostPasswordGet(email?: string, token?: string, resetPassword?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
-    public apiAuthResetLostPasswordGet(email?: string, token?: string, resetPassword?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
-    public apiAuthResetLostPasswordGet(email?: string, token?: string, resetPassword?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
-    public apiAuthResetLostPasswordGet(email?: string, token?: string, resetPassword?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public apiAuthResetLostPasswordGet(email?: string, token?: string, resetPassword?: string, version?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public apiAuthResetLostPasswordGet(email?: string, token?: string, resetPassword?: string, version?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public apiAuthResetLostPasswordGet(email?: string, token?: string, resetPassword?: string, version?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public apiAuthResetLostPasswordGet(email?: string, token?: string, resetPassword?: string, version?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
@@ -770,6 +771,8 @@ export class AuthApiService extends BaseService {
           <any>token, 'token');
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
           <any>resetPassword, 'resetPassword');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>version, 'version');
 
         let localVarHeaders = this.defaultHeaders;
 

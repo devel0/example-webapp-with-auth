@@ -11,6 +11,8 @@ export class ConstantsService {
   /** key for local storage of current user nfo */
   readonly LOCAL_STORAGE_KEY_DATA = "data"
 
+  readonly RESET_LOST_PASS_VERSION = 2
+
   /** invoke RenewRefreshToken api before expiration */
   readonly RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC = isDevMode() ? 10 : 30;  
 

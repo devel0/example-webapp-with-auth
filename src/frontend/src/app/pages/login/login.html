@@ -17,10 +17,10 @@
             </mat-form-field>
 
             <mat-form-field>
-                <mat-label>Password</mat-label>
+                <mat-label>{{this.token != null ? 'New Password' : 'Password'}}</mat-label>
                 <input
                     matInput #password
-                    (keydown.enter)="doLogin(username.value, password.value)"
+                    (keydown.enter)="doLoginOrReset(username.value, password.value)"
                     type="password">
             </mat-form-field>
 
@@ -28,8 +28,14 @@
 
         <mat-card-actions class="actions">
 
-            <button matButton (click)="doLogin(username.value, password.value)">
-                Login
+            @if (this.token == null) {
+            <button matButton (click)="doLostPassword(username.value)">
+                Lost password?
+            </button>
+            }
+
+            <button matButton (click)="doLoginOrReset(username.value, password.value)">
+                {{this.token == null ? 'Login' :'Reset password'}}
             </button>
 
         </mat-card-actions>

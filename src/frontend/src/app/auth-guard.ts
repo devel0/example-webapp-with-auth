@@ -21,7 +21,10 @@ export class AuthGuard implements CanActivate {
     const authValid = await this.authService.isAuth()
 
     if (!authValid) {
-      this.router.navigate(['login'], { queryParams: { returnUrl: state.url } })
+      const token: string | undefined = (route.queryParams as any).token
+
+      if (token == null)
+        this.router.navigate(['login'], { queryParams: { returnUrl: state.url } })
     }
 
     return authValid
