@@ -892,7 +892,7 @@ public class AuthService : IAuthService
     }
 
     public async Task<ResetLostPasswordResponseDto> ResetLostPasswordRequestAsync(
-        string email, string? token, string? resetPassword, CancellationToken cancellationToken)
+        string email, string? token, string? resetPassword, int? version, CancellationToken cancellationToken)
     {
         var user = await userManager.FindByEmailAsync(email);
         if (user is null)
@@ -936,7 +936,14 @@ public class AuthService : IAuthService
 
         var pwToken = await userManager.GeneratePasswordResetTokenAsync(user);
 
-        var resetUrl = $"https://{appServerName}/app/Login/:from/{HttpUtility.UrlEncode(pwToken)}";
+        string resetUrl;
+
+        if (version is null || version.Value != 2)
+            // react version
+            resetUrl = $"https://{appServerName}/app/Login/:from/{HttpUtility.UrlEncode(pwToken)}";
+        else
+            // angular version
+            resetUrl = $"https://{appServerName}/app/login?token={HttpUtility.UrlEncode(pwToken)}";
 
         var msg = new MimeMessage();
         msg.From.Add(new MailboxAddress(emailServerFromDisplayName, emailServerUsername));
