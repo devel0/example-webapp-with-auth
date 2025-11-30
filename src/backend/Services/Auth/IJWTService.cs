@@ -1,4 +1,4 @@
-namespace ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth;
+namespace ExampleWebApp.Backend.WebApi.Services.Auth;
 
 public record AccessTokenNfo(string AccessToken, DateTimeOffset Expiration);
 

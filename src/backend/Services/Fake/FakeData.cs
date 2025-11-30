@@ -1,6 +1,4 @@
-using NpgsqlTypes;
-
-namespace ExampleWebApp.Backend.WebApi.Services.Abstractions.Fake;
+namespace ExampleWebApp.Backend.WebApi.Services.Fake;
 
 [@Index(nameof(FirstName))]
 [@Index(nameof(LastName))]

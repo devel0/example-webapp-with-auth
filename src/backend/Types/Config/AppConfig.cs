@@ -1,4 +1,10 @@
-namespace ExampleWebApp.Backend.WebApi.Services.Abstractions;
+namespace ExampleWebApp.Backend.WebApi.Types;
+
+public enum DbProviderConfig
+{
+    Postgres,
+    Mysql
+};
 
 /// <summary>
 /// appsettings.json "AppConfig" object
@@ -99,13 +105,7 @@ public class AppConfig
 
             public string Name { get; set; } = "";
             public DbProviderConfig Provider { get; set; }
-            public string ConnectionString { get; set; } = "";
-
-            public enum DbProviderConfig
-            {
-                Postgres,
-                Mysql
-            };
+            public string ConnectionString { get; set; } = "";            
 
         }
 

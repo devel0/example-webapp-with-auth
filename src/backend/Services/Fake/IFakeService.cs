@@ -1,4 +1,4 @@
-namespace ExampleWebApp.Backend.WebApi.Services.Abstractions.Fake;
+namespace ExampleWebApp.Backend.WebApi.Services.Fake;
 
 public interface IFakeService
 {

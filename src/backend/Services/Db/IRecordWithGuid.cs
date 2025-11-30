@@ -1,4 +1,4 @@
-namespace ExampleWebApp.Backend.WebApi.Services.Abstractions.Data;
+namespace ExampleWebApp.Backend.WebApi.Services.Data;
 
 public interface IRecordWithGuid
 {

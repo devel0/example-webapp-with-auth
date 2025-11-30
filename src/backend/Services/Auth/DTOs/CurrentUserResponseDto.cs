@@ -1,4 +1,4 @@
-namespace ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs;
+namespace ExampleWebApp.Backend.WebApi.Services.Auth.DTOs;
 
 /// <summary>
 /// <see cref="AuthController.CurrentUser"/> response api specific status.

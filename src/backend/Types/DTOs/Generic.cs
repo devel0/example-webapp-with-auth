@@ -1,4 +1,4 @@
-namespace ExampleWebApp.Backend.WebApi.Services.Abstractions.DTOs;
+namespace ExampleWebApp.Backend.WebApi.Types;
 
 public class ColumnFilter
 {

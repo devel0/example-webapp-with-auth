@@ -1,4 +1,4 @@
-﻿namespace ExampleWebApp.Backend.WebApi.Data;
+﻿namespace ExampleWebApp.Backend.WebApi.Services.Data;
 
 public partial class AppDbContext : IdentityDbContext<ApplicationUser>
 {

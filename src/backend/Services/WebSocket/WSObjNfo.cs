@@ -1,4 +1,4 @@
-namespace ExampleWebApp.Backend.WebApi.Services.Abstractions;
+namespace ExampleWebApp.Backend.WebApi.Services;
 
 public class WSObjNfo<PROTO>    
 {

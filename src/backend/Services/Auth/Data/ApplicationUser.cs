@@ -1,4 +1,4 @@
-namespace ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.Data;
+namespace ExampleWebApp.Backend.WebApi.Services.Auth.Data;
 
 public class ApplicationUser : IdentityUser
 {

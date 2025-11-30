@@ -1,4 +1,4 @@
-namespace ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs;
+namespace ExampleWebApp.Backend.WebApi.Services.Auth.DTOs;
 
 public enum DeleteUserStatus
 {
