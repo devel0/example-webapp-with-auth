@@ -226,4 +226,4 @@ use provided script [gen-api.sh][9] to generate frontend api from the backend sw
 [10]: https://github.com/devel0/example-webapp-with-auth/tree/frontend/angular/doc/frontend.md
 [11]: https://github.com/devel0/example-webapp-with-auth/tree/frontend/react/doc/frontend.md
 [12]: ./doc/backend.md
-[13]: https://github.com/devel0/example-webapp-with-auth/blob/883fb59a458dce1dd3c0607be5709437f406fb2b/src/backend/Services/Implementations/Fake/FakeService.cs#L37
+[13]: https://github.com/devel0/example-webapp-with-auth/blob/b4ba4c5556e4b3739525b33600b2d6721dad6ecb/src/backend/Services/Fake/FakeService.cs#L36-L37
