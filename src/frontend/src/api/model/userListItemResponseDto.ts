@@ -35,11 +35,11 @@ export interface UserListItemResponseDto {
      */
     emailConfirmed: boolean;
     /**
-     * Lockout end (UTC). ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.UserListItemResponseDto.LockoutEnabled.
+     * Lockout end (UTC). ExampleWebApp.Backend.WebApi.Services.Auth.DTOs.UserListItemResponseDto.LockoutEnabled.
      */
     lockoutEnd: string;
     /**
-     * If true the user is lockout until ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.UserListItemResponseDto.LockoutEnd.
+     * If true the user is lockout until ExampleWebApp.Backend.WebApi.Services.Auth.DTOs.UserListItemResponseDto.LockoutEnd.
      */
     lockoutEnabled: boolean;
     /**

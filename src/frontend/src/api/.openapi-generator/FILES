@@ -12,9 +12,9 @@ encoder.ts
 git_push.sh
 index.ts
 model/accessTokenNfo.ts
-model/aliveWSMessageType.ts
-model/aliveWSProtocol.ts
 model/authOptions.ts
+model/baseWSProtocol.ts
+model/baseWSProtocolType.ts
 model/countGenericRequest.ts
 model/currentUserResponseDto.ts
 model/currentUserStatus.ts
@@ -24,6 +24,11 @@ model/deleteUserStatus.ts
 model/editUserRequestDto.ts
 model/editUserResponseDto.ts
 model/editUserStatus.ts
+model/exampleWSProto1.ts
+model/exampleWSProto2.ts
+model/exampleWSProtoServerMem.ts
+model/exampleWSProtocol.ts
+model/exampleWSProtocolType.ts
 model/fakeData.ts
 model/fakeDataGenericItemWithOrig.ts
 model/genericSort.ts
@@ -43,8 +48,6 @@ model/sortModelItem.ts
 model/userListItemResponseDto.ts
 model/userPermission.ts
 model/usernameAuthOptions.ts
-model/wSPing.ts
-model/wSPong.ts
 param.ts
 provide-api.ts
 variables.ts

@@ -10,7 +10,7 @@
 
 
 /**
- * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.LoginRequestDto) response api specific status.  OK (Login vaild.)  UsernameOrEmailRequired (Missing username or email.)  InvalidAuthentication (Invalid authentication.)  InvalidHttpContext (Authentication http context.)
+ * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.Services.Auth.DTOs.LoginRequestDto) response api specific status.  OK (Login vaild.)  UsernameOrEmailRequired (Missing username or email.)  InvalidAuthentication (Invalid authentication.)  InvalidHttpContext (Authentication http context.)
  */
 export const LoginStatus = {
 

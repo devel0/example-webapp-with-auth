@@ -10,9 +10,14 @@
 
 
 /**
- *   Ping  Pong
+ *   Custom  Ping  Pong
  */
-export const AliveWSMessageType = {
+export const BaseWSProtocolType = {
+
+    /**
+     * 
+     */
+    Custom: 'Custom',
 
     /**
      * 
@@ -24,5 +29,5 @@ export const AliveWSMessageType = {
      */
     Pong: 'Pong'
 } as const;
-export type AliveWSMessageType = typeof AliveWSMessageType[keyof typeof AliveWSMessageType];
+export type BaseWSProtocolType = typeof BaseWSProtocolType[keyof typeof BaseWSProtocolType];
 

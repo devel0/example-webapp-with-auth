@@ -10,7 +10,7 @@
 
 
 /**
- * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.LoginRequestDto) api request data.
+ * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.Services.Auth.DTOs.LoginRequestDto) api request data.
  */
 export interface LoginRequestDto { 
     /**

@@ -12,7 +12,7 @@ import { UserPermission } from './userPermission';
 
 
 /**
- * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.LoginRequestDto) api response data.
+ * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.Services.Auth.DTOs.LoginRequestDto) api response data.
  */
 export interface LoginResponseDto { 
     status: LoginStatus;

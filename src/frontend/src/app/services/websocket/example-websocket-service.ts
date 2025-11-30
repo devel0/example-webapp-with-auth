@@ -1,17 +1,20 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ConstantsService } from '../constants-service';
-import { AliveWSProtocol, WSPing, WSPong } from '../../../api';
+import { BaseWSProtocol, ExampleWSProto1, ExampleWSProto2, ExampleWSProtocol, ExampleWSProtoServerMem } from '../../../api';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AliveWebsocketService {
+export class ExampleWebsocketService {
 
   private websocket!: WebSocket
 
   private connected = new BehaviorSubject<boolean>(false)
   connected$ = this.connected.asObservable()
+
+  private srvMemUsed = new BehaviorSubject<number | null>(null)
+  srvMemUsed$ = this.srvMemUsed.asObservable()
 
   private pingMsg: string = 'ping'
   private pongMsg: string = 'pong'
@@ -24,6 +27,20 @@ export class AliveWebsocketService {
     setInterval(() => this.ping(), constantsService.WEBSOCKET_PING_MS)
   }
 
+  sendMyProto1(msg: string) {
+    this.sendMessage({
+      protocolType: 'MyProto1',
+      someMsg: msg
+    } as ExampleWSProto1)
+  }
+
+  sendMyProto2(value: number) {
+    this.sendMessage({
+      protocolType: 'MyProto2',
+      someLongValue: value
+    } as ExampleWSProto2)
+  }
+
   private connect() {
     this.websocket = new WebSocket(this.constantsService.ALIVE_WEBSOCKET_URL)
 
@@ -32,12 +49,22 @@ export class AliveWebsocketService {
     }
 
     this.websocket.onmessage = (event) => {
-      const proto: AliveWSProtocol = JSON.parse(event.data)
-      if (proto.messageType === 'Pong') {
-        const pong: WSPong = JSON.parse(event.data)
-        this.pongMsg = pong.msg ?? ''
+      const proto: ExampleWSProtocol = JSON.parse(event.data)
+
+      if (proto.baseProtocolType === 'Pong') {
+        const pong: BaseWSProtocol = JSON.parse(event.data)
+        this.pongMsg = pong.baseProtocolMsg ?? ''
         this.connected.next(this.pingMsg === this.pongMsg)
       }
+      else switch (proto.protocolType) {
+        case 'SrvMem':
+          {
+            const srvMem: ExampleWSProtoServerMem = JSON.parse(event.data)
+            this.srvMemUsed.next(srvMem.memoryUsed ?? null)
+          }
+          break;
+      }
+
     }
 
     this.websocket.onerror = (error) => {
@@ -50,7 +77,7 @@ export class AliveWebsocketService {
 
   }
 
-  sendMessage(msg: any) {
+  private sendMessage(msg: any) {
     if (this.websocket.readyState === WebSocket.OPEN) {
       this.websocket.send(JSON.stringify(msg))
     }
@@ -62,9 +89,9 @@ export class AliveWebsocketService {
     this.pingMsg = new Date().toISOString()
 
     this.sendMessage({
-      messageType: 'Ping',
-      msg: this.pingMsg
-    } as WSPing)
+      baseProtocolType: 'Ping',
+      baseProtocolMsg: this.pingMsg
+    } as ExampleWSProtocol)
 
     setTimeout(() => {
       this.connected.next(this.pingMsg === this.pongMsg)

@@ -7,6 +7,7 @@ import { MainLayout } from "../../components/main-layout/main-layout";
 import { SnackService } from '../../services/snack-service';
 import { AuthService } from '../../services/auth-service';
 import { BasicModule } from '../../modules/basic/basic-module';
+import { ExampleWebsocketService } from '../../services/websocket/example-websocket-service';
 
 @Component({
   selector: 'app-home',
@@ -17,14 +18,14 @@ import { BasicModule } from '../../modules/basic/basic-module';
   styleUrl: './home.scss',
 })
 export class Home {
-
   working: boolean = false
 
   constructor(
     private readonly mainApiService: MainApiService,
     private readonly snackService: SnackService,
     public readonly globalService: GlobalService,
-    public readonly authService: AuthService
+    public readonly authService: AuthService,
+    public readonly exampleWebSocketService: ExampleWebsocketService
   ) {
   }
 
@@ -56,6 +57,14 @@ export class Home {
       if (error instanceof HttpErrorResponse) {
       }
     }
+  }
+
+  async doSendWsExample1() {
+    this.exampleWebSocketService.sendMyProto1(`msg from client at ${new Date().toISOString()}`)
+  }
+
+  async doSendWsExample2() {
+    this.exampleWebSocketService.sendMyProto2(new Date().valueOf())
   }
 
 }
