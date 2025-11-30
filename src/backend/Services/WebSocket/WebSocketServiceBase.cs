@@ -1,56 +1,45 @@
 namespace ExampleWebApp.Backend.WebApi.Services;
 
-public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO>
+public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO> where PROTO : BaseWSProtocol
 {
-    readonly ILogger logger;
-    readonly IUtilService util;
-    readonly IAuthService auth;
+    protected readonly ILogger logger;
+    protected readonly IAuthService auth;
+    protected readonly IUtilService util;
+    protected readonly JsonTarget jsonTarget;
 
     public WebSocketServiceBase(
-      IUtilService util,
-      ILogger logger,
-      IAuthService auth
-  )
+        JsonTarget jsonTarget,
+        IUtilService util,
+        ILogger logger,
+        IAuthService auth
+    )
     {
+        this.jsonTarget = jsonTarget;
         this.util = util;
         this.logger = logger;
         this.auth = auth;
     }
 
-    static ConcurrentDictionary<WebSocketNfo, bool> connections = new ConcurrentDictionary<WebSocketNfo, bool>();
+    static ConcurrentDictionary<WebSocketClient, bool> connections =
+        new ConcurrentDictionary<WebSocketClient, bool>();
 
-    async Task Send(WebSocketNfo wsNfo, object obj, CancellationToken cancellationToken, bool skipDuplicates)
+    public async Task SendToAllClientsAsync(PROTO obj, bool skipDuplicates, CancellationToken cancellationToken)
     {
-        await wsNfo.SendSem.WaitAsync(cancellationToken);
-
-        try
-        {
-            var str = JsonSerializer.Serialize(obj, util.JavaSerializerSettings);
-
-            if (!skipDuplicates || str != wsNfo.SendTimestamp)
-            {
-                await util.SendMessageSerializedAsync(str, wsNfo.webSocket, cancellationToken);
-
-                wsNfo.SendTimestamp = str;
-            }
-        }
-        finally
-        {
-            wsNfo.SendSem.Release();
-        }
-    }
-
-    public async Task SendToAllClientsAsync(PROTO obj, CancellationToken cancellationToken, bool skipDuplicates)
-    {    
         var clients = connections.ToList().Select(w => w.Key).ToList();
 
         foreach (var client in clients)
         {
-            await Send(client, obj, cancellationToken, skipDuplicates);
+            if (obj is not null)
+                await client.SendAsync(obj, cancellationToken, skipDuplicates);
         }
     }
 
-    protected abstract Task OnMessageAsync(WebSocket webSocket, WSObjNfo<PROTO> mex, CancellationToken cancellationToken);
+    /// <summary>
+    /// switch on <paramref name="rxObj"/> message type to deserialize <paramref name="rxOrig"/> further
+    /// on specific expected object and handle
+    /// </summary>
+    protected abstract Task OnMessageAsync(
+        WebSocketClient wsClient, PROTO rxObj, string rxOrig, CancellationToken cancellationToken);
 
     public async Task HandleAsync(HttpContext httpContext, CancellationToken cancellationToken)
     {
@@ -70,9 +59,9 @@ public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO>
 
         var wsCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-        var wsNfo = new WebSocketNfo(webSocket);
+        var wsClient = new WebSocketClient(util, jsonTarget, webSocket);
 
-        connections.TryAdd(wsNfo, true);
+        connections.TryAdd(wsClient, true);
 
         logger.LogTrace($"Websocket connected");
 
@@ -80,10 +69,44 @@ public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO>
         {
             if (webSocket.State == WebSocketState.Open)
             {
-                var rxObjNfo = await util.ReceiveMessageAsync<PROTO>(webSocket, cancellationToken);
+                var rxOrig = await webSocket.ReceiveStringAsync(cancellationToken);
 
-                if (rxObjNfo.Obj is not null && rxObjNfo.Str is not null)
-                    await OnMessageAsync(webSocket, rxObjNfo, cancellationToken);
+                if (!string.IsNullOrWhiteSpace(rxOrig))
+                {
+                    var rxObj = JsonSerializer.Deserialize<BaseWSProtocol>(rxOrig, util.JavaSerializerSettings(wsClient.jsonTarget));
+
+                    if (rxObj is not null)
+                    {
+                        if (rxObj.BaseProtocolType == BaseWSProtocolType.Custom)
+                        {
+                            var specificObj = JsonSerializer.Deserialize<PROTO>(rxOrig, util.JavaSerializerSettings(wsClient.jsonTarget));
+
+                            if (specificObj is not null)
+                                await OnMessageAsync(wsClient, specificObj, rxOrig, cancellationToken);
+                        }
+
+                        else
+                        {
+                            // handle builtin base messages
+                            switch (rxObj.BaseProtocolType)
+                            {
+                                case BaseWSProtocolType.Ping:
+                                    {
+                                        var ping = wsClient.Deserialize<BaseWSProtocol>(rxOrig);
+                                        if (ping is not null)
+                                        {
+                                            await wsClient.SendAsync(new BaseWSProtocol
+                                            {
+                                                BaseProtocolType = BaseWSProtocolType.Pong,
+                                                BaseProtocolMsg = ping.BaseProtocolMsg
+                                            }, cancellationToken);
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                }
             }
             else break;
         }
@@ -102,7 +125,7 @@ public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO>
 
         logger.LogTrace($"Web socket closed");
 
-        connections.TryRemove(wsNfo, out var _);
+        connections.TryRemove(wsClient, out var _);
     }
 
 }

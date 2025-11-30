@@ -36,6 +36,8 @@ builder.Services.AddScoped<IJWTService, JWTService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUtilService, UtilService>();
 builder.Services.AddScoped<IFakeService, FakeService>();
+builder.Services.AddScoped<IWebSocketService<ExampleWSProtocol>, ExampleWebSocketService>();
+builder.Services.AddScoped<ServerMemoryService>();
 builder.Services.AddScoped<IWebSocketService<AliveWSProtocol>, AliveWebSocketService>();
 
 // setup default roles admin, user, advanced
