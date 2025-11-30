@@ -4,12 +4,12 @@ All URIs are relative to *http://localhost*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**apiMainAliveWebSocketGet**](#apimainalivewebsocketget) | **GET** /api/Main/AliveWebSocket | |
+|[**apiMainExampleWebSocketGet**](#apimainexamplewebsocketget) | **GET** /api/Main/ExampleWebSocket | |
 |[**apiMainLongRunningGet**](#apimainlongrunningget) | **GET** /api/Main/LongRunning | Long running api test. ( admin and users allowed )|
 |[**apiMainTestExceptionGet**](#apimaintestexceptionget) | **GET** /api/Main/TestException | Generate test exception. ( only admin )|
 
-# **apiMainAliveWebSocketGet**
-> apiMainAliveWebSocketGet()
+# **apiMainExampleWebSocketGet**
+> apiMainExampleWebSocketGet()
 
 
 ### Example
@@ -23,7 +23,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new MainApi(configuration);
 
-const { status, data } = await apiInstance.apiMainAliveWebSocketGet();
+const { status, data } = await apiInstance.apiMainExampleWebSocketGet();
 ```
 
 ### Parameters

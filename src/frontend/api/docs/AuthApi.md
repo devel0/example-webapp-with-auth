@@ -5,9 +5,11 @@ All URIs are relative to *http://localhost*
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
 |[**apiAuthAuthOptionsGet**](#apiauthauthoptionsget) | **GET** /api/Auth/AuthOptions | Retrieve auth options.|
+|[**apiAuthCountUsersPost**](#apiauthcountuserspost) | **POST** /api/Auth/CountUsers | count items with optional filtering|
 |[**apiAuthCurrentUserGet**](#apiauthcurrentuserget) | **GET** /api/Auth/CurrentUser | Retrieve current logged in user name, email, roles.|
 |[**apiAuthDeleteUserPost**](#apiauthdeleteuserpost) | **POST** /api/Auth/DeleteUser | Delete user.|
 |[**apiAuthEditUserPost**](#apiauthedituserpost) | **POST** /api/Auth/EditUser | Edit user data|
+|[**apiAuthGetUsersPost**](#apiauthgetuserspost) | **POST** /api/Auth/GetUsers | get items with optional filtering, sorting|
 |[**apiAuthListRolesGet**](#apiauthlistrolesget) | **GET** /api/Auth/ListRoles | List all roles.|
 |[**apiAuthListUsersGet**](#apiauthlistusersget) | **GET** /api/Auth/ListUsers | List all users or specific if param given.|
 |[**apiAuthLoginPost**](#apiauthloginpost) | **POST** /api/Auth/Login | Login user by given username or email and auth password.|
@@ -49,6 +51,57 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: Not defined
+ - **Accept**: text/plain, application/json, text/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **apiAuthCountUsersPost**
+> number apiAuthCountUsersPost()
+
+
+### Example
+
+```typescript
+import {
+    AuthApi,
+    Configuration,
+    CountGenericRequest
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AuthApi(configuration);
+
+let countGenericRequest: CountGenericRequest; // (optional)
+
+const { status, data } = await apiInstance.apiAuthCountUsersPost(
+    countGenericRequest
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **countGenericRequest** | **CountGenericRequest**|  | |
+
+
+### Return type
+
+**number**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json, text/json, application/*+json
  - **Accept**: text/plain, application/json, text/json
 
 
@@ -186,6 +239,57 @@ const { status, data } = await apiInstance.apiAuthEditUserPost(
 ### Return type
 
 **EditUserResponseDto**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json, text/json, application/*+json
+ - **Accept**: text/plain, application/json, text/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **apiAuthGetUsersPost**
+> Array<UserListItemResponseDto> apiAuthGetUsersPost()
+
+
+### Example
+
+```typescript
+import {
+    AuthApi,
+    Configuration,
+    GetGenericRequest
+} from './api';
+
+const configuration = new Configuration();
+const apiInstance = new AuthApi(configuration);
+
+let getGenericRequest: GetGenericRequest; // (optional)
+
+const { status, data } = await apiInstance.apiAuthGetUsersPost(
+    getGenericRequest
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **getGenericRequest** | **GetGenericRequest**|  | |
+
+
+### Return type
+
+**Array<UserListItemResponseDto>**
 
 ### Authorization
 
@@ -495,11 +599,13 @@ const apiInstance = new AuthApi(configuration);
 let email: string; // (optional) (default to undefined)
 let token: string; // (optional) (default to undefined)
 let resetPassword: string; // (optional) (default to undefined)
+let version: number; // (optional) (default to undefined)
 
 const { status, data } = await apiInstance.apiAuthResetLostPasswordGet(
     email,
     token,
-    resetPassword
+    resetPassword,
+    version
 );
 ```
 
@@ -510,6 +616,7 @@ const { status, data } = await apiInstance.apiAuthResetLostPasswordGet(
 | **email** | [**string**] |  | (optional) defaults to undefined|
 | **token** | [**string**] |  | (optional) defaults to undefined|
 | **resetPassword** | [**string**] |  | (optional) defaults to undefined|
+| **version** | [**number**] |  | (optional) defaults to undefined|
 
 
 ### Return type

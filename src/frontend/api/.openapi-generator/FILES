@@ -6,10 +6,10 @@ base.ts
 common.ts
 configuration.ts
 docs/AccessTokenNfo.md
-docs/AliveWSMessageType.md
-docs/AliveWSProtocol.md
 docs/AuthApi.md
 docs/AuthOptions.md
+docs/BaseWSProtocol.md
+docs/BaseWSProtocolType.md
 docs/CountGenericRequest.md
 docs/CurrentUserResponseDto.md
 docs/CurrentUserStatus.md
@@ -19,6 +19,11 @@ docs/DeleteUserStatus.md
 docs/EditUserRequestDto.md
 docs/EditUserResponseDto.md
 docs/EditUserStatus.md
+docs/ExampleWSProto1.md
+docs/ExampleWSProto2.md
+docs/ExampleWSProtoServerMem.md
+docs/ExampleWSProtocol.md
+docs/ExampleWSProtocolType.md
 docs/FakeData.md
 docs/FakeDataApi.md
 docs/FakeDataGenericItemWithOrig.md
@@ -39,7 +44,5 @@ docs/SortModelItem.md
 docs/UserListItemResponseDto.md
 docs/UserPermission.md
 docs/UsernameAuthOptions.md
-docs/WSPing.md
-docs/WSPong.md
 git_push.sh
 index.ts

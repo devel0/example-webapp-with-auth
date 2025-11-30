@@ -6,6 +6,7 @@ import { IGlobalData } from "./IData"
 export type IGlobalService = IGlobalData & IGlobalActions
 
 const InitialData: IGlobalData = {
+    wsConnected: false,
     generalNetwork: false,
     isMobile: computeIsMobile(),
     appBarHeight: null

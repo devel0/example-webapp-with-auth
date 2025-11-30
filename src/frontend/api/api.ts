@@ -27,11 +27,28 @@ export interface AccessTokenNfo {
     'accessToken'?: string | null;
     'expiration'?: string;
 }
+export interface AuthOptions {
+    'username': UsernameAuthOptions;
+    'password': PasswordAuthOptions;
+}
+export interface BaseWSProtocol {
+    'baseProtocolType'?: BaseWSProtocolType;
+    /**
+     * (don\'t care) : for internal protocol purpose
+     */
+    'baseProtocolMsg'?: string | null;
+}
+
+
 /**
- *   Ping  Pong
+ *   Custom  Ping  Pong
  */
 
-export const AliveWSMessageType = {
+export const BaseWSProtocolType = {
+    /**
+    * 
+    */
+    Custom: 'Custom',
     /**
     * 
     */
@@ -42,18 +59,9 @@ export const AliveWSMessageType = {
     Pong: 'Pong'
 } as const;
 
-export type AliveWSMessageType = typeof AliveWSMessageType[keyof typeof AliveWSMessageType];
+export type BaseWSProtocolType = typeof BaseWSProtocolType[keyof typeof BaseWSProtocolType];
 
 
-export interface AliveWSProtocol {
-    'messageType'?: AliveWSMessageType;
-}
-
-
-export interface AuthOptions {
-    'username': UsernameAuthOptions;
-    'password': PasswordAuthOptions;
-}
 /**
  * count request
  */
@@ -157,7 +165,7 @@ export type DeleteUserStatus = typeof DeleteUserStatus[keyof typeof DeleteUserSt
  */
 export interface EditUserRequestDto {
     /**
-     * Existing User name or null to create a new one using ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.EditUserRequestDto.EditUsername.
+     * Existing User name or null to create a new one using ExampleWebApp.Backend.WebApi.Services.Auth.DTOs.EditUserRequestDto.EditUsername.
      */
     'existingUsername'?: string | null;
     /**
@@ -181,7 +189,7 @@ export interface EditUserRequestDto {
      */
     'editDisabled'?: boolean | null;
     /**
-     * Set the end date of lockout. The user will be unable to login until ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.EditUserRequestDto.EditLockoutEnd. If ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.EditUserRequestDto.EditLockoutEnd is set in the past the user will be re-enabled immediately.
+     * Set the end date of lockout. The user will be unable to login until ExampleWebApp.Backend.WebApi.Services.Auth.DTOs.EditUserRequestDto.EditLockoutEnd. If ExampleWebApp.Backend.WebApi.Services.Auth.DTOs.EditUserRequestDto.EditLockoutEnd is set in the past the user will be re-enabled immediately.
      */
     'editLockoutEnd'?: string | null;
 }
@@ -232,6 +240,74 @@ export const EditUserStatus = {
 export type EditUserStatus = typeof EditUserStatus[keyof typeof EditUserStatus];
 
 
+export interface ExampleWSProto1 {
+    'baseProtocolType'?: BaseWSProtocolType;
+    /**
+     * (don\'t care) : for internal protocol purpose
+     */
+    'baseProtocolMsg'?: string | null;
+    'protocolType'?: ExampleWSProtocolType;
+    'someMsg'?: string | null;
+}
+
+
+export interface ExampleWSProto2 {
+    'baseProtocolType'?: BaseWSProtocolType;
+    /**
+     * (don\'t care) : for internal protocol purpose
+     */
+    'baseProtocolMsg'?: string | null;
+    'protocolType'?: ExampleWSProtocolType;
+    'someLongValue'?: number | null;
+}
+
+
+export interface ExampleWSProtoServerMem {
+    'baseProtocolType'?: BaseWSProtocolType;
+    /**
+     * (don\'t care) : for internal protocol purpose
+     */
+    'baseProtocolMsg'?: string | null;
+    'protocolType'?: ExampleWSProtocolType;
+    /**
+     * srv memory used in bytes
+     */
+    'memoryUsed'?: number | null;
+}
+
+
+export interface ExampleWSProtocol {
+    'baseProtocolType'?: BaseWSProtocolType;
+    /**
+     * (don\'t care) : for internal protocol purpose
+     */
+    'baseProtocolMsg'?: string | null;
+    'protocolType'?: ExampleWSProtocolType;
+}
+
+
+/**
+ *   MyProto1  MyProto2  SrvMem
+ */
+
+export const ExampleWSProtocolType = {
+    /**
+    * 
+    */
+    MyProto1: 'MyProto1',
+    /**
+    * 
+    */
+    MyProto2: 'MyProto2',
+    /**
+    * 
+    */
+    SrvMem: 'SrvMem'
+} as const;
+
+export type ExampleWSProtocolType = typeof ExampleWSProtocolType[keyof typeof ExampleWSProtocolType];
+
+
 export interface FakeData {
     'id'?: string;
     'firstName'?: string | null;
@@ -267,7 +343,7 @@ export interface GetGenericRequest {
     'sort'?: GenericSort;
 }
 /**
- * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.LoginRequestDto) api request data.
+ * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.Services.Auth.DTOs.LoginRequestDto) api request data.
  */
 export interface LoginRequestDto {
     /**
@@ -281,7 +357,7 @@ export interface LoginRequestDto {
     'passwordResetToken'?: string | null;
 }
 /**
- * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.LoginRequestDto) api response data.
+ * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.Services.Auth.DTOs.LoginRequestDto) api response data.
  */
 export interface LoginResponseDto {
     'status': LoginStatus;
@@ -310,7 +386,7 @@ export interface LoginResponseDto {
 
 
 /**
- * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.LoginRequestDto) response api specific status.  OK (Login vaild.)  UsernameOrEmailRequired (Missing username or email.)  InvalidAuthentication (Invalid authentication.)  InvalidHttpContext (Authentication http context.)
+ * M:ExampleWebApp.Backend.WebApi.AuthController.Login(ExampleWebApp.Backend.WebApi.Services.Auth.DTOs.LoginRequestDto) response api specific status.  OK (Login vaild.)  UsernameOrEmailRequired (Missing username or email.)  InvalidAuthentication (Invalid authentication.)  InvalidHttpContext (Authentication http context.)
  */
 
 export const LoginStatus = {
@@ -475,11 +551,11 @@ export interface UserListItemResponseDto {
      */
     'emailConfirmed': boolean;
     /**
-     * Lockout end (UTC). ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.UserListItemResponseDto.LockoutEnabled.
+     * Lockout end (UTC). ExampleWebApp.Backend.WebApi.Services.Auth.DTOs.UserListItemResponseDto.LockoutEnabled.
      */
     'lockoutEnd': string;
     /**
-     * If true the user is lockout until ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth.DTOs.UserListItemResponseDto.LockoutEnd.
+     * If true the user is lockout until ExampleWebApp.Backend.WebApi.Services.Auth.DTOs.UserListItemResponseDto.LockoutEnd.
      */
     'lockoutEnabled': boolean;
     /**
@@ -596,18 +672,6 @@ export type UserPermission = typeof UserPermission[keyof typeof UserPermission];
 export interface UsernameAuthOptions {
     'allowedUserNameCharacters': string;
 }
-export interface WSPing {
-    'messageType'?: AliveWSMessageType;
-    'msg'?: string | null;
-}
-
-
-export interface WSPong {
-    'messageType'?: AliveWSMessageType;
-    'msg'?: string | null;
-}
-
-
 
 /**
  * AuthApi - axios parameter creator
@@ -638,6 +702,40 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary count items with optional filtering
+         * @param {CountGenericRequest} [countGenericRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthCountUsersPost: async (countGenericRequest?: CountGenericRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/Auth/CountUsers`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(countGenericRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -736,6 +834,40 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(editUserRequestDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary get items with optional filtering, sorting
+         * @param {GetGenericRequest} [getGenericRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthGetUsersPost: async (getGenericRequest?: GetGenericRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/Auth/GetUsers`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(getGenericRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -936,10 +1068,11 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
          * @param {string} [email] 
          * @param {string} [token] 
          * @param {string} [resetPassword] 
+         * @param {number} [version] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiAuthResetLostPasswordGet: async (email?: string, token?: string, resetPassword?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        apiAuthResetLostPasswordGet: async (email?: string, token?: string, resetPassword?: string, version?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/Auth/ResetLostPassword`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -962,6 +1095,10 @@ export const AuthApiAxiosParamCreator = function (configuration?: Configuration)
 
             if (resetPassword !== undefined) {
                 localVarQueryParameter['resetPassword'] = resetPassword;
+            }
+
+            if (version !== undefined) {
+                localVarQueryParameter['version'] = version;
             }
 
 
@@ -994,6 +1131,19 @@ export const AuthApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthAuthOptionsGet(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AuthApi.apiAuthAuthOptionsGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary count items with optional filtering
+         * @param {CountGenericRequest} [countGenericRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiAuthCountUsersPost(countGenericRequest?: CountGenericRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<number>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthCountUsersPost(countGenericRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthApi.apiAuthCountUsersPost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -1032,6 +1182,19 @@ export const AuthApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthEditUserPost(editUserRequestDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AuthApi.apiAuthEditUserPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary get items with optional filtering, sorting
+         * @param {GetGenericRequest} [getGenericRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiAuthGetUsersPost(getGenericRequest?: GetGenericRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UserListItemResponseDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthGetUsersPost(getGenericRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AuthApi.apiAuthGetUsersPost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -1113,11 +1276,12 @@ export const AuthApiFp = function(configuration?: Configuration) {
          * @param {string} [email] 
          * @param {string} [token] 
          * @param {string} [resetPassword] 
+         * @param {number} [version] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiAuthResetLostPasswordGet(email?: string, token?: string, resetPassword?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthResetLostPasswordGet(email, token, resetPassword, options);
+        async apiAuthResetLostPasswordGet(email?: string, token?: string, resetPassword?: string, version?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthResetLostPasswordGet(email, token, resetPassword, version, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['AuthApi.apiAuthResetLostPasswordGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -1139,6 +1303,16 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
          */
         apiAuthAuthOptionsGet(options?: RawAxiosRequestConfig): AxiosPromise<AuthOptions> {
             return localVarFp.apiAuthAuthOptionsGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary count items with optional filtering
+         * @param {CountGenericRequest} [countGenericRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthCountUsersPost(countGenericRequest?: CountGenericRequest, options?: RawAxiosRequestConfig): AxiosPromise<number> {
+            return localVarFp.apiAuthCountUsersPost(countGenericRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1168,6 +1342,16 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
          */
         apiAuthEditUserPost(editUserRequestDto?: EditUserRequestDto, options?: RawAxiosRequestConfig): AxiosPromise<EditUserResponseDto> {
             return localVarFp.apiAuthEditUserPost(editUserRequestDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary get items with optional filtering, sorting
+         * @param {GetGenericRequest} [getGenericRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthGetUsersPost(getGenericRequest?: GetGenericRequest, options?: RawAxiosRequestConfig): AxiosPromise<Array<UserListItemResponseDto>> {
+            return localVarFp.apiAuthGetUsersPost(getGenericRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1230,11 +1414,12 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
          * @param {string} [email] 
          * @param {string} [token] 
          * @param {string} [resetPassword] 
+         * @param {number} [version] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiAuthResetLostPasswordGet(email?: string, token?: string, resetPassword?: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.apiAuthResetLostPasswordGet(email, token, resetPassword, options).then((request) => request(axios, basePath));
+        apiAuthResetLostPasswordGet(email?: string, token?: string, resetPassword?: string, version?: number, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.apiAuthResetLostPasswordGet(email, token, resetPassword, version, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -1251,6 +1436,17 @@ export class AuthApi extends BaseAPI {
      */
     public apiAuthAuthOptionsGet(options?: RawAxiosRequestConfig) {
         return AuthApiFp(this.configuration).apiAuthAuthOptionsGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary count items with optional filtering
+     * @param {CountGenericRequest} [countGenericRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiAuthCountUsersPost(countGenericRequest?: CountGenericRequest, options?: RawAxiosRequestConfig) {
+        return AuthApiFp(this.configuration).apiAuthCountUsersPost(countGenericRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1283,6 +1479,17 @@ export class AuthApi extends BaseAPI {
      */
     public apiAuthEditUserPost(editUserRequestDto?: EditUserRequestDto, options?: RawAxiosRequestConfig) {
         return AuthApiFp(this.configuration).apiAuthEditUserPost(editUserRequestDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary get items with optional filtering, sorting
+     * @param {GetGenericRequest} [getGenericRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public apiAuthGetUsersPost(getGenericRequest?: GetGenericRequest, options?: RawAxiosRequestConfig) {
+        return AuthApiFp(this.configuration).apiAuthGetUsersPost(getGenericRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1352,11 +1559,12 @@ export class AuthApi extends BaseAPI {
      * @param {string} [email] 
      * @param {string} [token] 
      * @param {string} [resetPassword] 
+     * @param {number} [version] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiAuthResetLostPasswordGet(email?: string, token?: string, resetPassword?: string, options?: RawAxiosRequestConfig) {
-        return AuthApiFp(this.configuration).apiAuthResetLostPasswordGet(email, token, resetPassword, options).then((request) => request(this.axios, this.basePath));
+    public apiAuthResetLostPasswordGet(email?: string, token?: string, resetPassword?: string, version?: number, options?: RawAxiosRequestConfig) {
+        return AuthApiFp(this.configuration).apiAuthResetLostPasswordGet(email, token, resetPassword, version, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -1747,8 +1955,8 @@ export const MainApiAxiosParamCreator = function (configuration?: Configuration)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiMainAliveWebSocketGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/Main/AliveWebSocket`;
+        apiMainExampleWebSocketGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/Main/ExampleWebSocket`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1845,10 +2053,10 @@ export const MainApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async apiMainAliveWebSocketGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.apiMainAliveWebSocketGet(options);
+        async apiMainExampleWebSocketGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiMainExampleWebSocketGet(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['MainApi.apiMainAliveWebSocketGet']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['MainApi.apiMainExampleWebSocketGet']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -1889,8 +2097,8 @@ export const MainApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        apiMainAliveWebSocketGet(options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.apiMainAliveWebSocketGet(options).then((request) => request(axios, basePath));
+        apiMainExampleWebSocketGet(options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.apiMainExampleWebSocketGet(options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1922,8 +2130,8 @@ export class MainApi extends BaseAPI {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public apiMainAliveWebSocketGet(options?: RawAxiosRequestConfig) {
-        return MainApiFp(this.configuration).apiMainAliveWebSocketGet(options).then((request) => request(this.axios, this.basePath));
+    public apiMainExampleWebSocketGet(options?: RawAxiosRequestConfig) {
+        return MainApiFp(this.configuration).apiMainExampleWebSocketGet(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

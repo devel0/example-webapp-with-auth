@@ -1,8 +1,10 @@
-# AliveWSMessageType
+# BaseWSProtocolType
 
-  Ping  Pong
+  Custom  Ping  Pong
 
 ## Enum
+
+* `Custom` (value: `'Custom'`)
 
 * `Ping` (value: `'Ping'`)
 

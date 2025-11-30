@@ -2,8 +2,8 @@ import { useRef, useState } from "react"
 import { API_URL, WS_PING_MS, WS_PONG_EXPECTED_MS, WSS_URL } from "../constants/general"
 import useWebSocket from "react-use-websocket"
 import { useGlobalService } from "../services/global/Service"
-import { AliveWSProtocol, WSPing, WSPong } from "../../api"
 import { useInterval } from "usehooks-ts"
+import { BaseWSProtocol } from "../../api"
 
 export const useAlive = () => {
     const pingMsg = useRef('ping')
@@ -14,9 +14,9 @@ export const useAlive = () => {
         pingMsg.current = `${new Date().valueOf()}`
 
         ws.sendMessage(JSON.stringify({
-            messageType: 'Ping',
-            msg: pingMsg.current
-        } as WSPing))
+            baseProtocolType: 'Ping',
+            baseProtocolMsg: pingMsg.current
+        } as BaseWSProtocol))
 
         // console.log(`sent ping ${pingMsg.current}`)
 
@@ -41,11 +41,11 @@ export const useAlive = () => {
         onMessage: (e) => {
             // console.log(`ws mex ${e.data}`)
 
-            const proto: AliveWSProtocol = JSON.parse(e.data)
-            if (proto.messageType === 'Pong') {
-                const pong: WSPong = JSON.parse(e.data)
+            const proto: BaseWSProtocol = JSON.parse(e.data)
+            if (proto.baseProtocolType === 'Pong') {
+                const pong: BaseWSProtocol = JSON.parse(e.data)
 
-                pongMsg.current = pong.msg ?? ''
+                pongMsg.current = pong.baseProtocolMsg ?? ''
 
                 // console.log(`RX pong ${pongMsg.current}`)
 
