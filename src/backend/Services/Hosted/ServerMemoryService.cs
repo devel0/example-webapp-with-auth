@@ -18,7 +18,7 @@ public class ServerMemoryService : IWorkerBase
 
     public async Task ExecAsync(CancellationToken cancellationToken)
     {
-        logger.LogInformation("EXEC mem serv");
+        // logger.LogInformation("EXEC mem serv");
         await this.wsService.SendToAllClientsAsync(new ExampleWSProtoServerMem
         {
             MemoryUsed = GC.GetTotalMemory(forceFullCollection: false)
