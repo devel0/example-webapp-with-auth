@@ -33,7 +33,7 @@
 
 - extend [appsettings typed config][1]
 
-- [create][19] a websocket protocol ; [create][20] and [register][21] a websocket protocol service
+- [create][19] a websocket protocol ; [create][20] and [register][21] a websocket protocol service ; [send broadcast][22] to websocket clients
 
 - [create][17] and [register][18] a hosted worker
 
@@ -113,3 +113,4 @@ dotnet build
 
 [21]: https://github.com/devel0/example-webapp-with-auth/blob/9bd420d450235a7549bbb0296955f27062f8a6b6/src/backend/Program.cs#L39
 
+[22]: https://github.com/devel0/example-webapp-with-auth/blob/0612de9b076f996e66987b264edeb081a5d2dc2b/src/backend/Services/Hosted/ServerMemoryService.cs#L22
