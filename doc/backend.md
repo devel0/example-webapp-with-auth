@@ -69,25 +69,25 @@ dotnet sln add src/webapi src/test
 dotnet build
 ```
 
-[1]: https://github.com/devel0/example-webapp-with-auth/blob/e0dfec4e37e72d8e8dbc555efebd3f5d7057be24/src/backend/Services/Abstractions/Config/AppConfig.cs#L6
+[1]: https://github.com/devel0/example-webapp-with-auth/blob/b4ba4c5556e4b3739525b33600b2d6721dad6ecb/src/backend/Services/Config/AppConfig.cs#L5-L6
 
-[2]: https://github.com/devel0/example-webapp-with-auth/blob/e2c8c9045109d994604f569356250ce2d0c5f0c5/src/backend/Services/Abstractions/IUtilService.cs#L3
+[2]: https://github.com/devel0/example-webapp-with-auth/blob/b4ba4c5556e4b3739525b33600b2d6721dad6ecb/src/backend/Services/IUtilService.cs#L2-L3
 
-[3]: https://github.com/devel0/example-webapp-with-auth/blob/e0dfec4e37e72d8e8dbc555efebd3f5d7057be24/src/backend/Services/Implementations/UtilService.cs#L3
+[3]: https://github.com/devel0/example-webapp-with-auth/blob/b4ba4c5556e4b3739525b33600b2d6721dad6ecb/src/backend/Services/UtilService.cs#L2-L3
 
 [4]: https://github.com/devel0/example-webapp-with-auth/blob/e1166d8cdba625f46c8c234454c7294b0bf55b40/src/backend/Program.cs#L35
 
-[5]: https://github.com/devel0/example-webapp-with-auth/blob/e2c8c9045109d994604f569356250ce2d0c5f0c5/src/backend/Services/Implementations/Auth/AuthService.cs#L17
+[5]: https://github.com/devel0/example-webapp-with-auth/blob/b4ba4c5556e4b3739525b33600b2d6721dad6ecb/src/backend/Services/Auth/AuthService.cs#L16-L17
 
-[6]: https://github.com/devel0/example-webapp-with-auth/blob/e0dfec4e37e72d8e8dbc555efebd3f5d7057be24/src/backend/Services/Abstractions/Auth/Data/UserRefreshToken.cs#L5
+[6]: https://github.com/devel0/example-webapp-with-auth/blob/b4ba4c5556e4b3739525b33600b2d6721dad6ecb/src/backend/Services/Auth/Data/UserRefreshToken.cs#L4-L5
 
 [7]: https://github.com/devel0/example-webapp-with-auth/blob/e0dfec4e37e72d8e8dbc555efebd3f5d7057be24/src/backend/Db/AppDbContext.cs#L16
 
-[8]: https://github.com/devel0/example-webapp-with-auth/blob/3489ad0f978d257654d47feadeb0b203b6584aef/src/backend/Services/Implementations/Fake/FakeService.cs#L14
+[8]: https://github.com/devel0/example-webapp-with-auth/blob/b4ba4c5556e4b3739525b33600b2d6721dad6ecb/src/backend/Services/Fake/FakeService.cs#L14-L15
 
-[9]: https://github.com/devel0/example-webapp-with-auth/blob/3489ad0f978d257654d47feadeb0b203b6584aef/src/backend/Services/Implementations/Fake/FakeService.cs#L29
+[9]: https://github.com/devel0/example-webapp-with-auth/blob/b4ba4c5556e4b3739525b33600b2d6721dad6ecb/src/backend/Services/Fake/FakeService.cs#L34
 
-[10]: https://github.com/devel0/example-webapp-with-auth/blob/3489ad0f978d257654d47feadeb0b203b6584aef/src/backend/Controllers/FakeDataController.cs#L6
+[10]: https://github.com/devel0/example-webapp-with-auth/blob/e6c698a4f4b5636e5d925952047e57dc66bb3022/src/backend/Controllers/FakeDataController.cs#L5-L6
 
 [11]: https://github.com/devel0/example-webapp-with-auth/blob/3489ad0f978d257654d47feadeb0b203b6584aef/src/backend/Extensions/Utils.cs#L3-L12
 
