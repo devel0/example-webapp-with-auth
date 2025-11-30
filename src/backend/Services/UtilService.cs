@@ -21,9 +21,9 @@ public partial class UtilService :
 
     public AppConfig GetAppConfig() => configuration.GetAppConfig();
 
-    public JsonSerializerOptions ConfigureJsonSerializerOptions(JsonSerializerOptions options, JsonSerializerTarget target)
+    public JsonSerializerOptions ConfigureJsonSerializerOptions(JsonSerializerOptions options, JsonTarget target)
     {
-        if (target == JsonSerializerTarget.None) return options;
+        if (target == JsonTarget.None) return options;
 
         options.Converters.Add(new JsonStringEnumConverter());
 
@@ -57,7 +57,7 @@ public partial class UtilService :
         return options;
     }
 
-    public JsonSerializerOptions JavaSerializerSettings(JsonSerializerTarget target)
+    public JsonSerializerOptions JavaSerializerSettings(JsonTarget target)
     {
         var options = new JsonSerializerOptions();
 

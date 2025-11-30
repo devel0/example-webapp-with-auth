@@ -4,34 +4,29 @@ public partial class AliveWebSocketService : WebSocketServiceBase<AliveWSProtoco
 {
 
     readonly ILogger logger;
-    readonly IUtilService util;
     readonly IAuthService auth;
 
     public AliveWebSocketService(
         IUtilService util,
-        IWebSocketUtilService wsUtil,
         ILogger<AliveWebSocketService> logger,
         IAuthService auth
-    ) : base(JsonSerializerTarget.Basic, util, wsUtil, logger, auth)
+    ) : base(JsonTarget.Basic, util, logger, auth)
     {
-        this.util = util;
         this.logger = logger;
         this.auth = auth;
     }
 
     protected override async Task OnMessageAsync(
-        WebSocket webSocket, WSObjNfo<AliveWSProtocol> mex, CancellationToken cancellationToken)
+        WebSocketClient<AliveWSProtocol> wsClient, AliveWSProtocol rxObj, string rxOrig, CancellationToken cancellationToken)
     {
-        if (mex.Obj is null) return;
-
-        switch (mex.Obj.MessageType)
+        switch (rxObj.MessageType)
         {
             case AliveWSMessageType.Ping:
                 {
-                    var ping = JsonSerializer.Deserialize<WSPing>(mex.Str ?? "{}", util.JavaSerializerSettings(jsonTarget));
+                    var ping = wsClient.Deserialize<WSPing>(rxOrig);
                     if (ping is not null)
                     {
-                        await wsUtil.SendMessageAsync(new WSPong(ping.Msg), webSocket, jsonTarget, cancellationToken);
+                        await wsClient.SendAsync(new WSPong(ping.Msg), cancellationToken);
                     }
                 }
                 break;

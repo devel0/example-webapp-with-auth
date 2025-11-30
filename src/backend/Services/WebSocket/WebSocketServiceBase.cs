@@ -1,62 +1,45 @@
 namespace ExampleWebApp.Backend.WebApi.Services;
 
-public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO>
+public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO> where PROTO : class
 {
     protected readonly ILogger logger;
-    protected readonly IUtilService util;
     protected readonly IAuthService auth;
-    protected readonly IWebSocketUtilService wsUtil;
-    protected readonly JsonSerializerTarget jsonTarget;
+    protected readonly IUtilService util;
+    protected readonly JsonTarget jsonTarget;
 
     public WebSocketServiceBase(
-        JsonSerializerTarget jsonTarget,
+        JsonTarget jsonTarget,
         IUtilService util,
-        IWebSocketUtilService wsUtil,
         ILogger logger,
         IAuthService auth
     )
     {
         this.jsonTarget = jsonTarget;
         this.util = util;
-        this.wsUtil = wsUtil;
         this.logger = logger;
-        this.auth = auth;        
+        this.auth = auth;
     }
 
-    static ConcurrentDictionary<WebSocketNfo, bool> connections = new ConcurrentDictionary<WebSocketNfo, bool>();
+    static ConcurrentDictionary<WebSocketClient<PROTO>, bool> connections =
+        new ConcurrentDictionary<WebSocketClient<PROTO>, bool>();
 
-    async Task Send(WebSocketNfo wsNfo, object obj, CancellationToken cancellationToken, bool skipDuplicates)
-    {
-        await wsNfo.SendSem.WaitAsync(cancellationToken);
-
-        try
-        {
-            var str = JsonSerializer.Serialize(obj, util.JavaSerializerSettings(jsonTarget));
-
-            if (!skipDuplicates || str != wsNfo.SendTimestamp)
-            {
-                await wsUtil.SendMessageSerializedAsync(str, wsNfo.webSocket, cancellationToken);
-
-                wsNfo.SendTimestamp = str;
-            }
-        }
-        finally
-        {
-            wsNfo.SendSem.Release();
-        }
-    }
-
-    public async Task SendToAllClientsAsync(PROTO obj, CancellationToken cancellationToken, bool skipDuplicates)
+    public async Task SendToAllClientsAsync(PROTO obj, bool skipDuplicates, CancellationToken cancellationToken)
     {
         var clients = connections.ToList().Select(w => w.Key).ToList();
 
         foreach (var client in clients)
         {
-            await Send(client, obj, cancellationToken, skipDuplicates);
+            if (obj is not null)
+                await client.SendAsync(obj, cancellationToken, skipDuplicates);
         }
     }
 
-    protected abstract Task OnMessageAsync(WebSocket webSocket, WSObjNfo<PROTO> mex, CancellationToken cancellationToken);
+    /// <summary>
+    /// switch on <paramref name="rxObj"/> message type to deserialize <paramref name="rxOrig"/> further
+    /// on specific expected object and handle
+    /// </summary>
+    protected abstract Task OnMessageAsync(
+        WebSocketClient<PROTO> wsClient, PROTO rxObj, string rxOrig, CancellationToken cancellationToken);
 
     public async Task HandleAsync(HttpContext httpContext, CancellationToken cancellationToken)
     {
@@ -76,7 +59,7 @@ public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO>
 
         var wsCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-        var wsNfo = new WebSocketNfo(webSocket);
+        var wsNfo = new WebSocketClient<PROTO>(util, jsonTarget, webSocket);
 
         connections.TryAdd(wsNfo, true);
 
@@ -86,10 +69,15 @@ public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO>
         {
             if (webSocket.State == WebSocketState.Open)
             {
-                var rxObjNfo = await wsUtil.ReceiveMessageAsync<PROTO>(webSocket, jsonTarget, cancellationToken);
+                var str = await webSocket.ReceiveStringAsync(cancellationToken);
 
-                if (rxObjNfo.Obj is not null && rxObjNfo.Str is not null)
-                    await OnMessageAsync(webSocket, rxObjNfo, cancellationToken);
+                if (!string.IsNullOrWhiteSpace(str))
+                {
+                    var rxObj = JsonSerializer.Deserialize<PROTO>(str, util.JavaSerializerSettings(wsNfo.jsonTarget));
+
+                    if (rxObj is not null)
+                        await OnMessageAsync(wsNfo, rxObj, str, cancellationToken);
+                }
             }
             else break;
         }

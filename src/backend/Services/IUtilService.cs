@@ -1,6 +1,6 @@
 namespace ExampleWebApp.Backend.WebApi.Services;
 
-public enum JsonSerializerTarget
+public enum JsonTarget
 {
     /// <summary>
     /// no config applied
@@ -16,9 +16,9 @@ public enum JsonSerializerTarget
 public interface IUtilService
 {
 
-    JsonSerializerOptions ConfigureJsonSerializerOptions(JsonSerializerOptions options, JsonSerializerTarget target);
+    JsonSerializerOptions ConfigureJsonSerializerOptions(JsonSerializerOptions options, JsonTarget jsonTarget);
 
-    JsonSerializerOptions JavaSerializerSettings(JsonSerializerTarget target = JsonSerializerTarget.Basic);
+    JsonSerializerOptions JavaSerializerSettings(JsonTarget jsonTarget = JsonTarget.Basic);
 
     /// <summary>
     /// retrieve <see cref="AppConfig"/> object from configuration
