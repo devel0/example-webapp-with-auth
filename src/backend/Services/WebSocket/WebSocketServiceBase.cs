@@ -1,6 +1,6 @@
 namespace ExampleWebApp.Backend.WebApi.Services;
 
-public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO> where PROTO : class
+public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO> where PROTO : BaseWSProtocol
 {
     protected readonly ILogger logger;
     protected readonly IAuthService auth;
@@ -20,8 +20,8 @@ public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO> whe
         this.auth = auth;
     }
 
-    static ConcurrentDictionary<WebSocketClient<PROTO>, bool> connections =
-        new ConcurrentDictionary<WebSocketClient<PROTO>, bool>();
+    static ConcurrentDictionary<WebSocketClient, bool> connections =
+        new ConcurrentDictionary<WebSocketClient, bool>();
 
     public async Task SendToAllClientsAsync(PROTO obj, bool skipDuplicates, CancellationToken cancellationToken)
     {
@@ -39,7 +39,7 @@ public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO> whe
     /// on specific expected object and handle
     /// </summary>
     protected abstract Task OnMessageAsync(
-        WebSocketClient<PROTO> wsClient, PROTO rxObj, string rxOrig, CancellationToken cancellationToken);
+        WebSocketClient wsClient, PROTO rxObj, string rxOrig, CancellationToken cancellationToken);
 
     public async Task HandleAsync(HttpContext httpContext, CancellationToken cancellationToken)
     {
@@ -59,9 +59,9 @@ public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO> whe
 
         var wsCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-        var wsNfo = new WebSocketClient<PROTO>(util, jsonTarget, webSocket);
+        var wsClient = new WebSocketClient(util, jsonTarget, webSocket);
 
-        connections.TryAdd(wsNfo, true);
+        connections.TryAdd(wsClient, true);
 
         logger.LogTrace($"Websocket connected");
 
@@ -69,14 +69,34 @@ public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO> whe
         {
             if (webSocket.State == WebSocketState.Open)
             {
-                var str = await webSocket.ReceiveStringAsync(cancellationToken);
+                var rxOrig = await webSocket.ReceiveStringAsync(cancellationToken);
 
-                if (!string.IsNullOrWhiteSpace(str))
+                if (!string.IsNullOrWhiteSpace(rxOrig))
                 {
-                    var rxObj = JsonSerializer.Deserialize<PROTO>(str, util.JavaSerializerSettings(wsNfo.jsonTarget));
+                    var rxObj = JsonSerializer.Deserialize<PROTO>(rxOrig, util.JavaSerializerSettings(wsClient.jsonTarget));
 
                     if (rxObj is not null)
-                        await OnMessageAsync(wsNfo, rxObj, str, cancellationToken);
+                    {
+                        if (rxObj.BaseProtocolType == BaseWSProtocolType.Custom)
+                            await OnMessageAsync(wsClient, rxObj, rxOrig, cancellationToken);
+
+                        else
+                        {
+                            // handle builtin base messages
+                            switch (rxObj.BaseProtocolType)
+                            {
+                                case BaseWSProtocolType.Ping:
+                                    {
+                                        var ping = wsClient.Deserialize<WSPing>(rxOrig);
+                                        if (ping is not null)
+                                        {
+                                            await wsClient.SendAsync(new WSPong(ping.Msg), cancellationToken);
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                    }
                 }
             }
             else break;
@@ -96,7 +116,7 @@ public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO> whe
 
         logger.LogTrace($"Web socket closed");
 
-        connections.TryRemove(wsNfo, out var _);
+        connections.TryRemove(wsClient, out var _);
     }
 
 }

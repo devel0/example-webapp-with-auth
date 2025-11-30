@@ -1,6 +1,6 @@
 namespace ExampleWebApp.Backend.WebApi.Services;
 
-public class WebSocketClient<PROTO> where PROTO : class
+public class WebSocketClient
 {
     readonly IUtilService util;
 
@@ -40,7 +40,7 @@ public class WebSocketClient<PROTO> where PROTO : class
         }
     }
 
-    public SPECIFIC? Deserialize<SPECIFIC>(string originalSocketMessage) where SPECIFIC : PROTO
+    public SPECIFIC? Deserialize<SPECIFIC>(string originalSocketMessage) where SPECIFIC : BaseWSProtocol
     {
         var specific = JsonSerializer.Deserialize<SPECIFIC>(
             originalSocketMessage ?? "{}", util.JavaSerializerSettings(jsonTarget));

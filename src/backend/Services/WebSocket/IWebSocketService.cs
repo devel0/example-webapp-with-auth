@@ -3,7 +3,7 @@ namespace ExampleWebApp.Backend.WebApi.Services;
 /// <summary>
 /// Handle websocket connections
 /// </summary>
-public interface IWebSocketService<PROTO> where PROTO : class
+public interface IWebSocketService<PROTO> where PROTO : BaseWSProtocol
 {
 
     /// <summary>
