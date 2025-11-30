@@ -1,3 +1,4 @@
+namespace ExampleWebApp.Backend.WebApi.Types;
 
 [DynamicLinqType]
 public static class DbFun

@@ -60,7 +60,7 @@ public class MainController : ControllerBase
         {
             if (context.WebSockets.IsWebSocketRequest)
             {
-                var wsClientManager = context.RequestServices.GetRequiredService<IWebSocketService<AliveWSProtocol>>();
+                var wsClientManager = context.RequestServices.GetRequiredService<IWebSocketService<ExampleWSProtocol>>();
                 await wsClientManager.HandleAsync(context, cancellationToken);
 
                 return new EmptyResult();
