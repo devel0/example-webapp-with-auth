@@ -38,7 +38,9 @@ builder.Services.AddScoped<IUtilService, UtilService>();
 builder.Services.AddScoped<IFakeService, FakeService>();
 builder.Services.AddScoped<IWebSocketService<ExampleWSProtocol>, ExampleWebSocketService>();
 builder.Services.AddScoped<ServerMemoryService>();
-builder.Services.AddScoped<IWebSocketService<AliveWSProtocol>, AliveWebSocketService>();
+
+// Add hosted services.
+builder.Services.AddHostedService<WorkerMainService>();
 
 // setup default roles admin, user, advanced
 builder.Services.SetupRoles();
