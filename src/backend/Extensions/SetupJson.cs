@@ -13,7 +13,7 @@ public static partial class Extensions
 
             var util = sp.GetRequiredService<IUtilService>();
 
-            util.ConfigureJsonSerializerOptions(options.SerializerOptions);
+            util.ConfigureJsonSerializerOptions(options.SerializerOptions, JsonTarget.Basic);
         });
 
         services.Configure<JsonOptions>(options =>

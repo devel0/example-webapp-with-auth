@@ -31,7 +31,7 @@ public static partial class Extensions
             switch (provider)
             {
 
-                case AppConfig.DatabaseConfig.ConnectionItemConfig.DbProviderConfig.Postgres:
+                case DbProviderConfig.Postgres:
                     {
                         options.UseNpgsql(connString, options =>
                         {
@@ -42,7 +42,7 @@ public static partial class Extensions
                     }
                     break;
 
-                case AppConfig.DatabaseConfig.ConnectionItemConfig.DbProviderConfig.Mysql:
+                case DbProviderConfig.Mysql:
                     {
                         var serverVersion = ServerVersion.AutoDetect(connString);
 
