@@ -42,7 +42,7 @@ export class ExampleWebsocketService {
   }
 
   private connect() {
-    this.websocket = new WebSocket(this.constantsService.ALIVE_WEBSOCKET_URL)
+    this.websocket = new WebSocket(this.constantsService.EXAMPLE_WEBSOCKET_URL)
 
     this.websocket.onopen = (event) => {
       this.connected.next(true)
@@ -91,7 +91,7 @@ export class ExampleWebsocketService {
     this.sendMessage({
       baseProtocolType: 'Ping',
       baseProtocolMsg: this.pingMsg
-    } as ExampleWSProtocol)
+    } as BaseWSProtocol)
 
     setTimeout(() => {
       this.connected.next(this.pingMsg === this.pongMsg)

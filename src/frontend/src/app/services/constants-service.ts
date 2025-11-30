@@ -16,7 +16,7 @@ export class ConstantsService {
   /** invoke RenewRefreshToken api before expiration */
   readonly RENEW_REFRESH_TOKEN_BEFORE_EXPIRE_SEC = isDevMode() ? 10 : 30;  
 
-  readonly ALIVE_WEBSOCKET_URL = `wss://${environment.serverName}/api/Main/ExampleWebSocket`
+  readonly EXAMPLE_WEBSOCKET_URL = `wss://${environment.serverName}/api/Main/ExampleWebSocket`
 
   /** ms between each ping alive test */
   readonly WEBSOCKET_PING_MS = 10000
