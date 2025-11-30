@@ -21,8 +21,10 @@ public partial class UtilService :
 
     public AppConfig GetAppConfig() => configuration.GetAppConfig();
 
-    public JsonSerializerOptions ConfigureJsonSerializerOptions(JsonSerializerOptions options)
+    public JsonSerializerOptions ConfigureJsonSerializerOptions(JsonSerializerOptions options, JsonSerializerTarget target)
     {
+        if (target == JsonSerializerTarget.None) return options;
+
         options.Converters.Add(new JsonStringEnumConverter());
 
         options.ReferenceHandler = ReferenceHandler.IgnoreCycles;
@@ -55,42 +57,13 @@ public partial class UtilService :
         return options;
     }
 
-    public JsonSerializerOptions JavaSerializerSettings
+    public JsonSerializerOptions JavaSerializerSettings(JsonSerializerTarget target)
     {
-        get
-        {
-            var options = new JsonSerializerOptions();
+        var options = new JsonSerializerOptions();
 
-            ConfigureJsonSerializerOptions(options);
+        ConfigureJsonSerializerOptions(options, target);
 
-            return options;
-        }
-    }
-
-    public async Task<WSObjNfo<PROTO>> ReceiveMessageAsync<PROTO>(WebSocket webSocket, CancellationToken cancellationToken)
-    {
-        PROTO? res = default;
-        var str = await webSocket.ReceiveStringAsync(cancellationToken);
-        if (!string.IsNullOrWhiteSpace(str))
-            res = JsonSerializer.Deserialize<PROTO>(str, JavaSerializerSettings);
-
-        return new WSObjNfo<PROTO> { Obj = res, Str = str };
-    }
-
-    public async Task<bool> SendMessageSerializedAsync(string str, WebSocket webSocket, CancellationToken cancellationToken)
-    {
-        var res = await webSocket.SendStringAsync(str, cancellationToken);
-
-        return res;
-    }
-
-    public async Task<bool> SendMessageAsync(object msg, WebSocket webSocket, CancellationToken cancellationToken)
-    {
-        var str = JsonSerializer.Serialize(msg, JavaSerializerSettings);
-
-        var res = await webSocket.SendStringAsync(str, cancellationToken);
-
-        return res;
+        return options;
     }
 
 }

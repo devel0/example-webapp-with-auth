@@ -9,9 +9,10 @@ public partial class AliveWebSocketService : WebSocketServiceBase<AliveWSProtoco
 
     public AliveWebSocketService(
         IUtilService util,
+        IWebSocketUtilService wsUtil,
         ILogger<AliveWebSocketService> logger,
         IAuthService auth
-    ) : base(util, logger, auth)
+    ) : base(JsonSerializerTarget.Basic, util, wsUtil, logger, auth)
     {
         this.util = util;
         this.logger = logger;
@@ -27,10 +28,10 @@ public partial class AliveWebSocketService : WebSocketServiceBase<AliveWSProtoco
         {
             case AliveWSMessageType.Ping:
                 {
-                    var ping = JsonSerializer.Deserialize<WSPing>(mex.Str ?? "{}", util.JavaSerializerSettings);
+                    var ping = JsonSerializer.Deserialize<WSPing>(mex.Str ?? "{}", util.JavaSerializerSettings(jsonTarget));
                     if (ping is not null)
                     {
-                        await util.SendMessageAsync(new WSPong(ping.Msg), webSocket, cancellationToken);
+                        await wsUtil.SendMessageAsync(new WSPong(ping.Msg), webSocket, jsonTarget, cancellationToken);
                     }
                 }
                 break;

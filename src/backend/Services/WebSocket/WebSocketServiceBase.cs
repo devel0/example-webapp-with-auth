@@ -2,19 +2,25 @@ namespace ExampleWebApp.Backend.WebApi.Services;
 
 public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO>
 {
-    readonly ILogger logger;
-    readonly IUtilService util;
-    readonly IAuthService auth;
+    protected readonly ILogger logger;
+    protected readonly IUtilService util;
+    protected readonly IAuthService auth;
+    protected readonly IWebSocketUtilService wsUtil;
+    protected readonly JsonSerializerTarget jsonTarget;
 
     public WebSocketServiceBase(
-      IUtilService util,
-      ILogger logger,
-      IAuthService auth
-  )
+        JsonSerializerTarget jsonTarget,
+        IUtilService util,
+        IWebSocketUtilService wsUtil,
+        ILogger logger,
+        IAuthService auth
+    )
     {
+        this.jsonTarget = jsonTarget;
         this.util = util;
+        this.wsUtil = wsUtil;
         this.logger = logger;
-        this.auth = auth;
+        this.auth = auth;        
     }
 
     static ConcurrentDictionary<WebSocketNfo, bool> connections = new ConcurrentDictionary<WebSocketNfo, bool>();
@@ -25,11 +31,11 @@ public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO>
 
         try
         {
-            var str = JsonSerializer.Serialize(obj, util.JavaSerializerSettings);
+            var str = JsonSerializer.Serialize(obj, util.JavaSerializerSettings(jsonTarget));
 
             if (!skipDuplicates || str != wsNfo.SendTimestamp)
             {
-                await util.SendMessageSerializedAsync(str, wsNfo.webSocket, cancellationToken);
+                await wsUtil.SendMessageSerializedAsync(str, wsNfo.webSocket, cancellationToken);
 
                 wsNfo.SendTimestamp = str;
             }
@@ -41,7 +47,7 @@ public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO>
     }
 
     public async Task SendToAllClientsAsync(PROTO obj, CancellationToken cancellationToken, bool skipDuplicates)
-    {    
+    {
         var clients = connections.ToList().Select(w => w.Key).ToList();
 
         foreach (var client in clients)
@@ -80,7 +86,7 @@ public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO>
         {
             if (webSocket.State == WebSocketState.Open)
             {
-                var rxObjNfo = await util.ReceiveMessageAsync<PROTO>(webSocket, cancellationToken);
+                var rxObjNfo = await wsUtil.ReceiveMessageAsync<PROTO>(webSocket, jsonTarget, cancellationToken);
 
                 if (rxObjNfo.Obj is not null && rxObjNfo.Str is not null)
                     await OnMessageAsync(webSocket, rxObjNfo, cancellationToken);
