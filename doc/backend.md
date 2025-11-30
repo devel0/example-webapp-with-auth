@@ -81,7 +81,7 @@ dotnet build
 
 [6]: https://github.com/devel0/example-webapp-with-auth/blob/b4ba4c5556e4b3739525b33600b2d6721dad6ecb/src/backend/Services/Auth/Data/UserRefreshToken.cs#L4-L5
 
-[7]: https://github.com/devel0/example-webapp-with-auth/blob/e0dfec4e37e72d8e8dbc555efebd3f5d7057be24/src/backend/Db/AppDbContext.cs#L16
+[7]: https://github.com/devel0/example-webapp-with-auth/blob/0d201a38f9ef6f01557debb3aa2daa427bab1571/src/backend/Services/Db/AppDbContext.cs#L16
 
 [8]: https://github.com/devel0/example-webapp-with-auth/blob/b4ba4c5556e4b3739525b33600b2d6721dad6ecb/src/backend/Services/Fake/FakeService.cs#L14-L15
 
