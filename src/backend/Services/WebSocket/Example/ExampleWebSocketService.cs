@@ -21,12 +21,22 @@ public partial class ExampleWebSocketService : WebSocketServiceBase<ExampleWSPro
     {
         switch (rxObj.ProtocolType)
         {
-            case ExampleWSProtocolType.Mex:
+            case ExampleWSProtocolType.MyProto1:
                 {
-                    var customMex = wsClient.Deserialize<WSCustomMex>(rxOrig);
+                    var customMex = wsClient.Deserialize<ExampleWSProto1>(rxOrig);
                     if (customMex is not null)
                     {
-                        logger.LogDebug($"rx [{customMex.SomeMsg}] mex from client");                        
+                        logger.LogDebug($"rx [{customMex.SomeMsg}] mex from client");
+                    }
+                }
+                break;
+
+            case ExampleWSProtocolType.MyProto2:
+                {
+                    var customMex = wsClient.Deserialize<ExampleWSProto2>(rxOrig);
+                    if (customMex is not null)
+                    {
+                        logger.LogDebug($"rx [{customMex.SomeLongValue}] value from client");
                     }
                 }
                 break;

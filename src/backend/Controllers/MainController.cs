@@ -50,7 +50,7 @@ public class MainController : ControllerBase
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> AliveWebSocket(
+    public async Task<IActionResult> ExampleWebSocket(
         IHttpContextAccessor httpContextAccessor
     )
     {

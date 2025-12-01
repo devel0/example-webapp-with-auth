@@ -1,25 +1,55 @@
 namespace ExampleWebApp.Backend.WebApi.Services;
 
-
 public enum ExampleWSProtocolType
-{    
-    Mex
+{
+    MyProto1,
+    MyProto2,
+    SrvMem
 }
 
-public class ExampleWSProtocol(ExampleWSProtocolType messageType) : BaseWSProtocol(BaseWSProtocolType.Custom)
+public class ExampleWSProtocol : BaseWSProtocol
 {
-
-    public ExampleWSProtocolType ProtocolType { get; set; } = messageType;
+    /// <summary>
+    /// already set if use some <see cref="ExampleWSProtocol"/>  derived types
+    /// </summary>    
+    public ExampleWSProtocolType ProtocolType { get; set; }
 }
 
-public class WSCustomMex : ExampleWSProtocol
+public class ExampleWSProto1 : ExampleWSProtocol
 {
 
-    public string SomeMsg { get; }
+    public string? SomeMsg { get; set; }
 
-    public WSCustomMex(string someMsg) : base(ExampleWSProtocolType.Mex)
+    public ExampleWSProto1()
     {
-        this.SomeMsg = someMsg;
+        this.ProtocolType = ExampleWSProtocolType.MyProto1;
+    }
+
+}
+
+public class ExampleWSProto2 : ExampleWSProtocol
+{
+
+    public long? SomeLongValue { get; set; }
+
+    public ExampleWSProto2()
+    {
+        this.ProtocolType = ExampleWSProtocolType.MyProto2;
+    }
+
+}
+
+public class ExampleWSProtoServerMem : ExampleWSProtocol
+{
+
+    /// <summary>
+    /// srv memory used in bytes
+    /// </summary>
+    public long? MemoryUsed { get; set; }
+
+    public ExampleWSProtoServerMem()
+    {
+        this.ProtocolType = ExampleWSProtocolType.SrvMem;
     }
 
 }

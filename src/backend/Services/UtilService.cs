@@ -29,7 +29,9 @@ public partial class UtilService :
 
         options.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 
-        options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;        
+
+        options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 
         // ignore by attribute example
 
