@@ -33,6 +33,10 @@
 
 - extend [appsettings typed config][1]
 
+- [create][19] a websocket protocol ; [create][20] and [register][21] a websocket protocol service ; [send broadcast][22] to websocket clients
+
+- [create][17] and [register][18] a hosted worker
+
 ## how this project was built
 
 ```sh
@@ -98,3 +102,15 @@ dotnet build
 [15]: https://github.com/devel0/example-webapp-with-auth/blob/0f6f274ced87be6df02de149ea81f11bba7c44e0/src/backend/Controllers/MainController.cs#L16
 
 [16]: https://github.com/devel0/example-webapp-with-auth/blob/0f6f274ced87be6df02de149ea81f11bba7c44e0/src/backend/Controllers/MainController.cs#L30
+
+[17]: https://github.com/devel0/example-webapp-with-auth/blob/0612de9b076f996e66987b264edeb081a5d2dc2b/src/backend/Services/Hosted/ServerMemoryService.cs#L3
+
+[18]: https://github.com/devel0/example-webapp-with-auth/blob/9bd420d450235a7549bbb0296955f27062f8a6b6/src/backend/Program.cs#L43
+
+[19]: https://github.com/devel0/example-webapp-with-auth/blob/ce5f23226c6880993ca0d168ec37ff5cf87dd990/src/backend/Services/WebSocket/Example/ExampleWSProtocol.cs#L2-L3
+
+[20]: https://github.com/devel0/example-webapp-with-auth/blob/ce5f23226c6880993ca0d168ec37ff5cf87dd990/src/backend/Services/WebSocket/Example/ExampleWebSocketService.cs#L3
+
+[21]: https://github.com/devel0/example-webapp-with-auth/blob/9bd420d450235a7549bbb0296955f27062f8a6b6/src/backend/Program.cs#L39
+
+[22]: https://github.com/devel0/example-webapp-with-auth/blob/0612de9b076f996e66987b264edeb081a5d2dc2b/src/backend/Services/Hosted/ServerMemoryService.cs#L22

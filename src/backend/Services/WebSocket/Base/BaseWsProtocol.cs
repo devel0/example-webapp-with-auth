@@ -11,31 +11,17 @@ public enum BaseWSProtocolType
 }
 
 [GenerateSwaggerSchema]
-public class BaseWSProtocol(BaseWSProtocolType baseMessageType)
-{
-    public BaseWSProtocolType BaseProtocolType { get; } = baseMessageType;
-}
-
-public class WSPing : BaseWSProtocol
+public class BaseWSProtocol
 {
 
-    public WSPing(string msg) : base(BaseWSProtocolType.Ping)
-    {
-        Msg = msg;
-    }
+    /// <summary>
+    /// (don't care) : for internal protocol purpose
+    /// </summary>    
+    public BaseWSProtocolType BaseProtocolType { get; set; } = BaseWSProtocolType.Custom;
 
-    public string Msg { get; set; }
-
-}
-
-public class WSPong : BaseWSProtocol
-{
-
-    public WSPong(string msg) : base(BaseWSProtocolType.Pong)
-    {
-        Msg = msg;
-    }
-
-    public string Msg { get; set; }
+    /// <summary>
+    /// (don't care) : for internal protocol purpose
+    /// </summary>
+    public string? BaseProtocolMsg { get; set; }
 
 }

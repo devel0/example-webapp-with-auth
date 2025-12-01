@@ -73,12 +73,17 @@ public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO> whe
 
                 if (!string.IsNullOrWhiteSpace(rxOrig))
                 {
-                    var rxObj = JsonSerializer.Deserialize<PROTO>(rxOrig, util.JavaSerializerSettings(wsClient.jsonTarget));
+                    var rxObj = JsonSerializer.Deserialize<BaseWSProtocol>(rxOrig, util.JavaSerializerSettings(wsClient.jsonTarget));
 
                     if (rxObj is not null)
                     {
                         if (rxObj.BaseProtocolType == BaseWSProtocolType.Custom)
-                            await OnMessageAsync(wsClient, rxObj, rxOrig, cancellationToken);
+                        {
+                            var specificObj = JsonSerializer.Deserialize<PROTO>(rxOrig, util.JavaSerializerSettings(wsClient.jsonTarget));
+
+                            if (specificObj is not null)
+                                await OnMessageAsync(wsClient, specificObj, rxOrig, cancellationToken);
+                        }
 
                         else
                         {
@@ -87,10 +92,14 @@ public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO> whe
                             {
                                 case BaseWSProtocolType.Ping:
                                     {
-                                        var ping = wsClient.Deserialize<WSPing>(rxOrig);
+                                        var ping = wsClient.Deserialize<BaseWSProtocol>(rxOrig);
                                         if (ping is not null)
                                         {
-                                            await wsClient.SendAsync(new WSPong(ping.Msg), cancellationToken);
+                                            await wsClient.SendAsync(new BaseWSProtocol
+                                            {
+                                                BaseProtocolType = BaseWSProtocolType.Pong,
+                                                BaseProtocolMsg = ping.BaseProtocolMsg
+                                            }, cancellationToken);
                                         }
                                     }
                                     break;
