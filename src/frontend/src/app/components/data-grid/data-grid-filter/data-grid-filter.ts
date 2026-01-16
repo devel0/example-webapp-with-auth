@@ -12,6 +12,8 @@ import { DisableAutocompleteDirective } from "../../../directives/disable-autoco
   styleUrl: './data-grid-filter.scss',
 })
 export class DataGridFilter implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+  private subs: Subscription[] = []
+
   CompareOp = CompareOp
   FieldKind = FieldKind
 
@@ -38,15 +40,12 @@ export class DataGridFilter implements OnInit, AfterViewInit, OnChanges, OnDestr
   }
 
   private operatorSubject
-  private operatorSubscription
-
   private textSubject
-  private textSubscription
 
   constructor(
   ) {
     this.operatorSubject = new BehaviorSubject<CompareOp | null>(this.columnState?.filter?.op ?? CompareOp.Equals)
-    this.operatorSubscription = this.operatorSubject
+    this.subs.push(this.operatorSubject
       .subscribe(x => {
 
         this.filterChange.emit(
@@ -56,10 +55,10 @@ export class DataGridFilter implements OnInit, AfterViewInit, OnChanges, OnDestr
               filter: this.text,
               op: this.operator ?? CompareOp.Equals
             })
-      });
+      }))
 
     this.textSubject = new BehaviorSubject<string | null>(null)
-    this.textSubscription = this.textSubject
+    this.subs.push(this.textSubject
       .pipe(debounceTime(this.debounceMs))
       .pipe(distinctUntilChanged())
       .subscribe(x => {
@@ -71,7 +70,7 @@ export class DataGridFilter implements OnInit, AfterViewInit, OnChanges, OnDestr
               filter: this.text,
               op: this.operator ?? CompareOp.Equals
             })
-      });
+      }))
   }
 
   ngOnInit() { }
@@ -86,8 +85,7 @@ export class DataGridFilter implements OnInit, AfterViewInit, OnChanges, OnDestr
   }
 
   ngOnDestroy() {
-    this.textSubscription.unsubscribe()
-    this.operatorSubscription.unsubscribe()
+    this.subs.forEach(sub => sub.unsubscribe())
   }
 
   clearFilter() {

@@ -1,8 +1,7 @@
-<div 
-appTrackOffsetTop
-(offsetTopChange)="divRefOffsetTopChanged($event)"
-></div>
+<div
+    appTrackElementMetrics
+    (metricsChange)="divRefMetricsChanged($event)"></div>
 
-<div #divMain>    
+<div #divMain>
     <ng-content />
 </div>

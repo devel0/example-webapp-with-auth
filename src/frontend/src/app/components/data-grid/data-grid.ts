@@ -4,17 +4,18 @@ import { BehaviorSubject } from 'rxjs';
 import { ComputeDynFilerNfo, DataGridColumn, DataGridColumnState, FieldKind, FilterNfo, NeedCountNfo, NeedLoadNfo } from './types/data-grid-types';
 import { DataGridFilter } from "./data-grid-filter/data-grid-filter";
 import { from } from 'linq-to-typescript';
-import { SizeNfo, TrackResize } from "../../directives/track-resize";
 import { DataGridColumnHandle } from "./data-grid-column-handle/data-grid-column-handle";
 import { MatDialog } from '@angular/material/dialog';
 import { ColumnChooserProps, ColumnsChooser } from './columns-chooser/columns-chooser';
 import { VisibleColumnsPipePipe } from "./visible-columns-pipe-pipe";
 import { SkipIfPipe } from "../utils/skip-if-pipe";
 import { emptyString } from '../../utils/utils';
+import { SizeNfo } from '../../types/size-nfo';
+import { ElementMetrics } from '../../directives/track-element-metrics';
 
 @Component({
   selector: 'app-data-grid',
-  imports: [BasicModule, DataGridFilter, TrackResize, DataGridColumnHandle, SkipIfPipe],
+  imports: [BasicModule, DataGridFilter, DataGridColumnHandle, SkipIfPipe],
   templateUrl: './data-grid.html',
   styleUrl: './data-grid.scss'
 })
@@ -79,9 +80,9 @@ export class DataGrid<T> implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
   }
 
-  onTableSizeChanged(size: SizeNfo) {
-    const widthChanged = size.width != (this.tableSize?.width ?? 0)
-    this.tableSize = size
+  onTableMetricsChanged(e: ElementMetrics) {
+    const widthChanged = e.width != (this.tableSize?.width ?? 0)
+    this.tableSize = { width: e.width, height: e.height }
     if (widthChanged)
       this.onTableResize()
   }

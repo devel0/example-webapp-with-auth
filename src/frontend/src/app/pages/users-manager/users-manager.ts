@@ -26,14 +26,12 @@ const fnTDATA = pathBuilder<TDATA>()
   styleUrl: './users-manager.scss',
 })
 export class UsersManager implements OnInit, AfterViewInit, OnDestroy {
+  private subs: Subscription[] = []
 
   @ViewChild('dgRef') dgRef!: DataGrid<TDATA>
 
   dataGrid!: DataGrid<TDATA>
 
-  private dialogSub: Subscription | null = null
-
-  private selectedRowsCountSub!: Subscription
   selectedRowsCount = 0
 
   constructor(
@@ -52,15 +50,14 @@ export class UsersManager implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.dialogSub != null) this.dialogSub.unsubscribe()
-    if (this.selectedRowsCountSub != null) this.selectedRowsCountSub.unsubscribe()
+    this.subs.forEach(sub => sub.unsubscribe())
   }
 
   ngAfterViewInit() {
     if (this.dgRef != null)
-      this.selectedRowsCountSub = this.dgRef.selectedRowIds$.subscribe(async x => {
+      this.subs.push(this.dgRef.selectedRowIds$.subscribe(async x => {
         this.selectedRowsCount = x.size
-      })
+      }))
   }
 
   addUser() {
@@ -75,10 +72,9 @@ export class UsersManager implements OnInit, AfterViewInit, OnDestroy {
         }
       })
 
-    this.dialogSub = dialogRef.afterClosed().subscribe(x => {
-
+    this.subs.push(dialogRef.afterClosed().subscribe(x => {
       this.dataGrid.reload()
-    })
+    }))
   }
 
   async delUsers() {
@@ -140,9 +136,9 @@ export class UsersManager implements OnInit, AfterViewInit, OnDestroy {
         }
       })
 
-    this.dialogSub = dialogRef.afterClosed().subscribe(x => {
+    this.subs.push(dialogRef.afterClosed().subscribe(x => {
       this.dataGrid.reload()
-    })
+    }))
   }
 
   computeDynFilter(nfo: ComputeDynFilerNfo) {

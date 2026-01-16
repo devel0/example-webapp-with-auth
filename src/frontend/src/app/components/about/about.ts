@@ -13,22 +13,22 @@ import { BehaviorSubject, firstValueFrom, Subscription } from 'rxjs';
   styleUrl: './about.scss'
 })
 export class About implements OnDestroy {
+  private subs: Subscription[] = []
 
   private srvMem = new BehaviorSubject<string>("")
-  srvMem$ = this.srvMem.asObservable()
-  srvMemSub: Subscription
+  srvMem$ = this.srvMem.asObservable()    
 
   constructor(
     private readonly constantsService: ConstantsService,
     readonly ws: ExampleWebsocketService
   ) {
-    this.srvMemSub = ws.srvMemUsed$.subscribe(x => {
+    this.subs.push(ws.srvMemUsed$.subscribe(x => {
       if (x != null) this.srvMem.next(sizeHumanizer(x))
-    })
+    }))
   }
 
   ngOnDestroy(): void {
-    if (this.srvMemSub != null) this.srvMemSub.unsubscribe()
+    this.subs.forEach(sub => sub.unsubscribe())
   }
 
   get appName() { return this.constantsService.APP_NAME }

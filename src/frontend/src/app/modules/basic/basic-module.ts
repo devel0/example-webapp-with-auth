@@ -11,6 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { TrackElementMetricsDirective } from '../../directives/track-element-metrics';
 
 const modules = [
   CommonModule,
@@ -24,7 +25,8 @@ const modules = [
   MatTabGroup,
   MatTabsModule,
   MatSelectModule,
-  MatCheckboxModule
+  MatCheckboxModule,
+  TrackElementMetricsDirective
 ]
 
 @NgModule({

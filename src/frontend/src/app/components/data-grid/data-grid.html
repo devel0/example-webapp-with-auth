@@ -2,8 +2,8 @@
     class="data-grid-div">
 
     <table
-        appTrackResize
-        (sizeChanged)="onTableSizeChanged($event)"
+        appTrackElementMetrics
+        (metricsChange)="onTableMetricsChanged($event)"
         class="data-grid-table">
 
         @if (this.columnsState$ | async; as _columnsState) {

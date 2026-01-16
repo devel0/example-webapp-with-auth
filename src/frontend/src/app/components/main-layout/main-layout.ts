@@ -24,10 +24,7 @@ import { ExampleWebsocketService } from '../../services/websocket/example-websoc
   styleUrl: './main-layout.scss'
 })
 export class MainLayout {
-
-  private breakpointObserverSub!: Subscription
-
-  private networkErrorSub!: Subscription
+  private subs: Subscription[] = []  
 
   constructor(
     public readonly snackService: SnackService,
@@ -43,19 +40,18 @@ export class MainLayout {
   }
 
   ngOnInit() {
-    this.networkErrorSub = this.globalService.networkError$.subscribe(x => {
+    this.subs.push(this.globalService.networkError$.subscribe(x => {
       if (x != null)
         this.snackService.showError("network err", `${x?.statusText}`)
-    })
+    }))
 
-    this.breakpointObserverSub = this.breakpointObserver.observe(['(max-width: 768px)']).subscribe(result => {
+    this.subs.push(this.breakpointObserver.observe(['(max-width: 768px)']).subscribe(result => {
       this.globalService.isMobile = result.matches
-    });
+    }))
   }
 
   ngOnDestroy() {
-    this.networkErrorSub.unsubscribe()
-    this.breakpointObserverSub.unsubscribe()
+    this.subs.forEach(sub => sub.unsubscribe())
   }
 
   goHome() {
