@@ -87,7 +87,7 @@ public class TestFactory : IDisposable
 
     public void Dispose()
     {        
-        Factory.Dispose();
+        Factory?.Dispose();
     }
 
 }
