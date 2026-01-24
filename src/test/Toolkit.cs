@@ -1,5 +1,3 @@
-using ExampleWebApp.Backend.WebApi.Services.Abstractions.Auth;
-
 namespace ExampleWebApp.Backend.Test;
 
 public static partial class Toolkit

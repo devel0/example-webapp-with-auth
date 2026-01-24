@@ -24,7 +24,7 @@ public interface IAuthService
     /// Retrieve current logged in user name, email, roles.
     /// </summary>        
     /// <returns>Logged in user info or null if not authenticated.</returns>                
-    CurrentUserResponseDto CurrentUserNfo();
+    Task<CurrentUserResponseDto> CurrentUserNfoAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// Renew access token if valid refresh token was found

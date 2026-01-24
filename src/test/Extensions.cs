@@ -115,7 +115,7 @@ public static class Extensions
     /// </summary>
     public static async Task<T?> DeserializeAsync<T>(this HttpResponseMessage httpResponseMessage, IUtilService util)
     {
-        return await httpResponseMessage.Content.ReadFromJsonAsync<T>(util.JavaSerializerSettings);
+        return await httpResponseMessage.Content.ReadFromJsonAsync<T>(util.JavaSerializerSettings(JsonTarget.Basic));
     }
 
 }
