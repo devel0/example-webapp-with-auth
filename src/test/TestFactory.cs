@@ -76,14 +76,18 @@ public class TestFactory : IDisposable
 
         await using var dataSource = NpgsqlDataSource.Create(PostgresDbConnectionString);
 
-        await using var cmd = dataSource.CreateCommand($"DROP DATABASE IF EXISTS \"{UnitTestDbName}\" WITH (FORCE)");
+        await using var cmd = dataSource.CreateCommand($"DROP DATABASE IF EXISTS \"{UnitTestDbName}\" WITH (FORCE)");        
 
         await cmd.ExecuteNonQueryAsync(cancellationToken);
+
+        await using var cmd2 = dataSource.CreateCommand($"CREATE DATABASE \"{UnitTestDbName}\"");
+
+        await cmd2.ExecuteNonQueryAsync(cancellationToken);
     }
 
     public void Dispose()
     {        
-        Factory.Dispose();
+        Factory?.Dispose();
     }
 
 }

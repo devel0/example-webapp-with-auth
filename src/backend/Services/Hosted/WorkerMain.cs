@@ -5,6 +5,8 @@ public class WorkerMainService : BackgroundService
 
     readonly IServiceScopeFactory scopeFactory;
 
+    DateTimeOffset startup = DateTimeOffset.Now;
+
     public WorkerMainService(
         IServiceScopeFactory scopeFactory
         )
@@ -51,14 +53,16 @@ public class WorkerMainService : BackgroundService
                     foreach (var worker in workers)
                     {
                         var run = false;
-                        if (!lastExecDict.ContainsKey(worker))                        
-                            run = true;
-                        
+                        if (!lastExecDict.ContainsKey(worker))
+                        {
+                            run = DateTimeOffset.Now - startup >= worker.StartupDelay;
+                        }
+
                         else
                         {
                             var lastExec = lastExecDict[worker];
                             var qTs = DateTimeOffset.UtcNow - lastExec;
-                            run = qTs >= worker.ExecInterval;                            
+                            run = qTs >= worker.ExecInterval;
                         }
 
                         if (run)

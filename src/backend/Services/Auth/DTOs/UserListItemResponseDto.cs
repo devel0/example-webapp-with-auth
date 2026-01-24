@@ -41,9 +41,8 @@ public class UserListItemResponseDto
 
     /// <summary>
     /// Lockout end (UTC). <see cref="LockoutEnabled"/>.
-    /// </summary>
-    [Required]
-    public required DateTimeOffset? LockoutEnd { get; set; }
+    /// </summary>    
+    public DateTimeOffset? LockoutEnd { get; set; }
 
     /// <summary>
     /// If true the user is lockout until <see cref="LockoutEnd"/>.
@@ -53,9 +52,8 @@ public class UserListItemResponseDto
 
     /// <summary>
     /// User phone number.
-    /// </summary>    
-    [Required]
-    public required string? PhoneNumber { get; set; }
+    /// </summary>        
+    public string? PhoneNumber { get; set; }
 
     /// <summary>
     /// User phone number confirmed.
