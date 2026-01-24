@@ -156,6 +156,8 @@ dotnet user-secrets set "AppConfig:Database:Connections:1:ConnectionString" "$UN
 dotnet user-secrets set "AppConfig:Database:Connections:1:Provider" "$DB_PROVIDER"
 ```
 
+note: to avoid `terminating connection due to administrator command` with postgres db in unit test append `; POOLING=False` to the connection string [ref][14]
+
 ## deployment
 
 a script to automate publish on production server is available
@@ -227,3 +229,4 @@ use provided script [gen-api.sh][9] to generate frontend api from the backend sw
 [11]: https://github.com/devel0/example-webapp-with-auth/tree/frontend/react/doc/frontend.md
 [12]: ./doc/backend.md
 [13]: https://github.com/devel0/example-webapp-with-auth/blob/b4ba4c5556e4b3739525b33600b2d6721dad6ecb/src/backend/Services/Fake/FakeService.cs#L36-L37
+[14]: https://stackoverflow.com/a/72602642/5521766
