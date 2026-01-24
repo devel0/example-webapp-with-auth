@@ -49,7 +49,7 @@ public abstract class WebSocketServiceBase<PROTO> : IWebSocketService<PROTO> whe
         };
         using var webSocket = await httpContext.WebSockets.AcceptWebSocketAsync(ctx);
 
-        var curUserRes = auth.CurrentUserNfo();
+        var curUserRes = await auth.CurrentUserNfoAsync(cancellationToken);
 
         if (curUserRes is null)
         {
