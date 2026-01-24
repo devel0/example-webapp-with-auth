@@ -5,6 +5,8 @@ public class ServerMemoryService : IWorkerBase
     readonly ILogger logger;
     readonly IWebSocketService<ExampleWSProtocol> wsService;
 
+    public TimeSpan StartupDelay => TimeSpan.FromSeconds(10);
+
     public TimeSpan ExecInterval => TimeSpan.FromSeconds(30);
 
     public ServerMemoryService(
