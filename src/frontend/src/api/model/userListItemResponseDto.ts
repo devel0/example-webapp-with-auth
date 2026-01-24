@@ -37,7 +37,7 @@ export interface UserListItemResponseDto {
     /**
      * Lockout end (UTC). ExampleWebApp.Backend.WebApi.Services.Auth.DTOs.UserListItemResponseDto.LockoutEnabled.
      */
-    lockoutEnd: string;
+    lockoutEnd?: string | null;
     /**
      * If true the user is lockout until ExampleWebApp.Backend.WebApi.Services.Auth.DTOs.UserListItemResponseDto.LockoutEnd.
      */
@@ -45,7 +45,7 @@ export interface UserListItemResponseDto {
     /**
      * User phone number.
      */
-    phoneNumber: string;
+    phoneNumber?: string | null;
     /**
      * User phone number confirmed.
      */
